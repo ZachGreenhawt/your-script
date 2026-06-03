@@ -28,7 +28,6 @@ ocr_diagnostics.csv
 /Dockerfile
 /.dockerignore
 /railway.json
-/vercel.json
 /DEPLOY.md
 
 # ── Secrets / env ─────────────────────────────────────────────
