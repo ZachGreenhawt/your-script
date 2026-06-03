@@ -167,6 +167,7 @@ export default function FeedbackPage() {
   const isIssue = requestedKind === "error" || Boolean(error);
   const isStory = requestedKind === "story" || from === "done";
   const isScriptScreen = SCRIPT_SCREENS.has(from);
+  const isSayHi = !isIssue && !isStory && !isScriptScreen;
   const showDiagnostics = isIssue && Boolean(error || snapshot);
   const ctx =
     isIssue ?
@@ -197,7 +198,7 @@ export default function FeedbackPage() {
       ["error", "Report parser issue", true],
     ]
     : [["general", "Say hi"]];
-  const mascot = "/mascots/Primary.svg";
+  const mascot = isSayHi ? "" : "/mascots/Primary.svg";
 
   const [note, setNote] = useState("");
   const [copied, setCopied] = useState(false);
@@ -289,7 +290,9 @@ export default function FeedbackPage() {
         <section className="paper-card fb-card-paper">
           <RoughBox className="paper-card-frame fb-card-frame" double />
           <div className="paper-card-body fb-card-body">
-            <img className="fb-mascot" src={mascot} alt="" aria-hidden="true" />
+            {mascot ? (
+              <img className="fb-mascot" src={mascot} alt="" aria-hidden="true" />
+            ) : null}
 
             {showDiagnostics ? (
               <div className="fb-debug">
