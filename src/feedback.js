@@ -1,10 +1,10 @@
 // ─── Feedback plumbing ──────────────────────────────────────────────────────
-// Everything funnels to one inbox.  We use a mailto: composer so it works with
-// zero backend infra and reliably reaches the inbox; the /feedback page and the
-// footer both build on these helpers.  (When the backend is ready, the same
-// payloads can POST to an /api/feedback endpoint — see buildPayload.)
+// Everything funnels to the backend, which sends the actual email through
+// Resend. No mail client required.
 
 import { readSnapshot, formatDiagnostics } from "./diagnostics.js";
+
+const API_BASE = (import.meta.env.VITE_API_BASE || "").replace(/\/+$/, "");
 
 export const EMAILS = {
   metrics: "metrics@yourscript.app", // auto daily digest (sent by the backend)
@@ -114,75 +114,51 @@ export function buildPayload({
   kind = "general",
   from = "",
   note = "",
+  senderEmail = "",
   error = null,
+  includeDiagnostics = false,
 }) {
+  const snapshot = includeDiagnostics ? readSnapshot() : null;
   return {
     kind,
     from,
     note,
+    senderEmail,
     error: kind === "error" ? error || readStashedError() : null,
+    diagnostics: snapshot
+      ? formatDiagnostics(snapshot, { maxLines: 10, maxSourceLines: 14 })
+      : "",
     at: new Date().toISOString(),
     url: typeof location !== "undefined" ? location.href : "",
     ua: typeof navigator !== "undefined" ? navigator.userAgent : "",
   };
 }
 
-// Compose a mailto: URL with a subject + body tailored to the intent.
-export function buildMailto({
+export async function sendFeedback({
   kind = "general",
   from = "",
   note = "",
+  senderEmail = "",
   error = null,
   includeDiagnostics = false,
 }) {
-  let subject;
-  let lines;
-
-  if (kind === "error") {
-    const e = error || readStashedError() || {};
-    subject = "[Your Script] Parser issue";
-    lines = [
-      "Something didn't parse right. Details below to help you fix it:",
-      "",
-      "What went wrong (in your words):",
-      note || "",
-      "",
-      "— debug info —",
-      `message: ${e.message || "(none)"}`,
-      `where:   ${e.context || from || "(unknown)"}`,
-      `input:   ${
-        e.input ?
-          `${e.input.kind} · ~${e.input.sizeKB} KB`
-        : e.fileName || "(n/a)"
-      }`,
-      `time:    ${e.at || new Date().toISOString()}`,
-      `url:     ${e.url || (typeof location !== "undefined" ? location.href : "")}`,
-      `browser: ${e.ua || (typeof navigator !== "undefined" ? navigator.userAgent : "")}`,
-    ];
-  } else if (kind === "story") {
-    subject = "[Your Script] A success story";
-    lines = [
-      "Sharing a win with Your Script — thank you, this genuinely means a lot.",
-      "",
-      "What were you rehearsing (show / role)?",
-      "",
-      "Did Your Script help? How?",
-      "",
-      "May I share this (anonymously) as a testimonial?   yes / no",
-      "",
-      note || "",
-    ];
-  } else {
-    subject = "[Your Script] Feedback";
-    lines = ["Your note:", note || "", ""];
+  const response = await fetch(`${API_BASE}/api/feedback`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(
+      buildPayload({
+        kind,
+        from,
+        note,
+        senderEmail,
+        error,
+        includeDiagnostics,
+      }),
+    ),
+  });
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok || !payload.ok) {
+    throw new Error(payload.error || "Could not send feedback.");
   }
-
-  const snapshot = includeDiagnostics ? readSnapshot() : null;
-  if (snapshot) lines.push("", formatDiagnostics(snapshot, { maxLines: 10, maxSourceLines: 14 }));
-
-  if (from) lines.push("", `— sent from the ${from} screen`);
-  const body = lines.join("\n");
-  return `mailto:${emailFor(kind)}?subject=${encodeURIComponent(
-    subject,
-  )}&body=${encodeURIComponent(body)}`;
+  return payload;
 }

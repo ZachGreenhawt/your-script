@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   FEEDBACK_EMAIL,
-  buildMailto,
+  sendFeedback,
   pageContext,
   readStashedError,
   clearStashedError,
@@ -15,6 +15,7 @@ import {
 const SCRIPT_SCREENS = new Set(["upload", "setup", "practice", "done"]);
 const HAND_UNDERLINE =
   "M 4 14 Q 32 4 60 12 Q 88 20 116 12 Q 144 4 172 12 Q 200 20 228 12 Q 256 4 264 14";
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function buildRoughRect(w, h, seed = 1) {
   const amp = Math.min(1.6, Math.min(w, h) * 0.04);
@@ -201,9 +202,12 @@ export default function FeedbackPage() {
   const mascot = isSayHi ? "" : "/mascots/Primary.svg";
 
   const [note, setNote] = useState("");
+  const [senderEmail, setSenderEmail] = useState("");
   const [copied, setCopied] = useState(false);
   const [diagCopied, setDiagCopied] = useState(false);
   const [sent, setSent] = useState(false);
+  const [sendError, setSendError] = useState("");
+  const [sending, setSending] = useState("");
 
   useEffect(() => {
     const prev = document.body.style.overflow;
@@ -213,21 +217,38 @@ export default function FeedbackPage() {
     };
   }, []);
 
-  const compose = (kind) => {
+  const compose = async (kind) => {
     const includeDiagnostics = kind === "error";
-    const href = buildMailto({
-      kind,
-      from,
-      note,
-      error: includeDiagnostics ? error : null,
-      includeDiagnostics,
-    });
-    if (includeDiagnostics) {
-      clearStashedError();
-      clearSnapshot();
+    const email = senderEmail.trim();
+
+    if (!EMAIL_RE.test(email)) {
+      setSent(false);
+      setSendError("Enter your email before sending.");
+      return;
     }
-    setSent(true);
-    window.location.href = href;
+
+    setSending(kind);
+    setSent(false);
+    setSendError("");
+    try {
+      await sendFeedback({
+        kind,
+        from,
+        note,
+        senderEmail: email,
+        error: includeDiagnostics ? error : null,
+        includeDiagnostics,
+      });
+      if (includeDiagnostics) {
+        clearStashedError();
+        clearSnapshot();
+      }
+      setSent(true);
+    } catch (err) {
+      setSendError(err.message || "Could not send feedback.");
+    } finally {
+      setSending("");
+    }
   };
 
   const copyEmail = () => {
@@ -320,6 +341,20 @@ export default function FeedbackPage() {
             ) : null}
 
             <label className="fb-note-field">
+              <span className="fb-note-label">Your email</span>
+              <div className="fb-note-wrap fb-email-wrap">
+                <input
+                  type="email"
+                  value={senderEmail}
+                  onChange={(e) => setSenderEmail(e.target.value)}
+                  placeholder="you@example.com"
+                  autoComplete="email"
+                />
+                <RoughBox className="fb-note-frame" seed={4} />
+              </div>
+            </label>
+
+            <label className="fb-note-field">
               <span className="fb-note-label">{noteLabel}</span>
               <div className="fb-note-wrap">
                 <textarea
@@ -337,9 +372,10 @@ export default function FeedbackPage() {
                 <PencilButton
                   key={kind}
                   className={`fb-action ${secondary ? "is-secondary" : ""}`}
+                  disabled={Boolean(sending)}
                   onClick={() => compose(kind)}
                 >
-                  {label}
+                  {sending === kind ? "Sending..." : label}
                 </PencilButton>
               ))}
             </div>
@@ -351,8 +387,31 @@ export default function FeedbackPage() {
           <button type="button" className="fb-email" onClick={copyEmail}>
             {copied ? "copied!" : FEEDBACK_EMAIL}
           </button>
-          {sent ? " · email window opened" : null}
+          {sent ? " · sent" : null}
         </p>
+
+        {sendError ? (
+          <div className="practice-toast fb-toast" role="alert">
+            <svg viewBox="0 0 20 20" aria-hidden="true" className="toast-icon">
+              <circle cx="10" cy="10" r="9" fill="currentColor" />
+              <path
+                d="M10 5v6M10 14v1"
+                stroke="#f2f0e8"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+              />
+            </svg>
+            <span>{sendError}</span>
+            <button
+              type="button"
+              className="toast-close"
+              aria-label="Dismiss"
+              onClick={() => setSendError("")}
+            >
+              ×
+            </button>
+          </div>
+        ) : null}
       </main>
 
       <div className="grain-layer" aria-hidden="true" />
