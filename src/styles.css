@@ -465,7 +465,6 @@ a {
   transform: translateY(0);
 }
 
-
 /* CTA */
 
 .cta-stack {
@@ -616,7 +615,8 @@ a {
 
 /* Hand-drawn squiggle underline on hover.  Built as a masked currentColor
    block so the squiggle picks up the link's text color automatically. */
-.chrome-link::after {
+.chrome-link::after,
+.end-footer-link::after {
   content: "";
   position: absolute;
   left: 0;
@@ -624,14 +624,17 @@ a {
   bottom: -7px;
   height: 7px;
   background: currentColor;
-  -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 8' preserveAspectRatio='none'><path d='M 1 4 Q 10 1 20 4 T 40 4 T 60 4 T 80 4 T 100 4 T 119 4' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round'/></svg>") left center / 100% 100% no-repeat;
-  mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 8' preserveAspectRatio='none'><path d='M 1 4 Q 10 1 20 4 T 40 4 T 60 4 T 80 4 T 100 4 T 119 4' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round'/></svg>") left center / 100% 100% no-repeat;
+  -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 8' preserveAspectRatio='none'><path d='M 1 4 Q 10 1 20 4 T 40 4 T 60 4 T 80 4 T 100 4 T 119 4' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round'/></svg>")
+    left center / 100% 100% no-repeat;
+  mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 8' preserveAspectRatio='none'><path d='M 1 4 Q 10 1 20 4 T 40 4 T 60 4 T 80 4 T 100 4 T 119 4' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round'/></svg>")
+    left center / 100% 100% no-repeat;
   transform: scaleX(0);
   transform-origin: left center;
   transition: transform 480ms var(--ease-out-expo);
 }
 
-.chrome-link:hover::after {
+.chrome-link:hover::after,
+.end-footer-link:hover::after {
   transform: scaleX(1);
 }
 
@@ -773,10 +776,10 @@ body:has(.new-script-hitbox:hover) .start-arrow {
 
 .end-footer {
   position: absolute;
+  z-index: 8;
   inset: auto 32px 26px;
   display: grid;
-  grid-template-columns: auto auto;
-  justify-content: space-between;
+  grid-template-columns: 1fr auto;
   align-items: center;
   gap: 16px;
   color: var(--ink);
@@ -791,10 +794,6 @@ body:has(.new-script-hitbox:hover) .start-arrow {
 .end-footer span:nth-child(1) {
   justify-self: start;
   font-weight: 500;
-}
-.end-footer span:nth-child(2) {
-  justify-self: end;
-  color: var(--gray);
 }
 
 /* ─── New-script hit-box ──────────────────────────────────────────────── */
@@ -1104,8 +1103,7 @@ body:has(.new-script-hitbox:hover) .start-arrow {
   gap: clamp(14px, 1.8vh, 22px);
   padding: clamp(20px, 3.5vh, 38px) clamp(28px, 4vw, 56px);
   transform: translateY(20px) scale(0.96);
-  transition:
-    transform 540ms var(--ease-out-expo) 120ms;
+  transition: transform 540ms var(--ease-out-expo) 120ms;
 }
 
 .mascot-loader.is-open .mascot-stage {
@@ -1126,16 +1124,20 @@ body:has(.new-script-hitbox:hover) .start-arrow {
   /* The provided mascot SVGs are pure black ink — keep them that way
      (matches our sepia ink tone closely enough) and add a soft paper
      shadow so the figure feels like it's standing on the page. */
-  filter:
-    drop-shadow(0 2px 0 rgba(44, 39, 34, 0.04))
+  filter: drop-shadow(0 2px 0 rgba(44, 39, 34, 0.04))
     drop-shadow(0 14px 32px rgba(44, 39, 34, 0.1));
 }
 
 /* Loader mascot "breathing" — a slightly larger bob with a touch of
    scale so the figure feels like it's alive and waiting on you. */
 @keyframes mascot-breathe {
-  0%, 100% { transform: translateY(0) rotate(0deg) scale(1); }
-  50%      { transform: translateY(-9px) rotate(-1.4deg) scale(1.015); }
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg) scale(1);
+  }
+  50% {
+    transform: translateY(-9px) rotate(-1.4deg) scale(1.015);
+  }
 }
 
 /* Hand-drawn progress strip — a wobbly rect outline with a pencil-line
@@ -1190,8 +1192,14 @@ body:has(.new-script-hitbox:hover) .start-arrow {
 }
 
 @keyframes mascot-caption-in {
-  from { opacity: 0; transform: translateY(4px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .mascot-caption-dots {
@@ -1209,12 +1217,23 @@ body:has(.new-script-hitbox:hover) .start-arrow {
   animation: mascot-dot 1.3s ease-in-out infinite;
 }
 
-.mascot-caption-dots i:nth-child(2) { animation-delay: 0.18s; }
-.mascot-caption-dots i:nth-child(3) { animation-delay: 0.36s; }
+.mascot-caption-dots i:nth-child(2) {
+  animation-delay: 0.18s;
+}
+.mascot-caption-dots i:nth-child(3) {
+  animation-delay: 0.36s;
+}
 
 @keyframes mascot-dot {
-  0%, 100% { opacity: 0.25; transform: translateY(0); }
-  50%      { opacity: 1; transform: translateY(-3px); }
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-3px);
+  }
 }
 
 /* Steady reassurance line under the rotating caption (e.g. the parse can
@@ -2556,16 +2575,29 @@ body:has(.new-script-hitbox:hover) .start-arrow {
 }
 
 @keyframes mascot-bob {
-  0%, 100% { transform: translateY(0); }
-  50%      { transform: translateY(-3px); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
 }
 
 /* Icon-tip — small playful wobble on hover for mascot icon buttons */
 @keyframes icon-tip {
-  0%   { transform: rotate(0); }
-  30%  { transform: rotate(-10deg); }
-  60%  { transform: rotate(5deg); }
-  100% { transform: rotate(0); }
+  0% {
+    transform: rotate(0);
+  }
+  30% {
+    transform: rotate(-10deg);
+  }
+  60% {
+    transform: rotate(5deg);
+  }
+  100% {
+    transform: rotate(0);
+  }
 }
 
 .grade-btn:hover .grade-btn-icon,
@@ -3668,8 +3700,14 @@ body:has(.new-script-hitbox:hover) .start-arrow {
    negative delays).  "always" runs on the focal cue card; "hover" only
    wakes when you point at an interactive frame. */
 @keyframes boil-cycle {
-  0%, 33.32%  { opacity: 1; }
-  33.33%, 100% { opacity: 0; }
+  0%,
+  33.32% {
+    opacity: 1;
+  }
+  33.33%,
+  100% {
+    opacity: 0;
+  }
 }
 
 .rough-box.is-boil .boil-frame,
@@ -3681,8 +3719,12 @@ body:has(.new-script-hitbox:hover) .start-arrow {
 .rough-box.is-boil .boil-frame {
   animation: boil-cycle 0.72s steps(1, jump-end) infinite;
 }
-.rough-box.is-boil .boil-frame-2 { animation-delay: -0.24s; }
-.rough-box.is-boil .boil-frame-3 { animation-delay: -0.48s; }
+.rough-box.is-boil .boil-frame-2 {
+  animation-delay: -0.24s;
+}
+.rough-box.is-boil .boil-frame-3 {
+  animation-delay: -0.48s;
+}
 
 /* Hover frames sit still (showing take #1) until the parent is hovered. */
 .rough-box.is-boil-hover .boil-frame-1 {
@@ -3706,17 +3748,37 @@ body:has(.new-script-hitbox:hover) .start-arrow {
    stamps in like a rubber stamp and the mascot hops.  Placed after the
    hover icon-tip rule so an increment wins if both fire at once. */
 @keyframes stat-stamp {
-  0%   { transform: scale(1.9) rotate(-7deg); opacity: 0.25; }
-  55%  { transform: scale(0.84) rotate(3deg); opacity: 1; }
-  78%  { transform: scale(1.1) rotate(-1.5deg); }
-  100% { transform: scale(1) rotate(0); }
+  0% {
+    transform: scale(1.9) rotate(-7deg);
+    opacity: 0.25;
+  }
+  55% {
+    transform: scale(0.84) rotate(3deg);
+    opacity: 1;
+  }
+  78% {
+    transform: scale(1.1) rotate(-1.5deg);
+  }
+  100% {
+    transform: scale(1) rotate(0);
+  }
 }
 @keyframes stat-hop {
-  0%   { transform: translateY(0) rotate(0); }
-  28%  { transform: translateY(-10px) rotate(-6deg); }
-  52%  { transform: translateY(2px) rotate(4deg); }
-  74%  { transform: translateY(-3px) rotate(-1.5deg); }
-  100% { transform: translateY(0) rotate(0); }
+  0% {
+    transform: translateY(0) rotate(0);
+  }
+  28% {
+    transform: translateY(-10px) rotate(-6deg);
+  }
+  52% {
+    transform: translateY(2px) rotate(4deg);
+  }
+  74% {
+    transform: translateY(-3px) rotate(-1.5deg);
+  }
+  100% {
+    transform: translateY(0) rotate(0);
+  }
 }
 .status-badge.is-bump .status-badge-card strong {
   animation: stat-stamp 560ms var(--ease-out-expo) both;
@@ -3755,23 +3817,50 @@ body:has(.new-script-hitbox:hover) .start-arrow {
 .spark-star {
   color: #315f5b;
   clip-path: polygon(
-    50% 0%, 60% 40%, 100% 50%, 60% 60%,
-    50% 100%, 40% 60%, 0% 50%, 40% 40%
+    50% 0%,
+    60% 40%,
+    100% 50%,
+    60% 60%,
+    50% 100%,
+    40% 60%,
+    0% 50%,
+    40% 40%
   );
 }
 .spark-plus {
   clip-path: polygon(
-    42% 0, 58% 0, 58% 42%, 100% 42%, 100% 58%, 58% 58%,
-    58% 100%, 42% 100%, 42% 58%, 0 58%, 0 42%, 42% 42%
+    42% 0,
+    58% 0,
+    58% 42%,
+    100% 42%,
+    100% 58%,
+    58% 58%,
+    58% 100%,
+    42% 100%,
+    42% 58%,
+    0 58%,
+    0 42%,
+    42% 42%
   );
 }
 @keyframes spark-pop {
-  0%   { opacity: 0; transform: scale(0) rotate(var(--spark-rot, 0deg)); }
-  35%  { opacity: 1; transform: scale(1.25) rotate(calc(var(--spark-rot, 0deg) + 10deg)); }
-  62%  { opacity: 1; transform: scale(1) rotate(var(--spark-rot, 0deg)); }
-  100% { opacity: 0; transform: scale(0.85) translateY(-10px) rotate(var(--spark-rot, 0deg)); }
+  0% {
+    opacity: 0;
+    transform: scale(0) rotate(var(--spark-rot, 0deg));
+  }
+  35% {
+    opacity: 1;
+    transform: scale(1.25) rotate(calc(var(--spark-rot, 0deg) + 10deg));
+  }
+  62% {
+    opacity: 1;
+    transform: scale(1) rotate(var(--spark-rot, 0deg));
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.85) translateY(-10px) rotate(var(--spark-rot, 0deg));
+  }
 }
-
 
 /* ── Respect reduced-motion ───────────────────────────────────────────────
    Kill every playful animation above, plus the pre-existing idle mascot
@@ -3838,7 +3927,9 @@ body:has(.new-script-hitbox:hover) .start-arrow {
   transition: color 180ms var(--ease-out-expo);
   width: fit-content;
 }
-.ds-back:hover { color: var(--off-white); }
+.ds-back:hover {
+  color: var(--off-white);
+}
 
 .ds-header-eyebrow {
   margin: 0;
@@ -3923,14 +4014,16 @@ body:has(.new-script-hitbox:hover) .start-arrow {
   text-align: left;
   transition: transform 180ms var(--ease-out-expo);
 }
-.ds-swatch:hover { transform: translateY(-2px); }
+.ds-swatch:hover {
+  transform: translateY(-2px);
+}
 
 .ds-swatch-chip {
   display: block;
   width: 80px;
   height: 56px;
   border-radius: 4px;
-  border: 1px solid rgba(44,39,34,.12);
+  border: 1px solid rgba(44, 39, 34, 0.12);
 }
 
 .ds-swatch-token {
@@ -3960,8 +4053,13 @@ body:has(.new-script-hitbox:hover) .start-arrow {
   min-width: 140px;
   transition: transform 180ms var(--ease-out-expo);
 }
-.ds-semantic-swatch:hover { transform: translateY(-2px); }
-.ds-semantic-swatch .ds-swatch-chip { width: 100%; height: 40px; }
+.ds-semantic-swatch:hover {
+  transform: translateY(-2px);
+}
+.ds-semantic-swatch .ds-swatch-chip {
+  width: 100%;
+  height: 40px;
+}
 .ds-swatch-use {
   font-size: 0.7rem;
   color: var(--pencil);
@@ -3975,8 +4073,14 @@ body:has(.new-script-hitbox:hover) .start-arrow {
   border-radius: 4px;
   min-width: 160px;
 }
-.ds-fill-chip code { font-size: 0.72rem; }
-.ds-fill-chip span { font-size: 0.72rem; color: inherit; opacity: .7; }
+.ds-fill-chip code {
+  font-size: 0.72rem;
+}
+.ds-fill-chip span {
+  font-size: 0.72rem;
+  color: inherit;
+  opacity: 0.7;
+}
 
 /* Type blocks */
 .ds-type-block {
@@ -3985,13 +4089,19 @@ body:has(.new-script-hitbox:hover) .start-arrow {
   padding: 20px 24px;
   background: var(--off-white);
   border-radius: 4px;
-  border: 1px solid rgba(44,39,34,.08);
+  border: 1px solid rgba(44, 39, 34, 0.08);
   width: 100%;
 }
-.ds-type-block code { font-size: 0.7rem; color: var(--gray); }
+.ds-type-block code {
+  font-size: 0.7rem;
+  color: var(--gray);
+}
 
 /* Spacing */
-.ds-space-grid { display: grid; gap: 10px; }
+.ds-space-grid {
+  display: grid;
+  gap: 10px;
+}
 .ds-space-row {
   display: flex;
   align-items: center;
@@ -4005,9 +4115,15 @@ body:has(.new-script-hitbox:hover) .start-arrow {
   border-radius: 2px;
   flex-shrink: 0;
 }
-.ds-space-row span { color: var(--pencil); }
+.ds-space-row span {
+  color: var(--pencil);
+}
 
-.ds-ease-grid { display: grid; gap: 10px; width: 100%; }
+.ds-ease-grid {
+  display: grid;
+  gap: 10px;
+  width: 100%;
+}
 .ds-ease-row {
   display: grid;
   grid-template-columns: 180px 1fr 1fr;
@@ -4018,8 +4134,15 @@ body:has(.new-script-hitbox:hover) .start-arrow {
   border-radius: 4px;
   font-size: 0.82rem;
 }
-.ds-ease-val { color: var(--pencil); font-family: monospace; font-size: .74rem; }
-.ds-ease-use { color: var(--gray); font-style: italic; }
+.ds-ease-val {
+  color: var(--pencil);
+  font-family: monospace;
+  font-size: 0.74rem;
+}
+.ds-ease-use {
+  color: var(--gray);
+  font-style: italic;
+}
 
 /* RoughBox demos */
 .ds-roughbox-demo {
@@ -4036,7 +4159,10 @@ body:has(.new-script-hitbox:hover) .start-arrow {
   gap: 8px;
   place-items: center;
 }
-.ds-roughbox-demo code { font-size: .7rem; color: var(--gray); }
+.ds-roughbox-demo code {
+  font-size: 0.7rem;
+  color: var(--gray);
+}
 
 /* Boil demo */
 .ds-boil-wrap {
@@ -4047,9 +4173,15 @@ body:has(.new-script-hitbox:hover) .start-arrow {
 .ds-boil-frame {
   animation: boil-cycle 0.72s steps(1, jump-end) infinite;
 }
-.ds-boil-frame.boil-frame-1 { position: relative; }
-.ds-boil-frame.boil-frame-2 { animation-delay: -0.24s; }
-.ds-boil-frame.boil-frame-3 { animation-delay: -0.48s; }
+.ds-boil-frame.boil-frame-1 {
+  position: relative;
+}
+.ds-boil-frame.boil-frame-2 {
+  animation-delay: -0.24s;
+}
+.ds-boil-frame.boil-frame-3 {
+  animation-delay: -0.48s;
+}
 
 /* Component demos */
 .ds-component-row {
@@ -4088,9 +4220,13 @@ body:has(.new-script-hitbox:hover) .start-arrow {
   width: 72px;
   height: 72px;
   object-fit: contain;
-  filter: drop-shadow(0 2px 4px rgba(44,39,34,.1));
+  filter: drop-shadow(0 2px 4px rgba(44, 39, 34, 0.1));
 }
-.ds-mascot-item code { font-size: .65rem; color: var(--gray); text-align: center; }
+.ds-mascot-item code {
+  font-size: 0.65rem;
+  color: var(--gray);
+  text-align: center;
+}
 
 .ds-usage-table {
   display: grid;
@@ -4103,11 +4239,15 @@ body:has(.new-script-hitbox:hover) .start-arrow {
   padding: 8px 12px;
   background: var(--off-white);
   border-radius: 3px;
-  font-size: .82rem;
+  font-size: 0.82rem;
   align-items: center;
 }
-.ds-usage-row code { font-size: .74rem; }
-.ds-usage-row span { color: var(--pencil); }
+.ds-usage-row code {
+  font-size: 0.74rem;
+}
+.ds-usage-row span {
+  color: var(--pencil);
+}
 
 /* Patterns */
 .ds-chrome-demo {
@@ -4121,7 +4261,10 @@ body:has(.new-script-hitbox:hover) .start-arrow {
 }
 
 /* Animation table */
-.ds-anim-table { display: grid; gap: 6px; }
+.ds-anim-table {
+  display: grid;
+  gap: 6px;
+}
 .ds-anim-row {
   display: grid;
   grid-template-columns: 220px 140px 1fr;
@@ -4129,15 +4272,27 @@ body:has(.new-script-hitbox:hover) .start-arrow {
   padding: 9px 14px;
   background: var(--off-white);
   border-radius: 3px;
-  font-size: .82rem;
+  font-size: 0.82rem;
   align-items: center;
 }
-.ds-anim-row code { font-size: .74rem; }
-.ds-anim-dur { color: var(--pencil); font-family: monospace; font-size: .74rem; }
-.ds-anim-use { color: var(--gray); font-style: italic; }
+.ds-anim-row code {
+  font-size: 0.74rem;
+}
+.ds-anim-dur {
+  color: var(--pencil);
+  font-family: monospace;
+  font-size: 0.74rem;
+}
+.ds-anim-use {
+  color: var(--gray);
+  font-style: italic;
+}
 
 /* Design rules */
-.ds-rules { display: grid; gap: 16px; }
+.ds-rules {
+  display: grid;
+  gap: 16px;
+}
 .ds-rule {
   padding: 18px 22px;
   background: var(--off-white);
@@ -4147,13 +4302,13 @@ body:has(.new-script-hitbox:hover) .start-arrow {
   gap: 4px;
 }
 .ds-rule-title {
-  font-size: .9rem;
+  font-size: 0.9rem;
   font-weight: 600;
   color: var(--ink);
 }
 .ds-rule-detail {
   margin: 0;
-  font-size: .84rem;
+  font-size: 0.84rem;
   line-height: 1.5;
   color: var(--pencil);
 }
@@ -4161,19 +4316,334 @@ body:has(.new-script-hitbox:hover) .start-arrow {
 /* Note / prose */
 .ds-prose {
   margin: 0;
-  font-size: .9rem;
+  font-size: 0.9rem;
   line-height: 1.6;
   color: var(--pencil);
   max-width: 72ch;
 }
 .ds-note {
   margin: 0;
-  font-size: .82rem;
+  font-size: 0.82rem;
   line-height: 1.5;
   color: var(--gray);
   font-style: italic;
   padding: 10px 14px;
-  background: rgba(44,39,34,.05);
+  background: rgba(44, 39, 34, 0.05);
   border-radius: 3px;
 }
-.ds-note strong { color: var(--ink); }
+.ds-note strong {
+  color: var(--ink);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   Contextual feedback + /feedback page
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Contextual feedback invite on the review screen — a quiet, hand-ruled line,
+   not a persistent widget.  Feedback only ever surfaces where it's natural: the
+   review screen, the error toast, and the landing's end credits. */
+.review-aside {
+  margin: 20px auto 0;
+  text-align: center;
+  font-style: italic;
+  font-size: 0.9rem;
+  color: var(--pencil);
+}
+.review-aside-link {
+  font-style: normal;
+  font-weight: 500;
+  color: var(--ink);
+  text-decoration: underline wavy;
+  text-decoration-color: rgba(90, 82, 73, 0.4);
+  text-underline-offset: 3px;
+  white-space: nowrap;
+  transition: color 200ms var(--ease-out-expo);
+}
+.review-aside-link:hover {
+  color: var(--maroon);
+}
+
+/* "report this" link inside the error toast */
+.toast-report {
+  color: #f2f0e8;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  white-space: nowrap;
+  margin-left: 4px;
+}
+.toast-report:hover {
+  opacity: 0.85;
+}
+
+/* Landing end-footer maker credit — blends with the credits (same uppercase,
+   letter-spacing and size, inherited), just a quieter colour + hover underline. */
+.end-footer-link {
+  position: relative;
+  display: inline-flex;
+  justify-self: end;
+  pointer-events: auto;
+  color: var(--gray);
+  text-decoration: none;
+  text-align: right;
+  max-width: min(64vw, 34ch);
+  transition: color 200ms var(--ease-out-expo);
+}
+.end-footer-link:hover {
+  color: var(--ink);
+}
+
+/* ── /feedback page ──────────────────────────────────────────────────────── */
+.fb-page {
+  position: relative;
+  min-height: 100vh;
+  background: var(--off-white);
+  color: var(--ink);
+  font-family: "Inter Tight", Manrope, sans-serif;
+}
+
+.fb-main {
+  position: relative;
+  z-index: 1;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: clamp(112px, 16vh, 154px) clamp(20px, 5vw, 48px) 80px;
+  display: grid;
+  justify-items: center;
+  gap: clamp(24px, 4vh, 42px);
+}
+
+.fb-heading {
+  gap: 10px;
+  margin: 0 auto;
+  max-width: 720px;
+}
+.fb-heading h1 {
+  font-size: clamp(2.6rem, 10vw, 5.2rem);
+}
+.fb-rule {
+  width: clamp(180px, 25vw, 320px);
+  height: 14px;
+  color: var(--pencil);
+  opacity: 0.7;
+}
+.fb-lede {
+  margin: 8px 0 0;
+  max-width: 48ch;
+  font-style: italic;
+  font-size: clamp(0.98rem, 1.4vw, 1.12rem);
+  line-height: 1.5;
+  color: var(--pencil);
+}
+
+.fb-card-paper {
+  min-height: auto;
+  padding: clamp(24px, 4vw, 38px);
+}
+.fb-card-frame {
+  inset: -5px;
+}
+.fb-card-body {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: clamp(18px, 3vh, 26px);
+}
+.fb-mascot {
+  position: absolute;
+  top: -6px;
+  right: clamp(4px, 1.5vw, 14px);
+  width: clamp(70px, 9vw, 96px);
+  height: clamp(70px, 9vw, 96px);
+  object-fit: contain;
+  pointer-events: none;
+  transform: rotate(4deg);
+  animation: mascot-bob 3.6s ease-in-out infinite;
+}
+
+.fb-debug {
+  display: grid;
+  gap: 10px;
+  justify-items: center;
+  width: 100%;
+}
+.fb-debug-note {
+  position: relative;
+  margin: 0;
+  justify-self: center;
+  max-width: 56ch;
+  text-align: center;
+  font-size: 0.84rem;
+  line-height: 1.5;
+  color: var(--pencil);
+  padding: 12px 16px;
+}
+.fb-debug-note p {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+}
+.fb-debug-frame {
+  color: var(--pencil);
+  opacity: 0.54;
+}
+.fb-debug-details {
+  width: 100%;
+  max-width: 56ch;
+}
+.fb-debug-details summary {
+  cursor: pointer;
+  text-align: center;
+  font-size: 0.82rem;
+  color: var(--pencil);
+  text-decoration: underline wavy;
+  text-decoration-color: rgba(90, 82, 73, 0.4);
+  text-underline-offset: 3px;
+  list-style: none;
+}
+.fb-debug-details summary::-webkit-details-marker {
+  display: none;
+}
+.fb-debug-details summary:hover {
+  color: var(--ink);
+}
+.fb-debug-pre {
+  margin: 10px 0 6px;
+  max-height: 240px;
+  overflow: auto;
+  padding: 12px 14px;
+  background: rgba(44, 39, 34, 0.05);
+  border: 1px solid rgba(44, 39, 34, 0.12);
+  border-radius: 5px;
+  font-family: "SF Mono", "JetBrains Mono", ui-monospace, Menlo, monospace;
+  font-size: 0.72rem;
+  line-height: 1.5;
+  color: var(--ink);
+  white-space: pre;
+  tab-size: 2;
+}
+.fb-debug-copy {
+  font-size: 0.8rem;
+}
+
+.fb-note-field {
+  display: grid;
+  gap: 10px;
+  width: 100%;
+}
+.fb-note-label {
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gray);
+  font-weight: 500;
+}
+.fb-note-wrap {
+  position: relative;
+}
+.fb-note-wrap textarea {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  min-height: 132px;
+  resize: vertical;
+  background: transparent;
+  border: 0;
+  outline: 0;
+  padding: 16px 20px;
+  font-family: "Inter Tight", Manrope, sans-serif;
+  font-size: 0.98rem;
+  line-height: 1.5;
+  color: var(--ink);
+}
+.fb-note-wrap textarea::placeholder {
+  color: var(--gray);
+  font-style: italic;
+}
+.fb-note-frame {
+  color: var(--pencil);
+  opacity: 0.66;
+  transition: opacity 200ms var(--ease-out-expo);
+}
+.fb-note-wrap:focus-within .fb-note-frame {
+  color: var(--ink);
+  opacity: 1;
+}
+
+.fb-actions {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.fb-action {
+  min-height: 48px;
+  padding: 13px 26px;
+  font-family: "Teko", "Inter Tight", sans-serif;
+  font-size: 1.38rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.fb-action .pencil-btn-frame {
+  opacity: 0.86;
+}
+.fb-action.is-secondary {
+  color: var(--pencil);
+  font-size: 1.18rem;
+}
+.fb-action.is-secondary .pencil-btn-frame {
+  opacity: 0.58;
+}
+
+.fb-fallback {
+  margin: -8px 0 0;
+  text-align: center;
+  font-size: 0.86rem;
+  color: var(--pencil);
+}
+.fb-email {
+  background: none;
+  border: 0;
+  padding: 0 2px;
+  cursor: pointer;
+  font: inherit;
+  color: var(--ink);
+  font-weight: 500;
+  text-decoration: underline wavy;
+  text-decoration-color: rgba(90, 82, 73, 0.4);
+  text-underline-offset: 3px;
+}
+.fb-email:hover {
+  color: var(--maroon);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .review-aside-link,
+  .fb-mascot,
+  .fb-action {
+    transition: none;
+    animation: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .fb-main {
+    padding-top: 116px;
+  }
+  .fb-card-paper {
+    width: 100%;
+    padding: 24px 20px;
+  }
+  .fb-mascot {
+    width: 64px;
+    height: 64px;
+    opacity: 0.82;
+  }
+  .fb-actions {
+    gap: 8px;
+  }
+  .fb-action {
+    padding-inline: 20px;
+  }
+}

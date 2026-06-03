@@ -6,6 +6,14 @@ import {
   useState,
 } from "react";
 import MascotLoader from "./MascotLoader.jsx";
+import { stashError } from "../feedback.js";
+import { track, EVENTS } from "../analytics.js";
+import {
+  buildSnapshot,
+  stashSnapshot,
+  fileMeta,
+  maskText,
+} from "../diagnostics.js";
 
 // API base — empty in dev (Vite proxies /api → :5174) and for same-origin
 // deploys.  Set VITE_API_BASE to the backend URL (e.g. the Railway URL) to
@@ -639,6 +647,7 @@ export default function PracticeApp() {
     setLoadProgress(0);
     setLoadCaption("Reading your script");
     setError("");
+    track(EVENTS.SCRIPT_UPLOADED);
     try {
       let response;
       if (file) {
@@ -668,8 +677,15 @@ export default function PracticeApp() {
       setBodyStartLine((payload.bodyStartIndex || 0) + 1);
       setSetupStep(0);
       setPhase("setup");
+      track(EVENTS.SCRIPT_ANALYZED);
     } catch (requestError) {
       setError(requestError.message);
+      stashError({
+        message: requestError.message,
+        context: file ? "analyze (file upload)" : "analyze (pasted text)",
+        input: fileMeta(file, scriptText),
+      });
+      track(EVENTS.ERROR_OCCURRED);
     } finally {
       setBusy("");
     }
@@ -701,9 +717,33 @@ export default function PracticeApp() {
       const payload = await streamApiResponse(response, handleLoadProgress);
       setLoadProgress(1);
       setParsed(payload);
+      // Stash an IP-safe diagnostic snapshot of the run (masked structure only,
+      // no script text) so a feedback report can carry real debug detail.
+      try {
+        stashSnapshot(
+          buildSnapshot({
+            parsed: payload,
+            analysis,
+            targetCharacter,
+            characters,
+            file,
+            scriptText,
+            cleanup: cleanupString,
+            settings,
+          }),
+        );
+      } catch {
+        // diagnostics must never block a successful parse
+      }
       startRound(payload.items || [], "Full run");
     } catch (requestError) {
       setError(requestError.message);
+      stashError({
+        message: requestError.message,
+        context: `parse (role ${maskText(targetCharacter, 24) || "?"})`,
+        input: fileMeta(file, scriptText),
+      });
+      track(EVENTS.ERROR_OCCURRED);
     } finally {
       setBusy("");
     }
@@ -721,6 +761,7 @@ export default function PracticeApp() {
     setSessionStartedAt(Date.now());
     setLineStartedAt(Date.now());
     setNow(Date.now());
+    if (items.length) track(EVENTS.PRACTICE_STARTED);
     setPhase(items.length ? "practice" : "done");
   }
 
@@ -869,6 +910,7 @@ export default function PracticeApp() {
 
   function nextCue() {
     if (currentIndex + 1 >= practiceItems.length) {
+      track(EVENTS.PRACTICE_COMPLETED);
       setPhase("done");
       return;
     }
@@ -902,7 +944,35 @@ export default function PracticeApp() {
     setHistory([]);
   }
 
+  // Download the user's cue/line list as a .txt — handy to print or study away
+  // from the screen.  (Built from the current run; nothing leaves the browser.)
+  function exportLines() {
+    track(EVENTS.EXPORT_CLICKED);
+    const items = parsed?.items || practiceItems || [];
+    if (!items.length) return;
+    const who = (targetCharacter || "MY LINES").toUpperCase();
+    const base = (analysis?.fileName || "your-script").replace(/\.[^.]+$/, "");
+    const body = items
+      .map(
+        (it, i) =>
+          `${i + 1}.\n  cue · ${displayCue(it.cue)}\n  ${who} · ${it.line}`,
+      )
+      .join("\n\n");
+    const blob = new Blob([`${base} — ${who}\n\n${body}\n`], {
+      type: "text/plain;charset=utf-8",
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${base} — ${who} lines.txt`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+
   function handleNextStep() {
+    if (setupStep === 1) track(EVENTS.CHARACTER_SELECTED);
     if (setupStep < SETUP_STEPS.length - 1) {
       setSetupStep((s) => s + 1);
       return;
@@ -988,6 +1058,12 @@ export default function PracticeApp() {
             />
           </svg>
           <span>{error}</span>
+          <a
+            className="toast-report"
+            href={`/feedback?from=${encodeURIComponent(phase)}&kind=error`}
+          >
+            report this&nbsp;→
+          </a>
           <button
             type="button"
             className="toast-close"
@@ -1092,6 +1168,7 @@ export default function PracticeApp() {
             onRetryAll={() => startRound(parsed?.items || [], "Full run")}
             onRetryMissed={retryMissed}
             onBackToSetup={resetToSetup}
+            onExport={exportLines}
           />
         ) : null}
       </section>
@@ -2041,6 +2118,7 @@ function DoneSession({
   onRetryAll,
   onRetryMissed,
   onBackToSetup,
+  onExport,
 }) {
   return (
     <div className="paper-stage">
@@ -2103,6 +2181,9 @@ function DoneSession({
 
       <div className="review-actions">
         {parsedTotal ? (
+          <PencilButton onClick={onExport}>Download lines</PencilButton>
+        ) : null}
+        {parsedTotal ? (
           <PencilButton onClick={onRetryAll}>Try again</PencilButton>
         ) : null}
         {hasMissed ? (
@@ -2112,6 +2193,15 @@ function DoneSession({
           {parsedTotal ? "Complete session" : "Back to settings"}
         </PencilButton>
       </div>
+
+      {parsedTotal ? (
+        <p className="review-aside">
+          Did this help you learn your lines?{" "}
+          <a className="review-aside-link" href="/feedback?from=done&kind=story">
+            Tell the maker&nbsp;→
+          </a>
+        </p>
+      ) : null}
     </div>
   );
 }

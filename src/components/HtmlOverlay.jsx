@@ -10,6 +10,7 @@ const TITLE_RULE =
 const ARROW_TO_BOOK = "M 30 30 L 40 18 L 50 30";
 
 const SECTION_NUMS = ["01", "02", "03", "04"];
+const FEEDBACK_HREF = "/feedback?from=landing&kind=general";
 
 // "Your Script" letters with a shuffled exit stagger — title scatters off
 // rather than wiping when the user scrolls past it.
@@ -310,7 +311,16 @@ export default function HtmlOverlay({ progress }) {
           aria-hidden={progress < 0.93}
         >
           <span>Your Script</span>
-          <span>Made for theatre</span>
+          <a
+            className="end-footer-link"
+            href={FEEDBACK_HREF}
+            onClick={(e) => {
+              e.preventDefault();
+              window.location.assign(FEEDBACK_HREF);
+            }}
+          >
+            Built by a student. Say hi!
+          </a>
         </footer>
       </div>
     </>
