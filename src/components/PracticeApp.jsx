@@ -548,14 +548,6 @@ export default function PracticeApp() {
   const [settingsOpen, setSettingsOpen] = useState(false);
 
   useEffect(() => {
-    const previous = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = previous;
-    };
-  }, []);
-
-  useEffect(() => {
     window.scrollTo(0, 0);
   }, [phase]);
 
