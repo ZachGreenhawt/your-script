@@ -25,7 +25,7 @@ iteration, and steered the look, feel, and behaviour until it matched what I
 wanted — down to specifics like which colours belong in the palette, how the
 controls should read, and how every screen flows into the next.
 
-**Disclosure:** the front-end *code* was implemented by an AI coding assistant
+**Disclosure:** the front-end _code_ was implemented by an AI coding assistant
 (Anthropic's Claude) working to my direction. The creative direction, design
 system, product decisions, and review are mine; the AI handled the
 implementation. I'm noting this in the interest of transparency.
@@ -66,9 +66,3 @@ from this repo alone — but the full UI, the landing page, and the design syste
 (`/design-system`) are all browsable.
 
 Routes: `/` (landing) · `/upload` (the practice app) · `/design-system`.
-
----
-
-## License
-
-© Me. All rights reserved. _(Update with your name / chosen license before publishing.)_
