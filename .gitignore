@@ -1,0 +1,54 @@
+# ── Dependencies ──────────────────────────────────────────────
+node_modules/
+.pnp
+.pnp.js
+
+# ── Build output ──────────────────────────────────────────────
+dist/
+dist-ssr/
+.vercel/
+
+# ── Runtime / dev scratch (NEVER commit; generated locally) ──
+# Lazily-compiled Java bridge classes + the dev tessdata symlink.
+.line-learner-build/
+/lib/
+# Old persistent upload cache (now ephemeral — should never appear).
+.line-learner-data/
+# Parser run artifacts written to the working dir.
+parser_exports/
+parser_sessions/
+ocr_diagnostics.csv
+
+# ── Work-in-progress: backend / API / deploy ─────────────────
+# This repo publishes the finished web UI only.  The parsing API, the
+# bundled Java engine, and the (still-WIP) deploy setup are kept local —
+# not part of the public showcase.
+/backend/
+/server/
+/Dockerfile
+/.dockerignore
+/railway.json
+/vercel.json
+/DEPLOY.md
+
+# ── Secrets / env ─────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+*.local
+
+# ── Logs ──────────────────────────────────────────────────────
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ── Editor / tooling / OS ─────────────────────────────────────
+.claude/
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.swp

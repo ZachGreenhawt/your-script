@@ -1,0 +1,4176 @@
+@font-face {
+  font-family: "Manrope";
+  src: url("/fonts/manrope-latin-400-normal.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Inter Tight";
+  src: url("/fonts/inter-tight-latin-500-normal.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Teko";
+  src: url("/fonts/teko-latin-600-normal.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+}
+
+:root {
+  /* Lighter, warmer sketchbook palette. The ink is a sepia near-black rather
+     than a pure off-black so the whole page reads as pencil on cream. */
+  --off-black: #2c2722;
+  --off-white: #f2f0e8;
+  --paper: #e6e3d8;
+  --ink: #2c2722;
+  --pencil: #5a5249;
+  --gray: #9a958c;
+  --maroon: #3d342a;
+  --ease-out-quart: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-in-out-quart: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  /* House curve — every micro-interaction lerps with this so the whole
+     page feels like one author chose it.  Soft start, settled finish. */
+  --ease-house: cubic-bezier(0.22, 0.61, 0.36, 1);
+  color: var(--ink);
+  background: var(--off-white);
+  font-family:
+    Manrope,
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  font-synthesis: none;
+  text-rendering: geometricPrecision;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  background: var(--off-white);
+}
+
+body {
+  min-width: 320px;
+  overflow-x: hidden;
+}
+
+button {
+  font: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.landing-scroll {
+  position: relative;
+  min-height: 1000vh;
+  background: var(--off-white);
+}
+
+.landing-pin {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  background: transparent;
+}
+
+/* When the mascot loader is active, every layer below it fades to
+   transparent so the page reads as empty paper behind the mascot. */
+.landing-scroll.is-loader-active .landing-pin > .landing-canvas,
+.landing-scroll.is-loader-active .landing-pin > .bg-atmosphere,
+.landing-scroll.is-loader-active .landing-pin > .html-overlay,
+.landing-scroll.is-loader-active .landing-pin .stage-background,
+.landing-scroll.is-loader-active .landing-pin > .grain-layer {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 640ms var(--ease-out-expo);
+}
+
+/* ─── Sketchbook atmosphere ───────────────────────────────────────────── */
+
+.bg-atmosphere {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  color: var(--atmo-ink, var(--ink));
+  opacity: var(--atmo-opacity, 1);
+  pointer-events: none;
+  transition:
+    color 220ms var(--ease-in-out-quart),
+    opacity 220ms var(--ease-in-out-quart);
+}
+
+.bg-grain {
+  position: absolute;
+  inset: -8vh -8vw;
+  opacity: 0.05;
+  background-image:
+    radial-gradient(circle, currentColor 0 0.8px, transparent 1px),
+    radial-gradient(circle, currentColor 0 0.55px, transparent 0.8px);
+  background-size:
+    21px 21px,
+    37px 37px;
+  background-position:
+    0 0,
+    13px 9px;
+  mix-blend-mode: multiply;
+  animation: paper-breathe 24s steps(3, end) infinite;
+}
+
+@keyframes paper-breathe {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  33% {
+    transform: translate3d(-6px, 3px, 0) rotate(0.03deg);
+  }
+  66% {
+    transform: translate3d(4px, -5px, 0) rotate(-0.025deg);
+  }
+}
+
+/* ─── Scroll progress hairline ───────────────────────────────────────── */
+
+.scroll-progress {
+  position: fixed;
+  left: clamp(12px, 1.6vw, 22px);
+  top: 22vh;
+  bottom: 22vh;
+  width: 22px;
+  z-index: 6;
+  pointer-events: none;
+  font-family: "Inter Tight", Manrope, sans-serif;
+}
+
+.scroll-progress-rail {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  margin-left: -0.5px;
+  background: color-mix(in srgb, var(--ink) 18%, transparent);
+}
+
+.scroll-progress-fill {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  margin-left: -0.5px;
+  background: var(--ink);
+  transform-origin: top center;
+  transform: scaleY(0);
+  transition: transform 220ms var(--ease-house);
+}
+
+.scroll-progress-knob {
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: top 220ms var(--ease-house);
+}
+
+.scroll-progress-knob::before {
+  content: "";
+  display: block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ink);
+}
+
+.scroll-progress-pct {
+  position: absolute;
+  left: 14px;
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  color: var(--ink);
+}
+
+.landing-scroll.is-loader-active .scroll-progress {
+  opacity: 0;
+  transition: opacity 480ms var(--ease-house);
+}
+
+/* ─── Loader ──────────────────────────────────────────────────────────── */
+
+.loader-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: grid;
+  place-items: center;
+  background: var(--off-white);
+  color: var(--ink);
+  pointer-events: none;
+  transition:
+    opacity 760ms var(--ease-in-out-quart),
+    transform 960ms var(--ease-in-out-quart),
+    visibility 0ms linear 960ms;
+}
+
+.loader-frame {
+  position: relative;
+  width: min(640px, 78vw);
+  display: grid;
+  grid-template-rows: auto auto 1fr auto auto;
+  row-gap: 3.4vh;
+  padding: 30px 0;
+  font-family: "Inter Tight", Manrope, sans-serif;
+}
+
+/* Small mascot peeking on the loader screen */
+.loader-mascot {
+  justify-self: center;
+  width: clamp(78px, 9vw, 120px);
+  height: auto;
+  margin-bottom: -1.2vh;
+  animation: mascot-bob 3.2s var(--ease-in-out-quart) infinite;
+}
+
+.loader-mascot img {
+  display: block;
+  width: 100%;
+  height: auto;
+  /* Mascots read naturally now that the loader is on cream paper —
+     no inversion, just a soft drop shadow so the figure sits on the page. */
+  filter: drop-shadow(0 12px 24px rgba(44, 39, 34, 0.1));
+  opacity: 0.92;
+}
+
+.loader-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gray);
+}
+
+.loader-meta strong {
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.loader-count {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.16em;
+  font-family: "Teko", "Inter Tight", sans-serif;
+  font-weight: 600;
+  font-size: clamp(7rem, 18vw, 13rem);
+  line-height: 0.82;
+  color: var(--ink);
+  letter-spacing: -0.022em;
+}
+
+.loader-count span {
+  display: inline-block;
+  animation: loader-pulse 1.4s var(--ease-in-out-quart) infinite;
+}
+
+.loader-count em {
+  font-style: normal;
+  font-size: 0.2em;
+  color: var(--gray);
+  letter-spacing: 0.06em;
+  align-self: flex-end;
+  transform: translateY(-0.6em);
+}
+
+@keyframes loader-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.012);
+  }
+}
+
+.loader-track {
+  position: relative;
+  width: 100%;
+  height: 1px;
+  background: rgba(44, 39, 34, 0.18);
+  overflow: hidden;
+}
+
+.loader-fill {
+  position: absolute;
+  inset: 0;
+  background: var(--ink);
+  transform-origin: left center;
+  transform: scaleX(0);
+  transition: transform 120ms var(--ease-out-quart);
+}
+
+.loader-screen.is-loaded {
+  visibility: hidden;
+  opacity: 0;
+  transform: translateY(-22vh);
+}
+
+/* ─── Stage (always off-white now) ────────────────────────────────────── */
+
+.stage-background {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  background: var(--off-white);
+  pointer-events: none;
+  transition: background-color 180ms linear;
+}
+
+.stage-background::after {
+  content: "";
+  position: absolute;
+  inset: -8vh -8vw;
+  z-index: 0;
+  opacity: 0.018;
+  background-image:
+    radial-gradient(circle, var(--ink) 0 0.8px, transparent 1px),
+    radial-gradient(circle, var(--ink) 0 0.55px, transparent 0.8px);
+  background-size:
+    18px 18px,
+    31px 31px;
+  background-position:
+    0 0,
+    12px 8px;
+}
+
+/* ─── Hero greeting (Your Script) ───────────────────────────────────────
+   First thing the user sees: a layered editorial title plate.
+   eyebrow → title → hand-drawn rule → italic subtitle, each revealing
+   in sequence after the loader clears. */
+
+.hero-title {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: min(86vw, 1080px);
+  pointer-events: none;
+  user-select: none;
+  text-align: center;
+}
+
+/* ── title proper ── */
+.page-title {
+  margin: 0;
+  color: var(--ink);
+  font-family: "Teko", "Inter Tight", "Arial Narrow", sans-serif;
+  font-size: clamp(5.4rem, 15.4vw, 14.5rem);
+  font-weight: 600;
+  line-height: 0.82;
+  letter-spacing: -0.005em;
+  text-align: center;
+  white-space: nowrap;
+  display: block;
+}
+
+.page-title-char {
+  display: inline-block;
+  opacity: 0;
+  transform: translate3d(0, -36px, 0);
+  transition:
+    opacity 620ms var(--ease-out-expo) calc(var(--char-i, 0) * 50ms + 220ms),
+    transform 620ms var(--ease-out-expo) calc(var(--char-i, 0) * 50ms + 220ms);
+  will-change: opacity, transform;
+}
+
+.hero-title.is-revealed .page-title-char {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+/* ── hand-drawn rule ── */
+.hero-rule {
+  width: clamp(220px, 28vw, 460px);
+  height: 0.4em;
+  margin-top: 0.12em;
+  color: var(--ink);
+  opacity: 0;
+  transition: opacity 420ms var(--ease-out-expo) 1050ms;
+  overflow: visible;
+}
+
+.hero-title.is-revealed .hero-rule {
+  opacity: 1;
+}
+
+.hero-rule path {
+  stroke-dasharray: 1100;
+  stroke-dashoffset: 1100;
+  transition: stroke-dashoffset 1100ms var(--ease-out-expo) 1050ms;
+}
+
+.hero-title.is-revealed .hero-rule path {
+  stroke-dashoffset: 0;
+}
+
+/* ── italic subtitle ── */
+.hero-subtitle {
+  margin-top: 0.6em;
+  font-family: "Inter Tight", Manrope, sans-serif;
+  font-size: clamp(0.92rem, 1.2vw, 1.18rem);
+  font-style: italic;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-transform: lowercase;
+  color: var(--pencil);
+  opacity: 0;
+  transform: translateY(8px);
+  transition:
+    opacity 520ms var(--ease-out-expo) 1450ms,
+    transform 520ms var(--ease-out-expo) 1450ms;
+}
+
+.hero-title.is-revealed .hero-subtitle {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+
+/* CTA */
+
+.cta-stack {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 2;
+  width: min(62vw, 680px);
+  min-height: min(36vh, 360px);
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink);
+  text-align: center;
+  pointer-events: none;
+  user-select: none;
+  padding: 0;
+}
+
+.cta-line {
+  font-family: "Teko", "Inter Tight", "Arial Narrow", sans-serif;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.005em;
+  line-height: 0.86;
+  white-space: nowrap;
+  margin: 0;
+  max-width: 100%;
+  text-wrap: balance;
+  will-change: transform, opacity;
+  transition:
+    transform 140ms var(--ease-out-quart),
+    opacity 140ms var(--ease-out-quart);
+}
+
+.cta-l1 {
+  font-size: clamp(3.3rem, 9.2vw, 7.2rem);
+  letter-spacing: 0;
+}
+
+.cta-l2-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: "Inter Tight", Manrope, sans-serif;
+  font-weight: 500;
+  font-style: italic;
+  font-size: clamp(1.35rem, 4vw, 3.1rem);
+  letter-spacing: 0.005em;
+  line-height: 1.08;
+  text-transform: lowercase;
+  color: var(--ink);
+  padding: 0.08em 0 0.22em;
+  margin: -0.08em 0 0.02em;
+  white-space: nowrap;
+  will-change: transform, opacity;
+  transition:
+    transform 140ms var(--ease-out-quart),
+    opacity 140ms var(--ease-out-quart);
+}
+
+.cta-l2 {
+  display: inline-block;
+}
+
+/* Hand-drawn wavy underline beneath "a play to" */
+.cta-underline {
+  width: clamp(120px, 13vw, 220px);
+  height: 0.34em;
+  margin-top: 0.04em;
+  color: var(--ink);
+  overflow: visible;
+}
+
+.cta-l3 {
+  font-size: clamp(2.7rem, 7vw, 5.35rem);
+  letter-spacing: 0;
+}
+
+/* ─── Canvas ──────────────────────────────────────────────────────────── */
+
+.landing-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: transparent;
+}
+
+/* ─── HTML overlay ────────────────────────────────────────────────────── */
+
+.html-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+}
+
+/* ─── Chrome ──────────────────────────────────────────────────────────── */
+
+.site-chrome {
+  position: absolute;
+  inset: 28px clamp(24px, 4vw, 48px) auto;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  color: var(--ink);
+  font-family: "Inter Tight", Manrope, sans-serif;
+  font-size: clamp(0.72rem, 0.88vw, 0.84rem);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  transition: opacity 220ms var(--ease-in-out-quart);
+}
+
+.chrome-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  pointer-events: auto;
+  cursor: pointer;
+  transition: color 320ms var(--ease-in-out-quart);
+}
+
+.chrome-mark {
+  justify-self: start;
+  font-family: "Teko", "Inter Tight", sans-serif;
+  font-size: clamp(1.08rem, 1.45vw, 1.35rem);
+  font-weight: 600;
+  letter-spacing: 0.015em;
+  text-transform: uppercase;
+}
+.chrome-cta {
+  justify-self: end;
+}
+
+.chrome-center {
+  justify-self: center;
+  color: var(--gray);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-size: 0.7em;
+}
+
+/* Hand-drawn squiggle underline on hover.  Built as a masked currentColor
+   block so the squiggle picks up the link's text color automatically. */
+.chrome-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -7px;
+  height: 7px;
+  background: currentColor;
+  -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 8' preserveAspectRatio='none'><path d='M 1 4 Q 10 1 20 4 T 40 4 T 60 4 T 80 4 T 100 4 T 119 4' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round'/></svg>") left center / 100% 100% no-repeat;
+  mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 8' preserveAspectRatio='none'><path d='M 1 4 Q 10 1 20 4 T 40 4 T 60 4 T 80 4 T 100 4 T 119 4' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round'/></svg>") left center / 100% 100% no-repeat;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 480ms var(--ease-out-expo);
+}
+
+.chrome-link:hover::after {
+  transform: scaleX(1);
+}
+
+.chrome-arrow {
+  width: 14px;
+  height: 14px;
+  transition: transform 360ms var(--ease-out-quart);
+}
+
+.chrome-cta:hover .chrome-arrow {
+  transform: translateX(4px);
+}
+
+/* ─── Section counter (just the current numeral) ──────────────────────── */
+
+.section-index {
+  position: absolute;
+  left: 32px;
+  bottom: 28px;
+  color: var(--ink);
+  font-family: "Inter Tight", Manrope, sans-serif;
+  pointer-events: none;
+  transition: opacity 220ms var(--ease-in-out-quart);
+}
+
+.section-index .is-active {
+  display: grid;
+  grid-template-rows: auto auto;
+  row-gap: 7px;
+  min-width: 56px;
+}
+
+.section-index strong {
+  font-family: "Teko", "Inter Tight", sans-serif;
+  font-weight: 600;
+  font-size: 1.45rem;
+  letter-spacing: 0;
+  line-height: 1;
+}
+
+.section-dot-track {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 1px;
+  background: rgba(44, 39, 34, 0.18);
+  overflow: hidden;
+}
+
+.section-dot-fill {
+  position: absolute;
+  inset: 0;
+  background: var(--ink);
+  transform-origin: left center;
+  transform: scaleX(0);
+  transition: transform 180ms var(--ease-out-quart);
+}
+
+/* ─── Scroll hint ─────────────────────────────────────────────────────── */
+
+.scroll-hint {
+  position: absolute;
+  right: 32px;
+  bottom: 28px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--gray);
+  font-family: "Inter Tight", Manrope, sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  pointer-events: none;
+  transition: opacity 220ms var(--ease-in-out-quart);
+}
+
+.scroll-meter {
+  position: relative;
+  width: 1px;
+  height: 42px;
+  background: rgba(44, 39, 34, 0.16);
+  overflow: hidden;
+}
+
+.scroll-meter span {
+  position: absolute;
+  inset: 0;
+  background: var(--ink);
+  transform: scaleY(0);
+  transform-origin: top center;
+  transition: transform 180ms var(--ease-out-quart);
+}
+
+/* ─── Get-started annotation ──────────────────────────────────────────── */
+
+/* "Get started" label centred below the New Script book; clean arrow
+   above pointing up at it. */
+.start-here {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(20px, 3vh, 36px);
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  color: var(--ink);
+  font-family: "Inter Tight", Manrope, sans-serif;
+  font-size: clamp(0.72rem, 0.9vw, 0.84rem);
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  pointer-events: none;
+  transition: opacity 360ms var(--ease-in-out-quart);
+  will-change: opacity, transform;
+}
+
+.start-here span {
+  white-space: nowrap;
+}
+
+.start-arrow {
+  width: clamp(28px, 3vw, 40px);
+  height: clamp(18px, 2vw, 26px);
+  color: currentColor;
+  overflow: visible;
+  transition: transform 260ms var(--ease-out-quart);
+}
+
+body:has(.new-script-hitbox:hover) .start-here {
+  color: var(--gray);
+}
+
+body:has(.new-script-hitbox:hover) .start-arrow {
+  transform: translateY(-4px);
+}
+
+/* ─── End footer ──────────────────────────────────────────────────────── */
+
+.end-footer {
+  position: absolute;
+  inset: auto 32px 26px;
+  display: grid;
+  grid-template-columns: auto auto;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  color: var(--ink);
+  font-family: "Inter Tight", Manrope, sans-serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  pointer-events: none;
+  transition: opacity 360ms var(--ease-in-out-quart);
+}
+
+.end-footer span:nth-child(1) {
+  justify-self: start;
+  font-weight: 500;
+}
+.end-footer span:nth-child(2) {
+  justify-self: end;
+  color: var(--gray);
+}
+
+/* ─── New-script hit-box ──────────────────────────────────────────────── */
+
+.new-script-hitbox {
+  position: absolute;
+  z-index: 6;
+  left: 50%;
+  top: 50%;
+  width: min(46vw, 540px);
+  height: min(72vh, 720px);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  transform: translate(-50%, -50%);
+  transition: opacity 240ms var(--ease-in-out-quart);
+}
+
+.new-script-hitbox:hover {
+  cursor: pointer;
+}
+
+/* ─── Grain ───────────────────────────────────────────────────────────── */
+
+.grain-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 7;
+  pointer-events: none;
+  opacity: 0.035;
+  mix-blend-mode: multiply;
+  background-image:
+    radial-gradient(
+      circle at 20% 30%,
+      rgba(44, 39, 34, 0.45) 0 1px,
+      transparent 1px
+    ),
+    radial-gradient(
+      circle at 80% 70%,
+      rgba(44, 39, 34, 0.34) 0 1px,
+      transparent 1px
+    );
+  background-size:
+    18px 18px,
+    23px 23px;
+}
+
+/* ─── Reduced-motion fallback ─────────────────────────────────────────── */
+
+.reduced-motion-page {
+  position: relative;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: var(--off-white);
+  color: var(--ink);
+  padding: 6vh 6vw;
+}
+
+.reduced-motion-inner {
+  width: min(960px, calc(100vw - 40px));
+}
+
+.eyebrow {
+  margin: 0 0 1.2rem;
+  color: var(--ink);
+  font-family: "Inter Tight", Manrope, sans-serif;
+  font-size: 0.86rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+}
+
+.reduced-motion-inner h1 {
+  max-width: 920px;
+  margin: 0;
+  color: var(--ink);
+  font-family: "Teko", "Inter Tight", sans-serif;
+  font-weight: 600;
+  font-size: clamp(3.6rem, 12vw, 9rem);
+  line-height: 0.82;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+
+.reduced-motion-inner p:not(.eyebrow) {
+  max-width: 540px;
+  margin: 1.8rem 0 0;
+  color: var(--gray);
+  font-size: clamp(1.05rem, 1.6vw, 1.3rem);
+  line-height: 1.4;
+}
+
+.new-script-fallback {
+  margin-top: 2.4rem;
+  min-height: 52px;
+  padding: 0 1.6rem;
+  border: 1px solid var(--ink);
+  background: var(--ink);
+  color: var(--off-white);
+  font-family: "Inter Tight", Manrope, sans-serif;
+  font-size: 0.92rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    background 280ms var(--ease-in-out-quart),
+    color 280ms var(--ease-in-out-quart);
+}
+
+.new-script-fallback:hover {
+  background: transparent;
+  color: var(--ink);
+}
+
+/* ─── Practice app ───────────────────────────────────────────────────── */
+/* The original /upload page CSS (.upload-page, .upload-stage,
+   .upload-heading, .upload-dropzone, etc.) was removed when /upload was
+   rewritten to use the notebook-paper PracticeApp. */
+
+/* The practice page locks vertical scroll on the page itself — the
+   notebook always fills the viewport.  Long content scrolls inside
+   its own container (the practice-shell scrolls; specific overflowing
+   cards scroll inside their bodies). */
+.practice-page {
+  height: 100vh;
+  height: 100dvh;
+  background: var(--off-white);
+  color: var(--ink);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.practice-chrome {
+  position: fixed;
+  z-index: 20;
+}
+
+.practice-shell {
+  position: relative;
+  z-index: 8;
+  width: min(1180px, calc(100vw - 40px));
+  margin: 0 auto;
+  padding: clamp(132px, 16vh, 168px) 0 56px;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(90, 82, 73, 0.4) transparent;
+}
+
+.practice-shell::-webkit-scrollbar {
+  width: 6px;
+}
+
+.practice-shell::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.practice-shell::-webkit-scrollbar-thumb {
+  background: rgba(90, 82, 73, 0.35);
+  border-radius: 3px;
+}
+
+.practice-shell::-webkit-scrollbar-thumb:hover {
+  background: rgba(90, 82, 73, 0.6);
+}
+
+.practice-shell.is-focused {
+  padding-top: clamp(96px, 13vh, 128px);
+}
+
+/* During the practice phase the whole quiz must fit the viewport — the
+   page never scrolls, only the card body does if a line runs long.  We
+   turn the shell into a flex column with a tighter header clearance and
+   let the rehearsal-room stretch to fill exactly what's left. */
+.practice-shell.is-rehearsal {
+  padding-top: clamp(88px, 11vh, 116px);
+  padding-bottom: clamp(16px, 2.4vh, 28px);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.practice-shell.is-rehearsal .rehearsal-room {
+  flex: 1;
+  min-height: 0;
+}
+
+/* The old practice-page CSS (panels, smooth dropzone, character pills,
+   line preview, cue panel, feedback box, done panel, etc.) was deleted
+   when /upload was rewritten onto the notebook-paper aesthetic — see
+   the "Practice app — notebook-paper aesthetic" section below. */
+
+/* Hand-drawn checkbox — a pencil-sketched RoughBox that gets a marker tick
+   when checked.  Used for settings; reads like a notebook checklist rather
+   than a glossy switch. */
+.paper-check {
+  position: relative;
+  display: grid;
+  grid-template-columns: 30px 1fr;
+  align-items: center;
+  gap: 14px;
+  color: var(--ink);
+  font-family: "Inter Tight", Manrope, sans-serif;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.paper-check input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.paper-check-box {
+  position: relative;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 auto;
+}
+
+.paper-check-frame {
+  color: var(--ink);
+  opacity: 0.6;
+  transition:
+    opacity 200ms var(--ease-out-expo),
+    color 200ms var(--ease-out-expo);
+}
+
+.paper-check:hover .paper-check-frame {
+  opacity: 0.9;
+}
+
+.paper-check.is-checked .paper-check-frame {
+  color: var(--ink);
+  opacity: 1;
+}
+
+.paper-check input:focus-visible + .paper-check-box .paper-check-frame {
+  opacity: 1;
+  color: var(--ink);
+}
+
+/* The marker tick scribbles in when checked. */
+.paper-check-tick {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  color: var(--ink);
+  opacity: 0;
+  transform: scale(0.5) rotate(-10deg);
+  transform-origin: center;
+  transition:
+    opacity 160ms var(--ease-out-expo),
+    transform 240ms var(--ease-out-expo);
+  pointer-events: none;
+  overflow: visible;
+}
+
+.paper-check.is-checked .paper-check-tick {
+  opacity: 1;
+  transform: scale(1) rotate(0deg);
+}
+
+.paper-check-label {
+  line-height: 1.3;
+}
+
+/* (Old setup/practice/done CSS removed — the new paper-aesthetic
+   versions live in the "Practice app — notebook-paper aesthetic"
+   section further down.) */
+
+/* ─── Mascot loader (post-click handoff) ─────────────────────────────── */
+
+/* The loader is layered *on top* of the existing 3D scene so the mascot
+   feels like it walked out from the page.  Background stays transparent
+   — no white panel — and the existing sketchbook atmosphere keeps moving
+   behind it.  A tiny black ink ring around the mascot makes it feel
+   intentional, like a stamp on the page. */
+.mascot-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  opacity: 0;
+  background: var(--off-white);
+  transition: opacity 480ms var(--ease-out-expo);
+}
+
+.mascot-loader.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.mascot-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(14px, 1.8vh, 22px);
+  padding: clamp(20px, 3.5vh, 38px) clamp(28px, 4vw, 56px);
+  transform: translateY(20px) scale(0.96);
+  transition:
+    transform 540ms var(--ease-out-expo) 120ms;
+}
+
+.mascot-loader.is-open .mascot-stage {
+  transform: translateY(0) scale(1);
+}
+
+.mascot-figure {
+  position: relative;
+  width: clamp(180px, 24vw, 320px);
+  height: auto;
+  animation: mascot-breathe 3.4s var(--ease-in-out-quart) infinite;
+}
+
+.mascot-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  /* The provided mascot SVGs are pure black ink — keep them that way
+     (matches our sepia ink tone closely enough) and add a soft paper
+     shadow so the figure feels like it's standing on the page. */
+  filter:
+    drop-shadow(0 2px 0 rgba(44, 39, 34, 0.04))
+    drop-shadow(0 14px 32px rgba(44, 39, 34, 0.1));
+}
+
+/* Loader mascot "breathing" — a slightly larger bob with a touch of
+   scale so the figure feels like it's alive and waiting on you. */
+@keyframes mascot-breathe {
+  0%, 100% { transform: translateY(0) rotate(0deg) scale(1); }
+  50%      { transform: translateY(-9px) rotate(-1.4deg) scale(1.015); }
+}
+
+/* Hand-drawn progress strip — a wobbly rect outline with a pencil-line
+   fill that scrubs across.  No solid bars, no gradients. */
+.mascot-progress {
+  position: relative;
+  width: clamp(220px, 24vw, 280px);
+  height: 24px;
+  color: var(--ink);
+}
+
+.mascot-progress svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+}
+
+.mascot-progress-fill {
+  position: absolute;
+  top: 6px;
+  bottom: 6px;
+  left: 7px;
+  width: 0;
+  max-width: calc(100% - 14px);
+  background-color: rgba(44, 39, 34, 0.16);
+  background-image: repeating-linear-gradient(
+    90deg,
+    var(--ink) 0 4px,
+    transparent 4px 8px
+  );
+  border-radius: 6px;
+  transition: width 260ms var(--ease-out-expo);
+}
+
+.mascot-caption {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  font-family: "Inter Tight", Manrope, sans-serif;
+  font-style: italic;
+  font-weight: 500;
+  font-size: clamp(0.86rem, 1.05vw, 1rem);
+  color: var(--ink);
+  letter-spacing: 0.01em;
+  text-transform: lowercase;
+}
+
+.mascot-caption-text {
+  display: inline-block;
+  animation: mascot-caption-in 320ms var(--ease-out-expo);
+}
+
+@keyframes mascot-caption-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.mascot-caption-dots {
+  display: inline-flex;
+  gap: 3px;
+}
+
+.mascot-caption-dots i {
+  display: inline-block;
+  width: 4px;
+  height: 4px;
+  background: currentColor;
+  border-radius: 50%;
+  opacity: 0.4;
+  animation: mascot-dot 1.3s ease-in-out infinite;
+}
+
+.mascot-caption-dots i:nth-child(2) { animation-delay: 0.18s; }
+.mascot-caption-dots i:nth-child(3) { animation-delay: 0.36s; }
+
+@keyframes mascot-dot {
+  0%, 100% { opacity: 0.25; transform: translateY(0); }
+  50%      { opacity: 1; transform: translateY(-3px); }
+}
+
+/* Steady reassurance line under the rotating caption (e.g. the parse can
+   take a moment on a long script). */
+.mascot-note {
+  margin: 12px 0 0;
+  font-family: "Inter Tight", Manrope, sans-serif;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gray);
+}
+
+/* Media queries ───────────────────────────────────────────────────── */
+
+@media (max-width: 760px) {
+  .landing-scroll {
+    min-height: 760vh;
+  }
+  .site-chrome {
+    inset: 22px 20px auto;
+  }
+  .cta-stack {
+    width: min(82vw, 420px);
+  }
+  .cta-l1 {
+    font-size: 16vw;
+  }
+  .cta-l2-wrap {
+    font-size: 5vw;
+  }
+  .cta-l3 {
+    font-size: 11.5vw;
+  }
+  .section-index {
+    left: 20px;
+    bottom: 20px;
+  }
+  .scroll-hint {
+    right: 20px;
+    bottom: 20px;
+  }
+  .end-footer {
+    inset: auto 20px 18px;
+    font-size: 0.66rem;
+  }
+  .start-here {
+    gap: 2px;
+    font-size: 0.72rem;
+  }
+  .practice-shell {
+    width: min(100% - 28px, 1180px);
+    padding-top: 118px;
+  }
+}
+
+/* ─── Practice app — notebook-paper aesthetic ────────────────────────── */
+/* Everything past the Upload screen (Setup wizard → Practice → Review)
+   lives on a sketched-paper page: red margin rule, faint horizontal
+   guides, and every interactive surface framed by two overlapping
+   pencil-drawn rectangles. */
+
+.practice-page.is-paper {
+  background: var(--off-white);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.paper-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.paper-margin {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: max(82px, 9.5vw);
+  width: 1.2px;
+  background: rgba(170, 60, 50, 0.28);
+}
+
+.paper-rules {
+  position: absolute;
+  inset: 64px 0 0 0;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0 38px,
+    rgba(90, 82, 73, 0.1) 38px 39px
+  );
+  /* Fade rules near the top and bottom edges so they don't fight chrome
+     elements or footer space.  Subtle radial-feathering. */
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    #000 60px,
+    #000 calc(100% - 80px),
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    #000 60px,
+    #000 calc(100% - 80px),
+    transparent 100%
+  );
+}
+
+.practice-shell.on-paper {
+  position: relative;
+  z-index: 6;
+  width: min(1180px, calc(100vw - 64px));
+  margin: 0 auto;
+  padding: clamp(118px, 14vh, 156px) 0 clamp(110px, 12vh, 160px);
+}
+
+/* Reusable rough-box SVG (two overlapping pencil rectangles) */
+.rough-box {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  color: var(--ink);
+  overflow: visible;
+}
+
+.hand-underline {
+  display: block;
+  width: 100%;
+  height: 14px;
+  color: var(--ink);
+  overflow: visible;
+}
+
+/* Pencil-drawn button — RoughBox frame behind a label */
+.pencil-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 22px;
+  background: transparent;
+  border: 0;
+  color: var(--ink);
+  font-family: "Inter Tight", Manrope, sans-serif;
+  font-size: 0.92rem;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: opacity 220ms var(--ease-out-expo);
+}
+
+.pencil-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.pencil-btn-frame {
+  color: var(--ink);
+  opacity: 0.82;
+  transition: opacity 220ms var(--ease-out-expo);
+}
+
+.pencil-btn:hover:not(:disabled) .pencil-btn-frame {
+  opacity: 1;
+}
+
+.pencil-btn-label {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Paper heading (handwritten-feel display title + curly rule + subtitle) */
+.paper-heading {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  text-align: center;
+  margin: 0 auto clamp(24px, 4vh, 48px);
+  max-width: 720px;
+}
+
+.paper-eyebrow {
+  margin: 0;
+  font-family: "Inter Tight", Manrope, sans-serif;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gray);
+}
+
+.paper-heading h1 {
+  margin: 0;
+  font-family: "Teko", "Inter Tight", sans-serif;
+  font-weight: 600;
+  font-size: clamp(3.4rem, 7.6vw, 6rem);
+  line-height: 0.92;
+  letter-spacing: 0.01em;
+  color: var(--ink);
+  transform: rotate(-0.5deg);
+}
+
+.paper-heading-rule {
+  width: clamp(180px, 22vw, 360px);
+  margin-top: 0.16em;
+  color: var(--pencil);
+  opacity: 0.7;
+}
+
+.paper-subtitle {
+  margin: 0.5em 0 0;
+  font-family: "Inter Tight", Manrope, sans-serif;
+  font-style: italic;
+  font-size: 1rem;
+  color: var(--pencil);
+}
+
+/* Paper stage (setup wizard + done) */
+.paper-stage {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 22px;
+}
+
+/* The setup wizard's pager is fixed to the bottom of the viewport, so the
+   card needs clearance below it — otherwise the card scrolls behind the
+   step dots.  This reserves room so the card always ends above the pager. */
+.paper-stage-setup {
+  padding-bottom: clamp(104px, 15vh, 148px);
+}
+
+.setup-wizard {
+  width: min(720px, 100%);
+}
+
+.wizard-step {
+  width: 100%;
+  animation: wizard-step-in 420ms var(--ease-out-expo);
+}
+
+@keyframes wizard-step-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+/* Paper card — universal "sheet within the sheet" with a rough frame */
+.paper-card {
+  position: relative;
+  width: 100%;
+  min-height: 240px;
+  color: var(--ink);
+  padding: clamp(22px, 3vw, 36px);
+}
+
+.paper-card-frame {
+  color: var(--ink);
+  opacity: 0.9;
+}
+
+.paper-card-body {
+  position: relative;
+  z-index: 1;
+}
+
+/* Role card — the card is height-capped so the role list scrolls inside
+   it while the "add role" row stays pinned at the bottom (never scrolls
+   away).  The list is the only scroller; the add row is a flex footer. */
+.paper-card-roles {
+  display: flex;
+  flex-direction: column;
+  max-height: min(56vh, 460px);
+}
+
+.paper-card-roles .paper-card-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.paper-card-roles .role-list {
+  flex: 1;
+  min-height: 0;
+  /* The list is the only scroller — cap it so a script with many detected
+     roles scrolls inside the card instead of overflowing past the add row. */
+  max-height: min(42vh, 320px);
+  overflow-y: auto;
+  margin-bottom: 0;
+  padding-bottom: 10px;
+  align-content: flex-start;
+}
+
+.paper-card-roles .role-add {
+  flex: 0 0 auto;
+  /* A plain footer below the scrolling list — NOT sticky, so chips can
+     never scroll underneath and collide with it.  A hairline rule sets it
+     apart, and the solid paper fill keeps it clean. */
+  margin-top: 0;
+  padding-top: 16px;
+  border-top: 1px solid rgba(90, 82, 73, 0.2);
+  background: var(--off-white);
+  position: relative;
+  z-index: 1;
+}
+
+/* Setup step 1 — roles */
+.role-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 18px;
+  list-style: none;
+  padding: 4px 0;
+  margin: 0 0 22px;
+  max-height: 48vh;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(90, 82, 73, 0.4) transparent;
+}
+
+.role-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.role-list::-webkit-scrollbar-thumb {
+  background: rgba(90, 82, 73, 0.3);
+  border-radius: 3px;
+}
+
+.role-chip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.role-chip-name {
+  position: relative;
+  padding: 7px 16px;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font-family: "Inter Tight", Manrope, sans-serif;
+  font-weight: 500;
+  font-size: 0.92rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.role-chip-name span {
+  position: relative;
+  z-index: 1;
+}
+
+.role-chip-frame {
+  color: var(--pencil);
+  opacity: 0.55;
+  transition:
+    opacity 220ms var(--ease-out-expo),
+    color 220ms var(--ease-out-expo);
+}
+
+.role-chip:hover .role-chip-frame {
+  opacity: 0.85;
+}
+
+.role-chip.is-active .role-chip-frame {
+  color: var(--ink);
+  opacity: 1;
+}
+
+.role-chip.is-active .role-chip-name {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.role-chip:not(.is-active) .role-chip-name {
+  color: var(--pencil);
+}
+
+.role-chip-remove {
+  border: 0;
+  background: transparent;
+  color: var(--pencil);
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 4px 6px;
+}
+
+.role-chip-remove:hover {
+  color: #8b3d3d;
+}
+
+.role-empty {
+  margin: 0 0 22px;
+  color: var(--pencil);
+  font-style: italic;
+}
+
+.role-add {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.role-add-field {
+  position: relative;
+  flex: 1;
+  display: block;
+}
+
+.role-add-field input {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  background: transparent;
+  border: 0;
+  outline: 0;
+  padding: 12px 16px;
+  font-family: "Inter Tight", Manrope, sans-serif;
+  font-size: 0.96rem;
+  color: var(--ink);
+}
+
+.role-add-frame {
+  color: var(--pencil);
+  opacity: 0.7;
+}
+
+.role-add-btn {
+  padding: 10px 18px;
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+/* Setup step 2 — settings */
+.settings-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 20px;
+}
+
+/* Setup step 3 — first line */
+.start-line-field {
+  margin-bottom: 20px;
+}
+
+.start-line-input {
+  position: relative;
+  width: 200px;
+}
+
+.start-line-input input {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  background: transparent;
+  border: 0;
+  outline: 0;
+  padding: 12px 16px;
+  font-family: "Inter Tight", Manrope, sans-serif;
+  font-size: 1rem;
+  color: var(--ink);
+}
+
+.start-line-frame {
+  color: var(--pencil);
+  opacity: 0.7;
+}
+
+.line-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 4px;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.line-row button {
+  display: flex;
+  gap: 14px;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  padding: 8px 10px;
+  border-radius: 4px;
+  font: inherit;
+  color: var(--ink);
+  cursor: pointer;
+  transition: background 180ms var(--ease-out-expo);
+}
+
+.line-row button:hover {
+  background: rgba(95, 85, 73, 0.07);
+}
+
+.line-row.is-picked button {
+  background: rgba(95, 85, 73, 0.14);
+}
+
+.line-row-no {
+  flex: 0 0 auto;
+  font-family: "Teko", "Inter Tight", sans-serif;
+  font-size: 1.1rem;
+  color: var(--pencil);
+  width: 26px;
+  text-align: right;
+}
+
+.line-row-text {
+  font-family: "Manrope", "Inter Tight", sans-serif;
+  font-size: 0.92rem;
+  color: var(--ink);
+  line-height: 1.4;
+}
+
+/* Wizard pager (fixed at bottom of viewport) */
+.wizard-pager {
+  position: fixed;
+  left: max(82px, 9.5vw);
+  right: max(40px, 4vw);
+  bottom: clamp(24px, 4vh, 44px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  z-index: 14;
+  font-family: "Teko", "Inter Tight", sans-serif;
+  font-weight: 600;
+  font-size: clamp(1.15rem, 1.5vw, 1.4rem);
+  letter-spacing: 0.04em;
+  text-transform: capitalize;
+}
+
+.pager-link {
+  background: transparent;
+  border: 0;
+  color: var(--ink);
+  font: inherit;
+  text-transform: inherit;
+  letter-spacing: inherit;
+  cursor: pointer;
+  padding: 8px 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: transform 180ms var(--ease-out-expo);
+}
+
+.pager-link:hover:not(:disabled) {
+  color: var(--maroon);
+}
+
+.pager-link:disabled {
+  opacity: 0.32;
+  cursor: not-allowed;
+}
+
+.pager-chev {
+  font-family: "Inter Tight", Manrope, sans-serif;
+  font-size: 0.7em;
+  position: relative;
+  top: -2px;
+}
+
+.pager-dots {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: inline-flex;
+  gap: 16px;
+}
+
+.pager-dots li {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  border: 1.5px solid var(--ink);
+  background: transparent;
+  transition: background 220ms var(--ease-out-expo);
+}
+
+.pager-dots .is-active {
+  background: var(--ink);
+}
+
+.pager-dots .is-done {
+  background: transparent;
+  opacity: 0.45;
+}
+
+/* Practice phase — rehearsal room (proper grid per IMG_3511–3516).
+   Grid fills the available viewport height so the foot row anchors
+   at the bottom of the page — the progress bar lives low, near the
+   edge, never floating mid-page. */
+.rehearsal-room {
+  position: relative;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: clamp(12px, 2vh, 26px);
+  width: 100%;
+}
+
+.rehearsal-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.status-cluster {
+  display: flex;
+  gap: clamp(8px, 1.2vw, 16px);
+}
+
+.rehearsal-stage {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) clamp(180px, 18vw, 220px);
+  gap: clamp(24px, 3vw, 44px);
+  align-items: stretch;
+  min-height: 0;
+}
+
+.rehearsal-aside {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-self: center;
+}
+
+.self-grade-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  animation: stage-cue-in 320ms var(--ease-out-expo);
+}
+
+/* Self-grade button (mark correct / review / wrong) — small horizontal
+   card matching IMG_3511's right-side stack of mascot icons + labels. */
+.grade-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  padding: 8px 22px;
+  background: transparent;
+  border: 0;
+  color: var(--ink);
+  font-family: "Inter Tight", Manrope, sans-serif;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  text-align: left;
+  cursor: pointer;
+  transition: transform 200ms var(--ease-out-expo);
+  min-height: 0;
+  min-width: 170px;
+}
+
+.grade-btn:hover {
+  transform: translateX(-3px);
+}
+
+/* Subtle alternating rotation on the self-grade stack — feels like
+   each button was placed by hand. */
+.self-grade-stack .grade-btn:nth-of-type(1) {
+  transform: rotate(-0.6deg);
+}
+.self-grade-stack .grade-btn:nth-of-type(2) {
+  transform: rotate(0.5deg);
+}
+.self-grade-stack .grade-btn:nth-of-type(3) {
+  transform: rotate(-0.4deg);
+}
+.self-grade-stack .grade-btn:nth-of-type(1):hover {
+  transform: rotate(-0.6deg) translateX(-3px);
+}
+.self-grade-stack .grade-btn:nth-of-type(2):hover {
+  transform: rotate(0.5deg) translateX(-3px);
+}
+.self-grade-stack .grade-btn:nth-of-type(3):hover {
+  transform: rotate(-0.4deg) translateX(-3px);
+}
+
+.grade-btn-frame {
+  color: var(--ink);
+  opacity: 0.7;
+  transition: opacity 200ms var(--ease-out-expo);
+}
+
+.grade-btn:hover .grade-btn-frame {
+  opacity: 1;
+}
+
+.grade-btn-icon {
+  position: relative;
+  z-index: 1;
+  width: 68px;
+  height: 54px;
+  object-fit: contain;
+  flex: 0 0 auto;
+}
+
+.grade-btn-label {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+}
+
+.grade-btn.tone-wrong .grade-btn-frame,
+.grade-btn.tone-wrong:hover .grade-btn-label {
+  color: #8b3d3d;
+}
+
+.grade-btn.tone-review .grade-btn-frame,
+.grade-btn.tone-review:hover .grade-btn-label {
+  color: #8a7228;
+}
+
+.grade-btn.tone-right .grade-btn-frame,
+.grade-btn.tone-right:hover .grade-btn-label {
+  color: #315f5b;
+}
+
+.grade-btn.tone-wrong:hover .grade-btn-frame,
+.grade-btn.tone-review:hover .grade-btn-frame,
+.grade-btn.tone-right:hover .grade-btn-frame {
+  color: currentColor;
+  opacity: 1;
+}
+
+/* Single-section flashcard view */
+.stage-single {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+  text-align: center;
+}
+
+.stage-hint-text {
+  margin-top: 24px;
+  font-family: "Inter Tight", Manrope, sans-serif;
+  font-style: italic;
+  font-size: 0.86rem;
+  color: var(--pencil);
+  opacity: 0.7;
+  letter-spacing: 0.04em;
+  animation: hint-fade-in 600ms var(--ease-out-expo) 800ms backwards;
+}
+
+@keyframes hint-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 0.7;
+  }
+}
+
+.paper-stage-card.is-clickable {
+  cursor: pointer;
+}
+
+.paper-stage-card.is-clickable:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 6px;
+}
+
+/* Status badge — small horizontal card (SVG icon + tally count) with
+   a label sitting underneath the card.  Matches IMG_3511/3517. */
+.status-badge {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  color: var(--ink);
+}
+
+.status-badge-card {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 6px 22px;
+  min-width: 150px;
+  min-height: 0;
+}
+
+/* Tiny per-badge rotation gives the trio a hand-drawn feel. */
+.status-badge:nth-of-type(1) .status-badge-card {
+  transform: rotate(-0.8deg);
+}
+.status-badge:nth-of-type(2) .status-badge-card {
+  transform: rotate(0.5deg);
+}
+.status-badge:nth-of-type(3) .status-badge-card {
+  transform: rotate(-0.3deg);
+}
+
+.status-badge-icon {
+  position: relative;
+  z-index: 1;
+  width: 72px;
+  height: 56px;
+  object-fit: contain;
+  flex: 0 0 auto;
+}
+
+.status-badge-card strong {
+  position: relative;
+  z-index: 1;
+  font-family: "Teko", "Inter Tight", sans-serif;
+  font-size: clamp(1.7rem, 2.2vw, 2.05rem);
+  line-height: 1;
+  min-width: 0.7em;
+  text-align: center;
+}
+
+.status-badge-label {
+  font-family: "Inter Tight", Manrope, sans-serif;
+  font-size: 0.66rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--pencil);
+}
+
+.status-badge-frame {
+  color: var(--ink);
+  opacity: 0.82;
+}
+
+.status-badge.tone-wrong .status-badge-frame,
+.status-badge.tone-wrong .status-badge-card strong {
+  color: #8b3d3d;
+}
+
+.status-badge.tone-review .status-badge-frame,
+.status-badge.tone-review .status-badge-card strong {
+  color: #8a7228;
+}
+
+.status-badge.tone-right .status-badge-frame,
+.status-badge.tone-right .status-badge-card strong {
+  color: #315f5b;
+}
+
+/* Mode toggle — single rough-bordered pill holding both labels with a
+   vertical pipe divider between them.  Matches IMG_3511. */
+.mode-toggle {
+  position: relative;
+  display: inline-flex;
+  align-items: stretch;
+  padding: 0;
+  height: 44px;
+  color: var(--ink);
+}
+
+.mode-toggle-frame {
+  color: var(--ink);
+  opacity: 0.82;
+}
+
+.mode-seg {
+  position: relative;
+  background: transparent;
+  border: 0;
+  padding: 6px 22px;
+  margin: 0 4px;
+  color: var(--pencil);
+  font-family: "Inter Tight", Manrope, sans-serif;
+  font-size: 0.86rem;
+  letter-spacing: 0.04em;
+  text-transform: capitalize;
+  cursor: pointer;
+  z-index: 1;
+  transition: color 220ms var(--ease-out-expo);
+  display: inline-flex;
+  align-items: center;
+}
+
+.mode-seg.is-active {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.mode-seg-label {
+  position: relative;
+  z-index: 2;
+}
+
+.mode-seg-active-frame {
+  color: var(--ink);
+  opacity: 0.85;
+  pointer-events: none;
+}
+
+.mode-divider {
+  position: absolute;
+  right: -4px;
+  top: 9px;
+  bottom: 9px;
+  width: 1px;
+  background: currentColor;
+  opacity: 0.4;
+  z-index: 0;
+}
+
+/* Hint card */
+.hint-card {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 20px;
+  min-width: 196px;
+  min-height: 0;
+  background: transparent;
+  border: 0;
+  color: var(--ink);
+  font-family: "Inter Tight", Manrope, sans-serif;
+  font-size: 0.86rem;
+  text-align: left;
+  cursor: pointer;
+  transform: rotate(0.6deg);
+  transition:
+    opacity 200ms var(--ease-out-expo),
+    transform 200ms var(--ease-out-expo);
+}
+
+.hint-card:hover:not(:disabled) {
+  transform: rotate(0.6deg) translate(-2px, -2px);
+}
+
+.hint-card:disabled {
+  cursor: default;
+}
+
+.hint-card-frame {
+  color: var(--ink);
+  opacity: 0.7;
+  transition: opacity 200ms var(--ease-out-expo);
+}
+
+.hint-card:hover:not(:disabled) .hint-card-frame {
+  opacity: 1;
+}
+
+.hint-card-icon {
+  position: relative;
+  z-index: 1;
+  width: 72px;
+  height: 58px;
+  object-fit: contain;
+  flex: 0 0 auto;
+}
+
+.hint-card-text {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 2px;
+}
+
+.hint-card-text strong {
+  font-family: "Teko", "Inter Tight", sans-serif;
+  font-size: 1.2rem;
+  line-height: 1;
+  letter-spacing: 0.04em;
+}
+
+.hint-card-text span {
+  color: var(--pencil);
+  font-style: italic;
+}
+
+.hint-card.is-shown .hint-card-text span {
+  color: var(--ink);
+  font-style: normal;
+  font-family: "Inter Tight", Manrope, sans-serif;
+  font-size: 0.86rem;
+}
+
+/* Paper stage card — the main rehearsal sheet */
+.paper-stage-card {
+  position: relative;
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: clamp(24px, 4vh, 56px) clamp(28px, 4vw, 60px);
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.paper-stage-card > .stage-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: safe center;
+  gap: clamp(12px, 2vh, 20px);
+  min-height: 0;
+  max-height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(90, 82, 73, 0.4) transparent;
+}
+
+.paper-stage-card > .stage-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.paper-stage-card > .stage-body::-webkit-scrollbar-thumb {
+  background: rgba(90, 82, 73, 0.3);
+  border-radius: 3px;
+}
+
+.stage-body {
+  display: grid;
+  gap: 20px;
+}
+
+.stage-row {
+  display: grid;
+  gap: 6px;
+  justify-items: center;
+  text-align: center;
+}
+
+.stage-label {
+  margin: 0;
+  font-family: "Inter Tight", Manrope, sans-serif;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--pencil);
+}
+
+.stage-line {
+  margin: 0;
+  font-family: "Teko", "Inter Tight", sans-serif;
+  font-weight: 600;
+  font-size: calc(clamp(1.9rem, 4.4vw, 3.1rem) * var(--stage-scale, 1));
+  line-height: 1.04;
+  letter-spacing: 0.005em;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+  max-width: 100%;
+}
+
+.stage-line.revealed {
+  font-family: "Inter Tight", Manrope, sans-serif;
+  font-size: calc(clamp(1.3rem, 2.4vw, 1.8rem) * var(--stage-scale, 1));
+  font-weight: 500;
+  line-height: 1.4;
+  animation: stage-reveal-in 360ms var(--ease-out-expo);
+}
+
+@keyframes stage-reveal-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.stage-character {
+  margin: 0;
+  font-family: "Inter Tight", Manrope, sans-serif;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--pencil);
+}
+
+.stage-divider {
+  width: 84%;
+  margin: 0 auto;
+  color: var(--pencil);
+  opacity: 0.55;
+}
+
+/* Flashcard reveal button */
+.reveal-line-btn {
+  position: relative;
+  background: transparent;
+  border: 0;
+  padding: 12px 22px;
+  cursor: pointer;
+  color: var(--pencil);
+  font-family: "Inter Tight", Manrope, sans-serif;
+  font-size: 0.96rem;
+  font-style: italic;
+  transition: transform 180ms var(--ease-out-expo);
+}
+
+.reveal-line-btn:hover {
+  color: var(--ink);
+  transform: translateY(-1px);
+}
+
+.reveal-line-btn span {
+  position: relative;
+  z-index: 1;
+}
+
+.reveal-line-frame {
+  color: var(--pencil);
+  opacity: 0.55;
+}
+
+/* Answer textarea (active recall) */
+.answer-field {
+  position: relative;
+  width: min(560px, 100%);
+  margin: 0 auto;
+}
+
+.answer-field textarea {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  background: transparent;
+  border: 0;
+  outline: 0;
+  padding: 14px 20px;
+  font-family: "Inter Tight", Manrope, sans-serif;
+  font-size: 1.04rem;
+  line-height: 1.45;
+  color: var(--ink);
+  resize: none;
+}
+
+.answer-field-frame {
+  color: var(--pencil);
+  opacity: 0.6;
+}
+
+/* Feedback panel inside the stage card */
+.stage-feedback {
+  margin-top: 4px;
+  display: grid;
+  gap: 8px;
+  justify-items: center;
+  text-align: center;
+  font-family: "Inter Tight", Manrope, sans-serif;
+  animation: stage-reveal-in 320ms var(--ease-out-expo);
+}
+
+.stage-feedback-tag {
+  font-size: 0.7rem;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--pencil);
+}
+
+.stage-feedback.is-correct .stage-feedback-tag {
+  color: #315f5b;
+}
+
+.stage-feedback.is-review .stage-feedback-tag {
+  color: #8a7228;
+}
+
+.stage-feedback.is-wrong .stage-feedback-tag,
+.stage-feedback.is-revealed .stage-feedback-tag {
+  color: #8b3d3d;
+}
+
+.stage-feedback p {
+  margin: 0;
+  font-family: "Manrope", Inter, sans-serif;
+  font-size: 1rem;
+  line-height: 1.45;
+  color: var(--ink);
+  max-width: 560px;
+}
+
+/* Self-grade buttons (flashcard mode) */
+.self-grade {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  justify-content: center;
+}
+
+/* Foot navigation — sits at the bottom of the rehearsal room with
+   generous breathing room above so it lives low on the page. */
+.rehearsal-foot {
+  position: relative;
+  /* Breathing room above the rail so the progress mascot (which rides
+     tall, above the rail line) and the finish flag clear the cue card
+     instead of overlapping its bottom edge. */
+  margin-top: clamp(40px, 5vh, 56px);
+  padding: 0 4px 4px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: end;
+  gap: clamp(20px, 3vw, 40px);
+  font-family: "Inter Tight", Manrope, sans-serif;
+  font-size: 0.94rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: lowercase;
+}
+
+.foot-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.foot-actions .pencil-btn {
+  padding: 12px 24px;
+  font-family: "Inter Tight", Manrope, sans-serif;
+  font-size: 0.92rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: lowercase;
+}
+
+.foot-link {
+  background: transparent;
+  border: 0;
+  color: var(--ink);
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  cursor: pointer;
+  padding: 6px 4px;
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  transition: color 180ms var(--ease-out-expo);
+}
+
+.foot-link:hover:not(:disabled) {
+  color: var(--maroon);
+}
+
+.foot-link:disabled {
+  opacity: 0.32;
+  cursor: not-allowed;
+}
+
+.foot-reveal {
+  color: var(--pencil);
+}
+
+.foot-reveal:hover {
+  color: var(--ink);
+}
+
+.foot-progress {
+  display: grid;
+  gap: 16px;
+  justify-items: center;
+  min-width: 0;
+  width: 100%;
+}
+
+/* Wobbly outlined rail — matches the mascot loader's progress strip
+   but bound to actual run progress.  Fill is a dashed pencil line that
+   grows from the left as the user completes cues. */
+.foot-progress-rail {
+  position: relative;
+  display: block;
+  width: 100%;
+  max-width: 520px;
+  height: 36px;
+  color: var(--ink);
+}
+
+.foot-progress-rail-outline {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+}
+
+.foot-progress-fill {
+  position: absolute;
+  top: 50%;
+  left: 6px;
+  height: 16px;
+  margin-top: -8px;
+  background-color: rgba(44, 39, 34, 0.16);
+  background-image: repeating-linear-gradient(
+    90deg,
+    var(--ink) 0 6px,
+    transparent 6px 11px
+  );
+  border-radius: 8px;
+  max-width: calc(100% - 12px);
+  transition: width 540ms var(--ease-out-expo);
+  opacity: 0.92;
+}
+
+/* Mascot rides the progress rail — at progress=0 it sits at the left
+   end, at progress=1 it sits at the right end. */
+.foot-progress-mascot {
+  position: absolute;
+  bottom: 3px;
+  width: 100px;
+  height: 78px;
+  object-fit: contain;
+  pointer-events: none;
+  transition: left 540ms var(--ease-out-expo);
+  z-index: 2;
+  animation: mascot-bob 3.4s ease-in-out infinite;
+}
+
+@keyframes mascot-bob {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-3px); }
+}
+
+/* Icon-tip — small playful wobble on hover for mascot icon buttons */
+@keyframes icon-tip {
+  0%   { transform: rotate(0); }
+  30%  { transform: rotate(-10deg); }
+  60%  { transform: rotate(5deg); }
+  100% { transform: rotate(0); }
+}
+
+.grade-btn:hover .grade-btn-icon,
+.hint-card:hover:not(:disabled) .hint-card-icon,
+.status-badge:hover .status-badge-icon {
+  animation: icon-tip 480ms ease-out;
+}
+
+.foot-progress-meta {
+  font-family: "Inter Tight", Manrope, sans-serif;
+  font-size: 0.74rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--pencil);
+  display: inline-flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.foot-progress-meta em {
+  font-style: normal;
+  color: var(--ink);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  font-family: "Teko", "Inter Tight", sans-serif;
+  font-size: 0.96rem;
+}
+
+.foot-progress-meta i {
+  font-style: normal;
+  opacity: 0.55;
+}
+
+/* Toast (top error banner) */
+.practice-toast {
+  position: fixed;
+  top: clamp(72px, 9vh, 96px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 30;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px 10px 12px;
+  background: #d05757;
+  color: #fff8f0;
+  border-radius: 26px;
+  box-shadow: 0 18px 36px rgba(208, 87, 87, 0.32);
+  font-family: "Inter Tight", Manrope, sans-serif;
+  font-size: 0.88rem;
+  animation: toast-in 320ms var(--ease-out-expo);
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -8px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+.toast-icon {
+  width: 18px;
+  height: 18px;
+  color: #ffffff;
+}
+
+.toast-close {
+  background: rgba(255, 255, 255, 0.2);
+  border: 0;
+  color: #fff;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+  padding: 0;
+}
+
+/* Review session (done phase) */
+.review-summary {
+  display: flex;
+  gap: 18px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 0 auto 28px;
+}
+
+.review-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 14px;
+  width: min(820px, 100%);
+}
+
+.review-row {
+  position: relative;
+  padding: 16px 22px;
+  color: var(--ink);
+  min-height: 88px;
+}
+
+.review-row-frame {
+  color: var(--ink);
+  opacity: 0.7;
+}
+
+.review-row-body {
+  position: relative;
+  z-index: 1;
+}
+
+.review-row-head {
+  margin: 0 0 8px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 14px;
+  font-family: "Inter Tight", Manrope, sans-serif;
+  font-size: 0.86rem;
+}
+
+.review-row-head strong {
+  font-family: "Teko", sans-serif;
+  font-size: 1.2rem;
+  color: var(--ink);
+}
+
+.review-row-mode {
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  color: var(--pencil);
+}
+
+.review-row-tag {
+  font-family: "Teko", "Inter Tight", sans-serif;
+  font-size: 1rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.review-row-tag.tone-right {
+  color: #315f5b;
+}
+
+.review-row-tag.tone-wrong {
+  color: #8b3d3d;
+}
+
+.review-row-tag.tone-review {
+  color: #8a7228;
+}
+
+.review-row-time {
+  margin-left: auto;
+  color: var(--pencil);
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  font-family: "Teko", "Inter Tight", sans-serif;
+}
+
+.review-row-line {
+  margin: 0 0 4px;
+  font-family: "Inter Tight", Manrope, sans-serif;
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+.review-row-cue {
+  margin: 0;
+  font-family: "Inter Tight", Manrope, sans-serif;
+  font-size: 0.78rem;
+  color: var(--pencil);
+  font-style: italic;
+}
+
+.review-row.tone-right .review-row-frame {
+  color: #315f5b;
+  opacity: 0.62;
+}
+
+.review-row.tone-wrong .review-row-frame {
+  color: #8b3d3d;
+  opacity: 0.62;
+}
+
+.review-row.tone-review .review-row-frame {
+  color: #8a7228;
+  opacity: 0.62;
+}
+
+.review-empty {
+  margin: 0;
+  color: var(--pencil);
+  font-style: italic;
+}
+
+.review-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  justify-content: center;
+  margin-top: 32px;
+}
+
+@media (max-width: 860px) {
+  .practice-shell.on-paper {
+    padding-left: 14px;
+    padding-right: 14px;
+    width: 100%;
+  }
+  /* On phones the card + aside stack vertically and can exceed the
+     viewport, so re-enable scrolling for the rehearsal phase here. */
+  .practice-shell.is-rehearsal {
+    display: block;
+    overflow-y: auto;
+    padding-top: clamp(96px, 14vh, 128px);
+    padding-bottom: 40px;
+  }
+  .paper-margin {
+    left: 18px;
+  }
+  .rehearsal-top {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .status-cluster {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .rehearsal-stage {
+    grid-template-columns: 1fr;
+  }
+  .rehearsal-aside {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-self: stretch;
+  }
+  .self-grade-stack {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .paper-stage-card {
+    width: 100%;
+    max-width: none;
+  }
+  .wizard-pager {
+    left: 14px;
+    right: 14px;
+    font-size: 1.1rem;
+  }
+  .pager-dots {
+    gap: 12px;
+  }
+  .review-summary {
+    flex-wrap: wrap;
+  }
+  .rehearsal-foot {
+    grid-template-columns: 1fr;
+    gap: 14px;
+    justify-items: center;
+  }
+  .foot-actions {
+    justify-content: center;
+  }
+}
+
+/* ─── Upload phase — paper-aesthetic edition ─────────────────────────── */
+/* The /upload landing now lives on the same notebook paper as the rest
+   of the app: handwritten heading, rough-pencil dropzone, rough-pencil
+   textareas, and a pencil-button submit.  Replaces the smooth-panel
+   layout that broke visual continuity with the setup wizard. */
+
+/* Upload phase — per IMG_3503 */
+
+.upload-stage-paper {
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding-top: clamp(8px, 4vh, 32px);
+}
+
+.upload-heading {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  text-align: center;
+  margin: 0 0 clamp(34px, 5.5vh, 60px);
+}
+
+.upload-title {
+  margin: 0;
+  text-align: center;
+  font-family: "Teko", "Inter Tight", sans-serif;
+  font-weight: 600;
+  font-size: clamp(3.6rem, 8vw, 6rem);
+  line-height: 0.92;
+  letter-spacing: 0.01em;
+  color: var(--ink);
+  transform: rotate(-0.6deg);
+}
+
+.upload-lede {
+  margin: 2px 0 0;
+  max-width: 44ch;
+  font-family: "Inter Tight", Manrope, sans-serif;
+  font-style: italic;
+  font-size: clamp(0.98rem, 1.3vw, 1.12rem);
+  line-height: 1.45;
+  color: var(--pencil);
+  text-wrap: balance;
+}
+
+.upload-form {
+  display: grid;
+  gap: clamp(28px, 4vh, 44px);
+  width: 100%;
+  justify-items: center;
+}
+
+/* The mascot + dropzone pair — kept compact and centered as a unit
+   rather than stretching across the page width.  Matches IMG_3503. */
+.upload-row {
+  display: inline-grid;
+  grid-template-columns: auto auto;
+  gap: clamp(24px, 3vw, 40px);
+  align-items: center;
+  justify-self: center;
+  justify-content: center;
+  width: auto;
+}
+
+.upload-mascot {
+  width: clamp(96px, 11vw, 132px);
+  height: clamp(96px, 11vw, 132px);
+  object-fit: contain;
+  flex: 0 0 auto;
+  transition: transform 360ms var(--ease-out-expo);
+}
+
+.upload-row:hover .upload-mascot {
+  transform: rotate(-3deg);
+}
+
+/* Rough-bordered dropzone — sized to feel like a label on the paper,
+   not a full-width banner.  Matches IMG_3503's mid-sized rectangle. */
+.paper-dropzone {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: clamp(280px, 36vw, 420px);
+  min-height: clamp(132px, 16vh, 168px);
+  padding: 22px 32px;
+  background: transparent;
+  border: 0;
+  color: var(--ink);
+  cursor: pointer;
+  font-family: "Inter Tight", Manrope, sans-serif;
+  text-align: center;
+  transition: color 240ms var(--ease-out-expo);
+}
+
+.paper-dropzone-inner {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  justify-items: center;
+  gap: 3px;
+}
+
+/* Hand-drawn "drop into tray" arrow — nudges down on hover/drag so the
+   affordance feels alive without a heavy icon. */
+.paper-dropzone-arrow {
+  width: clamp(30px, 3.4vw, 40px);
+  height: clamp(30px, 3.4vw, 40px);
+  margin-bottom: 4px;
+  color: var(--pencil);
+  opacity: 0.72;
+  overflow: visible;
+  transition:
+    transform 320ms var(--ease-out-expo),
+    opacity 240ms var(--ease-out-expo);
+}
+
+.paper-dropzone:hover .paper-dropzone-arrow,
+.paper-dropzone.is-dragging .paper-dropzone-arrow {
+  transform: translateY(4px);
+  opacity: 1;
+}
+
+.paper-dropzone-hint {
+  font-family: "Inter Tight", Manrope, sans-serif;
+  font-size: 0.74rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gray);
+}
+
+.paper-dropzone-frame {
+  color: var(--ink);
+  opacity: 0.82;
+  transition: opacity 240ms var(--ease-out-expo);
+}
+
+.paper-dropzone:hover .paper-dropzone-frame,
+.paper-dropzone.is-dragging .paper-dropzone-frame,
+.paper-dropzone.is-loaded .paper-dropzone-frame {
+  opacity: 1;
+}
+
+.paper-dropzone-text {
+  position: relative;
+  z-index: 1;
+  font-family: "Teko", "Inter Tight", sans-serif;
+  font-weight: 600;
+  font-size: clamp(1.5rem, 2.4vw, 2rem);
+  letter-spacing: 0.04em;
+  line-height: 1.1;
+  color: var(--ink);
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.upload-secondary {
+  display: flex;
+  justify-content: center;
+}
+
+.upload-text-link {
+  background: transparent;
+  border: 0;
+  color: var(--pencil);
+  font-family: "Inter Tight", Manrope, sans-serif;
+  font-size: 0.92rem;
+  font-style: italic;
+  cursor: pointer;
+  padding: 6px 8px;
+  text-decoration: underline dotted;
+  text-underline-offset: 4px;
+  text-decoration-color: rgba(90, 82, 73, 0.4);
+}
+
+.upload-text-link:hover {
+  color: var(--ink);
+  text-decoration-color: var(--ink);
+}
+
+.upload-paste-wrap {
+  width: clamp(280px, 40vw, 480px);
+}
+
+.upload-textarea-wrap {
+  position: relative;
+}
+
+.upload-textarea-wrap textarea {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  min-height: 132px;
+  background: transparent;
+  border: 0;
+  outline: 0;
+  padding: 16px 20px;
+  font-family: "Inter Tight", Manrope, sans-serif;
+  font-size: 0.98rem;
+  line-height: 1.5;
+  color: var(--ink);
+  resize: vertical;
+}
+
+.upload-textarea-wrap textarea::placeholder {
+  color: var(--gray);
+  font-style: italic;
+}
+
+.upload-textarea-frame {
+  color: var(--pencil);
+  opacity: 0.66;
+  transition: opacity 200ms var(--ease-out-expo);
+}
+
+.upload-textarea-wrap:focus-within .upload-textarea-frame {
+  color: var(--ink);
+  opacity: 1;
+}
+
+.upload-actions {
+  display: flex;
+  justify-content: center;
+}
+
+.upload-submit {
+  font-family: "Teko", "Inter Tight", sans-serif;
+  font-weight: 600;
+  font-size: 1.4rem;
+  letter-spacing: 0.06em;
+  text-transform: capitalize;
+  padding: 14px 32px;
+}
+
+/* Line-pick step (wizard step 3) — no card, just numbered lines on the
+   paper with a hand-drawn underline beneath each.  Matches IMG_3508. */
+.line-pick-list {
+  list-style: none;
+  margin: 0 auto;
+  padding: 0;
+  width: min(640px, 100%);
+  display: grid;
+  gap: 18px;
+}
+
+.line-pick button {
+  display: grid;
+  grid-template-columns: 32px 1fr;
+  gap: 16px;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  color: var(--ink);
+  cursor: pointer;
+  padding: 4px 4px 8px;
+  transition: opacity 200ms var(--ease-out-expo);
+}
+
+.line-pick:not(.is-picked) button {
+  opacity: 0.6;
+}
+
+.line-pick button:hover {
+  opacity: 1;
+}
+
+.line-pick-no {
+  font-family: "Teko", "Inter Tight", sans-serif;
+  font-weight: 600;
+  font-size: 1.4rem;
+  line-height: 1;
+  color: var(--pencil);
+  padding-top: 2px;
+}
+
+.line-pick.is-picked .line-pick-no {
+  color: var(--ink);
+}
+
+.line-pick-body {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.line-pick-text {
+  font-family: "Inter Tight", Manrope, sans-serif;
+  font-size: clamp(1rem, 1.5vw, 1.12rem);
+  line-height: 1.4;
+  color: var(--ink);
+}
+
+.line-pick-rule {
+  width: 100%;
+  height: 10px;
+  color: var(--pencil);
+  opacity: 0.5;
+  transition: opacity 200ms var(--ease-out-expo);
+}
+
+.line-pick.is-picked .line-pick-rule {
+  color: var(--ink);
+  opacity: 1;
+}
+
+@media (max-width: 760px) {
+  .upload-row {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    gap: 24px;
+  }
+  .upload-mascot {
+    width: 96px;
+    height: 96px;
+  }
+  .paper-dropzone {
+    min-height: 90px;
+  }
+}
+
+/* ─── Design system additions (mascots, header, modal, transitions) ──── */
+/* These extend the paper aesthetic with the pieces called out in the
+   reference sketches: SVG mascots in status badges + hint, an icon-only
+   settings entry in the header, brown-paper settings modal, yes/no
+   buttons for the cleanup step, an artifact list, a big "you were
+   wrong" headline, and page-tear transitions between cues. */
+
+/* ── Header: chrome layout + settings glyph ──────────────────────────── */
+.practice-chrome .chrome-right {
+  display: inline-flex;
+  align-items: center;
+  gap: 18px;
+  justify-self: end;
+}
+
+.chrome-icon-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  background: transparent;
+  border: 0;
+  border-radius: 50%;
+  color: var(--ink);
+  cursor: pointer;
+  transition:
+    transform 200ms var(--ease-out-expo),
+    background 200ms var(--ease-out-expo);
+}
+
+.chrome-icon-btn:hover {
+  background: rgba(44, 39, 34, 0.08);
+}
+
+.settings-glyph {
+  width: 18px;
+  height: 18px;
+}
+
+/* Phase crumbs (center of header) — current label + tiny step dots */
+.phase-crumbs {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.phase-crumbs em {
+  font-style: normal;
+}
+
+.phase-crumbs-dots {
+  display: inline-flex;
+  gap: 5px;
+}
+
+.phase-crumbs-dots i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  border: 1px solid currentColor;
+  background: transparent;
+}
+
+.phase-crumbs-dots i.is-active {
+  background: currentColor;
+}
+
+.phase-crumbs-dots i.is-done {
+  opacity: 0.45;
+}
+
+/* ── Cleanup wizard step: yes/no buttons + artifact list ─────────────── */
+.yesno-row {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin: 4px 0 24px;
+}
+
+.yesno-btn {
+  position: relative;
+  padding: 8px 20px;
+  background: transparent;
+  border: 0;
+  color: var(--ink);
+  font-family: "Inter Tight", Manrope, sans-serif;
+  font-weight: 500;
+  font-size: 0.94rem;
+  letter-spacing: 0.06em;
+  text-transform: lowercase;
+  cursor: pointer;
+  min-width: 80px;
+}
+
+.yesno-btn span {
+  position: relative;
+  z-index: 1;
+}
+
+.yesno-frame {
+  color: var(--pencil);
+  opacity: 0.5;
+  transition:
+    opacity 220ms var(--ease-out-expo),
+    color 220ms var(--ease-out-expo);
+}
+
+.yesno-btn:hover .yesno-frame {
+  opacity: 0.8;
+}
+
+.yesno-btn.is-active .yesno-frame {
+  color: var(--ink);
+  opacity: 1;
+}
+
+.yesno-btn.is-active {
+  font-weight: 600;
+}
+
+.artifact-block {
+  display: grid;
+  gap: 12px;
+  animation: stage-reveal-in 280ms var(--ease-out-expo);
+}
+
+.artifact-helper {
+  margin: 0;
+  font-family: "Inter Tight", Manrope, sans-serif;
+  font-size: 0.86rem;
+  color: var(--pencil);
+  font-style: italic;
+  text-align: center;
+}
+
+.artifact-helper-muted {
+  opacity: 0.7;
+}
+
+.artifact-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.artifact-list li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: rgba(95, 85, 73, 0.1);
+  color: var(--ink);
+  border-radius: 24px;
+  font-family: "Inter Tight", Manrope, sans-serif;
+  font-size: 0.86rem;
+}
+
+.artifact-list li button {
+  background: transparent;
+  border: 0;
+  color: var(--pencil);
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+  padding: 0 2px;
+}
+
+.artifact-list li button:hover {
+  color: #8b3d3d;
+}
+
+.artifact-add {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.artifact-add-field {
+  position: relative;
+  flex: 1;
+  display: block;
+}
+
+.artifact-add-field input {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  background: transparent;
+  border: 0;
+  outline: 0;
+  padding: 10px 14px;
+  font-family: "Inter Tight", Manrope, sans-serif;
+  font-size: 0.94rem;
+  color: var(--ink);
+}
+
+.artifact-add-frame {
+  color: var(--pencil);
+  opacity: 0.7;
+}
+
+.artifact-add-btn {
+  padding: 8px 14px;
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+/* ── Wrong feedback headline (per IMG_3515) ──────────────────────────── */
+.wrong-headline {
+  margin: 0;
+  font-family: "Teko", "Inter Tight", sans-serif;
+  font-weight: 600;
+  font-size: clamp(1.8rem, 3.4vw, 2.6rem);
+  letter-spacing: 0.02em;
+  line-height: 1;
+  color: #8b3d3d;
+  text-align: center;
+  animation: stage-reveal-in 320ms var(--ease-out-expo);
+}
+
+/* When the cue card is in a wrong state, dim the cue itself so the
+   correct line gets the visual weight. */
+.stage-body:has(.wrong-headline) .stage-cue .stage-line {
+  opacity: 0.5;
+  font-size: clamp(1.2rem, 2.6vw, 1.8rem);
+}
+
+/* ── Subtle fade-in between cues ─────────────────────────────────────── */
+/* The stage-body remounts on every advance (key={currentIndex}).  A
+   small fade + lift settles the new cue without theatrics. */
+.stage-body {
+  animation: stage-cue-in 320ms var(--ease-out-expo);
+}
+
+@keyframes stage-cue-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── Settings modal ──────────────────────────────────────────────────── */
+.settings-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  background: rgba(20, 17, 14, 0.42);
+  backdrop-filter: blur(2px);
+  animation: settings-fade-in 220ms var(--ease-out-expo);
+}
+
+@keyframes settings-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.settings-modal {
+  position: relative;
+  width: min(440px, 92vw);
+  padding: 30px 34px 26px;
+  /* A lifted paper card — matches the rest of the site instead of a
+     foreign dark dialog. */
+  color: var(--ink);
+  background: var(--off-white);
+  border-radius: 6px;
+  box-shadow: 0 22px 60px rgba(20, 17, 14, 0.26);
+  animation: settings-pop-in 320ms var(--ease-out-expo);
+}
+
+@keyframes settings-pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.settings-modal-frame {
+  color: var(--ink);
+  opacity: 0.9;
+  inset: -6px;
+}
+
+.settings-modal-body {
+  position: relative;
+  z-index: 1;
+}
+
+.settings-modal-head {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  margin-bottom: 22px;
+}
+
+.settings-modal-head h2 {
+  margin: 0;
+  font-family: "Teko", "Inter Tight", sans-serif;
+  font-size: 2.4rem;
+  letter-spacing: 0.01em;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.settings-modal-rule {
+  width: 120px;
+  color: var(--pencil);
+  opacity: 0.7;
+}
+
+.settings-modal-close {
+  position: absolute;
+  top: -8px;
+  right: -10px;
+  width: 28px;
+  height: 28px;
+  background: transparent;
+  border: 0;
+  color: var(--pencil);
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0.65;
+  transition:
+    opacity 200ms var(--ease-out-expo),
+    color 200ms var(--ease-out-expo);
+}
+
+.settings-modal-close:hover {
+  opacity: 1;
+  color: var(--ink);
+}
+
+.settings-list-modal {
+  list-style: none;
+  margin: 0 0 24px;
+  padding: 0;
+  display: grid;
+  gap: 18px;
+  color: var(--ink);
+}
+
+/* Toggles + confirm button inherit the site's base ink/teal styling now
+   that the modal is paper — no dark-theme overrides needed. */
+.settings-modal-actions {
+  display: flex;
+  justify-content: center;
+}
+
+/* ── Review session row icon ─────────────────────────────────────────── */
+.review-row {
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  gap: 16px;
+  align-items: center;
+}
+
+.review-row-icon {
+  position: relative;
+  z-index: 1;
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  justify-self: center;
+}
+
+/* ── Active-recall confirm-state textarea filled with response ───────── */
+.answer-field textarea:disabled {
+  color: var(--ink);
+  opacity: 0.95;
+  cursor: default;
+}
+
+/* ── Status badge mobile clamp ───────────────────────────────────────── */
+@media (max-width: 860px) {
+  .status-badge {
+    min-width: 100px;
+    padding: 8px 10px;
+    min-height: 56px;
+  }
+  .status-badge-icon {
+    width: 28px;
+    height: 28px;
+  }
+  .status-badge strong {
+    font-size: 1.2rem;
+  }
+  .hint-card {
+    min-width: 150px;
+  }
+  .practice-mascot {
+    width: 56px;
+    height: 56px;
+    bottom: 12px;
+  }
+  .settings-modal {
+    padding: 24px 22px 22px;
+  }
+  .phase-crumbs-dots {
+    display: none;
+  }
+}
+
+/* ─── Dashboard ────────────────────────────────────────────────────── */
+/* Empty-state landing for the /dashboard route.  Per IMG_3519/3520 — a
+   centered "Nothing here yet!" message and a hand-drawn link back to
+   the upload page. */
+
+.dashboard-page .practice-shell.on-paper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dashboard-stage {
+  width: 100%;
+  max-width: 640px;
+  text-align: center;
+  align-items: center;
+  justify-items: center;
+}
+
+.dashboard-empty {
+  margin-top: clamp(40px, 6vh, 72px);
+  display: grid;
+  justify-items: center;
+  gap: 18px;
+}
+
+.dashboard-empty-mascot {
+  width: clamp(120px, 14vw, 168px);
+  height: clamp(120px, 14vw, 168px);
+  object-fit: contain;
+  animation: mascot-bob 3.6s ease-in-out infinite;
+}
+
+.dashboard-empty-line {
+  margin: 0;
+  font-family: "Teko", "Inter Tight", sans-serif;
+  font-weight: 600;
+  font-size: clamp(1.8rem, 3.4vw, 2.6rem);
+  line-height: 1;
+  letter-spacing: 0.01em;
+  text-transform: capitalize;
+  color: var(--ink);
+  transform: rotate(-0.6deg);
+}
+
+.dashboard-empty-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: "Inter Tight", Manrope, sans-serif;
+  font-weight: 500;
+  font-size: 1rem;
+  color: #2d4373;
+  text-decoration: underline wavy;
+  text-decoration-thickness: 1.4px;
+  text-underline-offset: 5px;
+  text-decoration-color: rgba(45, 67, 115, 0.55);
+  transition:
+    color 200ms var(--ease-out-expo),
+    transform 200ms var(--ease-out-expo);
+}
+
+.dashboard-empty-cta:hover {
+  color: #1f2e52;
+  transform: translateX(4px);
+}
+
+.dashboard-empty-arrow {
+  width: 1.1em;
+  height: 1.1em;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   Playful pass — hand-drawn life: sketch-boil frames, stat stamps,
+   correct-answer confetti, and a finish-line flag.  All transform/opacity
+   only, and every bit of it is switched off under prefers-reduced-motion
+   at the bottom of this block.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* ── Sketch boil ──────────────────────────────────────────────────────────
+   Three deterministic redraws of the same outline, cross-cut so the line
+   looks hand-animated.  Exactly one frame shows at a time (staggered
+   negative delays).  "always" runs on the focal cue card; "hover" only
+   wakes when you point at an interactive frame. */
+@keyframes boil-cycle {
+  0%, 33.32%  { opacity: 1; }
+  33.33%, 100% { opacity: 0; }
+}
+
+.rough-box.is-boil .boil-frame,
+.rough-box.is-boil-hover .boil-frame {
+  opacity: 0;
+}
+
+/* Always-on (cue card) — calm ~4fps shimmer. */
+.rough-box.is-boil .boil-frame {
+  animation: boil-cycle 0.72s steps(1, jump-end) infinite;
+}
+.rough-box.is-boil .boil-frame-2 { animation-delay: -0.24s; }
+.rough-box.is-boil .boil-frame-3 { animation-delay: -0.48s; }
+
+/* Hover frames sit still (showing take #1) until the parent is hovered. */
+.rough-box.is-boil-hover .boil-frame-1 {
+  opacity: 1;
+}
+.grade-btn:hover .rough-box.is-boil-hover .boil-frame,
+.hint-card:hover:not(:disabled) .rough-box.is-boil-hover .boil-frame {
+  animation: boil-cycle 0.44s steps(1, jump-end) infinite;
+}
+.grade-btn:hover .rough-box.is-boil-hover .boil-frame-2,
+.hint-card:hover:not(:disabled) .rough-box.is-boil-hover .boil-frame-2 {
+  animation-delay: -0.147s;
+}
+.grade-btn:hover .rough-box.is-boil-hover .boil-frame-3,
+.hint-card:hover:not(:disabled) .rough-box.is-boil-hover .boil-frame-3 {
+  animation-delay: -0.293s;
+}
+
+/* ── Stat stamp + hop ─────────────────────────────────────────────────────
+   When a tally ticks up the badge gets `is-bump` for one cycle: the number
+   stamps in like a rubber stamp and the mascot hops.  Placed after the
+   hover icon-tip rule so an increment wins if both fire at once. */
+@keyframes stat-stamp {
+  0%   { transform: scale(1.9) rotate(-7deg); opacity: 0.25; }
+  55%  { transform: scale(0.84) rotate(3deg); opacity: 1; }
+  78%  { transform: scale(1.1) rotate(-1.5deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+@keyframes stat-hop {
+  0%   { transform: translateY(0) rotate(0); }
+  28%  { transform: translateY(-10px) rotate(-6deg); }
+  52%  { transform: translateY(2px) rotate(4deg); }
+  74%  { transform: translateY(-3px) rotate(-1.5deg); }
+  100% { transform: translateY(0) rotate(0); }
+}
+.status-badge.is-bump .status-badge-card strong {
+  animation: stat-stamp 560ms var(--ease-out-expo) both;
+}
+.status-badge.is-bump .status-badge-icon {
+  animation: stat-hop 560ms var(--ease-out-expo);
+}
+
+/* ── Correct-answer confetti ──────────────────────────────────────────────
+   Sibling overlay over the cue card (never inside .stage-body, so it can't
+   change the measured scrollHeight that drives the fit-shrink).  Doodles
+   pop, hold, then fade up and vanish — no lingering clutter. */
+.correct-burst {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 3;
+}
+.spark {
+  position: absolute;
+  width: 13px;
+  height: 13px;
+  margin: -6.5px 0 0 -6.5px;
+  color: var(--pencil);
+  background: currentColor;
+  opacity: 0;
+  animation: spark-pop 900ms var(--ease-out-expo) var(--spark-delay, 0ms) both;
+}
+.spark-dot {
+  width: 9px;
+  height: 9px;
+  margin: -4.5px 0 0 -4.5px;
+  border-radius: 50%;
+}
+.spark-star {
+  color: #315f5b;
+  clip-path: polygon(
+    50% 0%, 60% 40%, 100% 50%, 60% 60%,
+    50% 100%, 40% 60%, 0% 50%, 40% 40%
+  );
+}
+.spark-plus {
+  clip-path: polygon(
+    42% 0, 58% 0, 58% 42%, 100% 42%, 100% 58%, 58% 58%,
+    58% 100%, 42% 100%, 42% 58%, 0 58%, 0 42%, 42% 42%
+  );
+}
+@keyframes spark-pop {
+  0%   { opacity: 0; transform: scale(0) rotate(var(--spark-rot, 0deg)); }
+  35%  { opacity: 1; transform: scale(1.25) rotate(calc(var(--spark-rot, 0deg) + 10deg)); }
+  62%  { opacity: 1; transform: scale(1) rotate(var(--spark-rot, 0deg)); }
+  100% { opacity: 0; transform: scale(0.85) translateY(-10px) rotate(var(--spark-rot, 0deg)); }
+}
+
+
+/* ── Respect reduced-motion ───────────────────────────────────────────────
+   Kill every playful animation above, plus the pre-existing idle mascot
+   bobs (which were never gated), and settle the boil on a single take. */
+@media (prefers-reduced-motion: reduce) {
+  .rough-box.is-boil .boil-frame,
+  .rough-box.is-boil-hover .boil-frame,
+  .grade-btn:hover .rough-box.is-boil-hover .boil-frame,
+  .hint-card:hover:not(:disabled) .rough-box.is-boil-hover .boil-frame {
+    animation: none !important;
+    opacity: 0;
+  }
+  .rough-box.is-boil .boil-frame-1,
+  .rough-box.is-boil-hover .boil-frame-1 {
+    opacity: 1;
+  }
+  .status-badge.is-bump .status-badge-card strong,
+  .status-badge.is-bump .status-badge-icon {
+    animation: none !important;
+  }
+  .correct-burst {
+    display: none !important;
+  }
+  .mascot-figure,
+  .foot-progress-mascot,
+  .dashboard-empty-mascot {
+    animation: none !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   Design System page (/design-system)
+   ═══════════════════════════════════════════════════════════════════════ */
+.ds-page {
+  min-height: 100vh;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: "Inter Tight", Manrope, sans-serif;
+  /* The design system page is a normal scrolling document.  The body-level
+     overflow:hidden from the practice app doesn't apply here because
+     DesignSystem.jsx clears it on mount.  But also make the page itself
+     independently scrollable so it works regardless. */
+  position: fixed;
+  inset: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.ds-header {
+  background: var(--ink);
+  color: var(--off-white);
+  padding: clamp(40px, 6vw, 80px) clamp(24px, 8vw, 120px) clamp(36px, 5vw, 64px);
+  display: grid;
+  gap: 20px;
+}
+
+.ds-back {
+  font-family: "Inter Tight", Manrope, sans-serif;
+  font-size: 0.82rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gray);
+  text-decoration: none;
+  transition: color 180ms var(--ease-out-expo);
+  width: fit-content;
+}
+.ds-back:hover { color: var(--off-white); }
+
+.ds-header-eyebrow {
+  margin: 0;
+  font-size: 0.78rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gray);
+}
+
+.ds-header-title {
+  margin: 4px 0 0;
+  font-family: "Teko", "Inter Tight", sans-serif;
+  font-size: clamp(3.2rem, 7vw, 6rem);
+  font-weight: 600;
+  line-height: 0.9;
+  color: var(--off-white);
+  letter-spacing: 0.01em;
+}
+
+.ds-header-sub {
+  margin: 12px 0 0;
+  max-width: 56ch;
+  font-size: 1rem;
+  line-height: 1.55;
+  color: rgba(242, 240, 232, 0.6);
+  font-style: italic;
+}
+
+.ds-main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: clamp(40px, 6vh, 80px) clamp(24px, 6vw, 80px);
+  display: grid;
+  gap: clamp(56px, 8vh, 100px);
+}
+
+.ds-section {
+  display: grid;
+  gap: 28px;
+}
+
+.ds-section-title {
+  margin: 0;
+  font-family: "Teko", "Inter Tight", sans-serif;
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--ink);
+  padding-bottom: 12px;
+  border-bottom: 1.5px solid rgba(44, 39, 34, 0.15);
+}
+
+.ds-row {
+  display: grid;
+  gap: 12px;
+}
+
+.ds-row-label {
+  margin: 0;
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gray);
+  font-weight: 500;
+}
+
+.ds-row-items {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+/* Color swatches */
+.ds-swatch {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: grid;
+  gap: 6px;
+  text-align: left;
+  transition: transform 180ms var(--ease-out-expo);
+}
+.ds-swatch:hover { transform: translateY(-2px); }
+
+.ds-swatch-chip {
+  display: block;
+  width: 80px;
+  height: 56px;
+  border-radius: 4px;
+  border: 1px solid rgba(44,39,34,.12);
+}
+
+.ds-swatch-token {
+  display: block;
+  font-size: 0.76rem;
+  font-weight: 500;
+  color: var(--ink);
+  font-family: "Inter Tight", Manrope, sans-serif;
+}
+
+.ds-swatch-hex {
+  display: block;
+  font-size: 0.7rem;
+  color: var(--gray);
+  font-family: monospace;
+  letter-spacing: 0.04em;
+}
+
+.ds-semantic-swatch {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: grid;
+  gap: 4px;
+  text-align: left;
+  min-width: 140px;
+  transition: transform 180ms var(--ease-out-expo);
+}
+.ds-semantic-swatch:hover { transform: translateY(-2px); }
+.ds-semantic-swatch .ds-swatch-chip { width: 100%; height: 40px; }
+.ds-swatch-use {
+  font-size: 0.7rem;
+  color: var(--pencil);
+  font-style: italic;
+}
+
+.ds-fill-chip {
+  display: grid;
+  gap: 6px;
+  padding: 14px 16px;
+  border-radius: 4px;
+  min-width: 160px;
+}
+.ds-fill-chip code { font-size: 0.72rem; }
+.ds-fill-chip span { font-size: 0.72rem; color: inherit; opacity: .7; }
+
+/* Type blocks */
+.ds-type-block {
+  display: grid;
+  gap: 8px;
+  padding: 20px 24px;
+  background: var(--off-white);
+  border-radius: 4px;
+  border: 1px solid rgba(44,39,34,.08);
+  width: 100%;
+}
+.ds-type-block code { font-size: 0.7rem; color: var(--gray); }
+
+/* Spacing */
+.ds-space-grid { display: grid; gap: 10px; }
+.ds-space-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 0.82rem;
+}
+.ds-space-bar {
+  height: 10px;
+  background: var(--ink);
+  opacity: 0.18;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+.ds-space-row span { color: var(--pencil); }
+
+.ds-ease-grid { display: grid; gap: 10px; width: 100%; }
+.ds-ease-row {
+  display: grid;
+  grid-template-columns: 180px 1fr 1fr;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 16px;
+  background: var(--off-white);
+  border-radius: 4px;
+  font-size: 0.82rem;
+}
+.ds-ease-val { color: var(--pencil); font-family: monospace; font-size: .74rem; }
+.ds-ease-use { color: var(--gray); font-style: italic; }
+
+/* RoughBox demos */
+.ds-roughbox-demo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px 32px;
+  align-items: flex-end;
+  padding: 24px;
+  background: var(--off-white);
+  border-radius: 4px;
+}
+.ds-roughbox-demo > div {
+  display: grid;
+  gap: 8px;
+  place-items: center;
+}
+.ds-roughbox-demo code { font-size: .7rem; color: var(--gray); }
+
+/* Boil demo */
+.ds-boil-wrap {
+  position: relative;
+  width: 120px;
+  height: 48px;
+}
+.ds-boil-frame {
+  animation: boil-cycle 0.72s steps(1, jump-end) infinite;
+}
+.ds-boil-frame.boil-frame-1 { position: relative; }
+.ds-boil-frame.boil-frame-2 { animation-delay: -0.24s; }
+.ds-boil-frame.boil-frame-3 { animation-delay: -0.48s; }
+
+/* Component demos */
+.ds-component-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+  padding: 20px 24px;
+  background: var(--off-white);
+  border-radius: 4px;
+}
+
+.ds-code-hint {
+  font-size: 0.72rem;
+  color: var(--gray);
+  font-style: italic;
+  display: block;
+}
+
+/* Mascot grid */
+.ds-mascot-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px 32px;
+  padding: 24px;
+  background: var(--off-white);
+  border-radius: 4px;
+}
+.ds-mascot-item {
+  display: grid;
+  gap: 8px;
+  place-items: center;
+  width: 90px;
+}
+.ds-mascot-img {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(44,39,34,.1));
+}
+.ds-mascot-item code { font-size: .65rem; color: var(--gray); text-align: center; }
+
+.ds-usage-table {
+  display: grid;
+  gap: 6px;
+}
+.ds-usage-row {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 16px;
+  padding: 8px 12px;
+  background: var(--off-white);
+  border-radius: 3px;
+  font-size: .82rem;
+  align-items: center;
+}
+.ds-usage-row code { font-size: .74rem; }
+.ds-usage-row span { color: var(--pencil); }
+
+/* Patterns */
+.ds-chrome-demo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+  background: var(--off-white);
+  border-radius: 4px;
+  width: 100%;
+}
+
+/* Animation table */
+.ds-anim-table { display: grid; gap: 6px; }
+.ds-anim-row {
+  display: grid;
+  grid-template-columns: 220px 140px 1fr;
+  gap: 16px;
+  padding: 9px 14px;
+  background: var(--off-white);
+  border-radius: 3px;
+  font-size: .82rem;
+  align-items: center;
+}
+.ds-anim-row code { font-size: .74rem; }
+.ds-anim-dur { color: var(--pencil); font-family: monospace; font-size: .74rem; }
+.ds-anim-use { color: var(--gray); font-style: italic; }
+
+/* Design rules */
+.ds-rules { display: grid; gap: 16px; }
+.ds-rule {
+  padding: 18px 22px;
+  background: var(--off-white);
+  border-radius: 4px;
+  border-left: 3px solid var(--ink);
+  display: grid;
+  gap: 4px;
+}
+.ds-rule-title {
+  font-size: .9rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+.ds-rule-detail {
+  margin: 0;
+  font-size: .84rem;
+  line-height: 1.5;
+  color: var(--pencil);
+}
+
+/* Note / prose */
+.ds-prose {
+  margin: 0;
+  font-size: .9rem;
+  line-height: 1.6;
+  color: var(--pencil);
+  max-width: 72ch;
+}
+.ds-note {
+  margin: 0;
+  font-size: .82rem;
+  line-height: 1.5;
+  color: var(--gray);
+  font-style: italic;
+  padding: 10px 14px;
+  background: rgba(44,39,34,.05);
+  border-radius: 3px;
+}
+.ds-note strong { color: var(--ink); }
