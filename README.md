@@ -66,3 +66,9 @@ from this repo alone — but the full UI, the landing page, and the design syste
 (`/design-system`) are all browsable.
 
 Routes: `/` (landing) · `/upload` (the practice app) · `/design-system`.
+
+---
+
+## Run it Online
+
+[Your Script](https://www.yourscript.app/).
