@@ -181,6 +181,7 @@ export function buildSnapshot(ctx = {}) {
       caseSensitive: Boolean(settings.caseSensitive),
       punctuation: Boolean(settings.punctuation),
       timedMode: Boolean(settings.timedMode),
+      includeMusicAsLines: Boolean(settings.includeMusicAsLines),
     },
     stats: {
       total: parsed?.total ?? items.length,
@@ -224,7 +225,7 @@ export function formatDiagnostics(
   }
   if (snap.settings)
     L.push(
-      `settings: stage dirs in cue ${snap.settings.stageDirectionsInCue ? "on" : "off"} · case ${snap.settings.caseSensitive ? "on" : "off"} · punctuation ${snap.settings.punctuation ? "on" : "off"}`,
+      `settings: stage dirs in cue ${snap.settings.stageDirectionsInCue ? "on" : "off"} · case ${snap.settings.caseSensitive ? "on" : "off"} · punctuation ${snap.settings.punctuation ? "on" : "off"} · songs as lines ${snap.settings.includeMusicAsLines ? "on" : "off"}`,
     );
   if (snap.cleanup?.length)
     L.push(`removed:  ${snap.cleanup.length} masked cleanup line(s) — ${snap.cleanup.join(" | ")}`);

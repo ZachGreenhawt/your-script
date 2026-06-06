@@ -31,6 +31,7 @@ const DEFAULT_SETTINGS = {
   caseSensitive: false,
   punctuation: false,
   timedMode: true,
+  includeMusicAsLines: false,
 };
 
 const MODES = [
@@ -2286,6 +2287,13 @@ function SettingsModal({ open, settings, onChange, onClose }) {
                 label="Timed mode"
                 checked={settings.timedMode}
                 onChange={(value) => onChange("timedMode", value)}
+              />
+            </li>
+            <li>
+              <Toggle
+                label="Include songs as lines"
+                checked={settings.includeMusicAsLines}
+                onChange={(value) => onChange("includeMusicAsLines", value)}
               />
             </li>
           </ol>
