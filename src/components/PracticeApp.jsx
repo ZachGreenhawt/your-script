@@ -583,6 +583,10 @@ export default function PracticeApp() {
   const [revealed, setRevealed] = useState(false);
   const [history, setHistory] = useState([]);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [parserIssues, setParserIssues] = useState([]);
+  const [parserIssueStatus, setParserIssueStatus] = useState("idle");
+  const [parserIssueError, setParserIssueError] = useState("");
+  const [parserIssueSentCount, setParserIssueSentCount] = useState(0);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -778,10 +782,10 @@ export default function PracticeApp() {
     }
   }
 
-  async function reportParserIssue({ kind, note, item, index }) {
+  function reportParserIssue({ kind, note, item, index }) {
     if (!item) return null;
 
-    return sendParserEvent({
+    const issue = {
       kind,
       noteMask: maskText(note, 500),
       parserVersion: "web-client",
@@ -819,7 +823,40 @@ export default function PracticeApp() {
       formatting: {
         shape: `cue ${parserShape(item.cue)}; line ${parserShape(item.line)}`,
       },
-    });
+    };
+
+    setParserIssues((current) => [...current, issue]);
+    setParserIssueStatus("queued");
+    setParserIssueError("");
+    return { queued: true };
+  }
+
+  async function sendParserIssues(issues = parserIssues) {
+    if (!issues.length) {
+      setParserIssueStatus("idle");
+      return;
+    }
+
+    setParserIssueStatus("sending");
+    setParserIssueError("");
+
+    const results = await Promise.allSettled(
+      issues.map((issue) => sendParserEvent(issue)),
+    );
+    const failed = results.filter((result) => result.status === "rejected");
+
+    if (failed.length) {
+      setParserIssueStatus("error");
+      setParserIssueError(
+        `Couldn't send ${failed.length} parser note${failed.length === 1 ? "" : "s"}.`,
+      );
+      track(EVENTS.ERROR_OCCURRED);
+      return;
+    }
+
+    setParserIssues([]);
+    setParserIssueSentCount(issues.length);
+    setParserIssueStatus("sent");
   }
 
   function startRound(items, label) {
@@ -831,6 +868,10 @@ export default function PracticeApp() {
     setStats({ right: 0, wrong: 0, review: 0 });
     setMissed([]);
     setHistory([]);
+    setParserIssues([]);
+    setParserIssueStatus("idle");
+    setParserIssueError("");
+    setParserIssueSentCount(0);
     setSessionStartedAt(Date.now());
     setLineStartedAt(Date.now());
     setNow(Date.now());
@@ -981,10 +1022,15 @@ export default function PracticeApp() {
     recordItem("wrong");
   }
 
+  function endSession() {
+    track(EVENTS.PRACTICE_COMPLETED);
+    setPhase("done");
+    sendParserIssues(parserIssues);
+  }
+
   function nextCue() {
     if (currentIndex + 1 >= practiceItems.length) {
-      track(EVENTS.PRACTICE_COMPLETED);
-      setPhase("done");
+      endSession();
       return;
     }
     setCurrentIndex((index) => index + 1);
@@ -1012,9 +1058,13 @@ export default function PracticeApp() {
     setPracticeItems([]);
     setAnswer("");
     setFeedback(null);
-    setStats({ right: 0, wrong: 0 });
+    setStats({ right: 0, wrong: 0, review: 0 });
     setMissed([]);
     setHistory([]);
+    setParserIssues([]);
+    setParserIssueStatus("idle");
+    setParserIssueError("");
+    setParserIssueSentCount(0);
   }
 
   // Download the user's cue/line list as a .txt — handy to print or study away
@@ -1226,6 +1276,8 @@ export default function PracticeApp() {
             isFirst={currentIndex === 0}
             isLast={currentIndex + 1 >= practiceItems.length}
             onReportIssue={reportParserIssue}
+            parserIssueCount={parserIssues.length}
+            onEndSession={endSession}
           />
         ) : null}
 
@@ -1243,6 +1295,11 @@ export default function PracticeApp() {
             onRetryMissed={retryMissed}
             onBackToSetup={resetToSetup}
             onExport={exportLines}
+            parserIssueCount={parserIssues.length}
+            parserIssueStatus={parserIssueStatus}
+            parserIssueError={parserIssueError}
+            parserIssueSentCount={parserIssueSentCount}
+            onRetryParserIssues={() => sendParserIssues(parserIssues)}
           />
         ) : null}
       </section>
@@ -1816,6 +1873,8 @@ function PracticeRoom({
   isFirst,
   isLast,
   onReportIssue,
+  parserIssueCount,
+  onEndSession,
 }) {
   const expected = currentItem.line;
   const character = currentItem.character || targetCharacter;
@@ -1828,12 +1887,14 @@ function PracticeRoom({
   const [reportNote, setReportNote] = useState("");
   const [reportStatus, setReportStatus] = useState("");
   const [reportBusy, setReportBusy] = useState(false);
+  const [confirmEnd, setConfirmEnd] = useState(false);
 
   useEffect(() => {
     setReportOpen(false);
     setReportNote("");
     setReportStatus("");
     setReportBusy(false);
+    setConfirmEnd(false);
   }, [currentIndex]);
 
   // Fit-to-box: rather than scroll (or clip) a long line, shrink the
@@ -1887,20 +1948,28 @@ function PracticeRoom({
     setReportBusy(true);
     setReportStatus("");
     try {
-      const result = await onReportIssue({
+      await onReportIssue({
         kind: reportKind,
         note: reportNote,
         item: currentItem,
         index: currentIndex,
       });
-      const repeated = result?.repeated > 1 ? ` (${result.repeated}x pattern)` : "";
-      setReportStatus(`Saved${repeated}.`);
+      setReportStatus("Saved for end of session.");
       setReportNote("");
+      setReportOpen(false);
     } catch (error) {
       setReportStatus(error.message || "Could not save that report.");
     } finally {
       setReportBusy(false);
     }
+  }
+
+  function handleEndSession() {
+    if (!confirmEnd) {
+      setConfirmEnd(true);
+      return;
+    }
+    onEndSession();
   }
 
   // Show the bottom action button differently based on context.
@@ -2127,13 +2196,20 @@ function PracticeRoom({
 
           <div className="parser-report">
             {!reportOpen ? (
-              <button
-                type="button"
-                className="parser-report-link"
-                onClick={() => setReportOpen(true)}
-              >
-                parser issue?
-              </button>
+              <>
+                <button
+                  type="button"
+                  className="parser-report-link"
+                  onClick={() => setReportOpen(true)}
+                >
+                  {parserIssueCount ?
+                    `parser issues (${parserIssueCount})`
+                  : "parser issue?"}
+                </button>
+                {reportStatus ? (
+                  <p className="parser-report-status">{reportStatus}</p>
+                ) : null}
+              </>
             ) : (
               <form className="parser-report-panel" onSubmit={submitParserReport}>
                 <RoughBox className="parser-report-frame" />
@@ -2161,7 +2237,7 @@ function PracticeRoom({
                 </label>
                 <div className="parser-report-actions">
                   <button type="submit" disabled={reportBusy}>
-                    {reportBusy ? "saving..." : "save"}
+                    {reportBusy ? "saving..." : "save for end"}
                   </button>
                   <button
                     type="button"
@@ -2264,7 +2340,25 @@ function PracticeRoom({
           )}
         </div>
 
-        <div className="foot-actions">{primaryAction}</div>
+        <div className="foot-actions">
+          <button
+            type="button"
+            className={`foot-link foot-end ${confirmEnd ? "is-confirming" : ""}`}
+            onClick={handleEndSession}
+          >
+            {confirmEnd ? "yes, end" : "end session"}
+          </button>
+          {confirmEnd ? (
+            <button
+              type="button"
+              className="foot-link foot-cancel"
+              onClick={() => setConfirmEnd(false)}
+            >
+              cancel
+            </button>
+          ) : null}
+          {primaryAction}
+        </div>
       </footer>
     </div>
   );
@@ -2284,6 +2378,11 @@ function DoneSession({
   onRetryMissed,
   onBackToSetup,
   onExport,
+  parserIssueCount,
+  parserIssueStatus,
+  parserIssueError,
+  parserIssueSentCount,
+  onRetryParserIssues,
 }) {
   return (
     <div className="paper-stage">
@@ -2344,6 +2443,14 @@ function DoneSession({
         <p className="review-empty">No lines to review yet.</p>
       )}
 
+      <ParserIssueSync
+        count={parserIssueCount}
+        status={parserIssueStatus}
+        error={parserIssueError}
+        sentCount={parserIssueSentCount}
+        onRetry={onRetryParserIssues}
+      />
+
       <div className="review-actions">
         {parsedTotal ? (
           <PencilButton onClick={onExport}>Download lines</PencilButton>
@@ -2366,6 +2473,28 @@ function DoneSession({
             Tell the maker&nbsp;→
           </a>
         </p>
+      ) : null}
+    </div>
+  );
+}
+
+function ParserIssueSync({ count, status, error, sentCount, onRetry }) {
+  if (status === "idle" || (!count && status !== "sent")) return null;
+
+  const message =
+    status === "sending" ? `Sending ${count} parser note${count === 1 ? "" : "s"}...`
+    : status === "sent" ? `Sent ${sentCount} parser note${sentCount === 1 ? "" : "s"}.`
+    : status === "error" ? error || "Parser notes could not be sent."
+    : `${count} parser note${count === 1 ? "" : "s"} saved for this session.`;
+
+  return (
+    <div className={`review-parser-sync is-${status}`}>
+      <RoughBox className="review-parser-sync-frame" />
+      <span>{message}</span>
+      {status === "error" ? (
+        <button type="button" onClick={onRetry}>
+          try again
+        </button>
       ) : null}
     </div>
   );

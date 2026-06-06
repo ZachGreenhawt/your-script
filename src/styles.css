@@ -2240,21 +2240,28 @@ body:has(.new-script-hitbox:hover) .start-arrow {
 }
 
 .parser-report {
+  position: relative;
+  z-index: 6;
   margin-top: 8px;
   width: min(230px, 100%);
   font-family: "Inter Tight", Manrope, sans-serif;
 }
 
 .parser-report-link {
-  border: 0;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  width: 100%;
+  border: 1px solid rgba(18, 17, 15, 0.22);
+  border-radius: 4px;
   background: transparent;
   color: var(--pencil);
   font: inherit;
   font-size: 0.82rem;
   font-style: italic;
-  text-decoration: underline wavy;
-  text-decoration-color: rgba(90, 82, 73, 0.35);
-  text-underline-offset: 3px;
+  text-decoration: none;
   cursor: pointer;
 }
 
@@ -2263,10 +2270,15 @@ body:has(.new-script-hitbox:hover) .start-arrow {
 }
 
 .parser-report-panel {
-  position: relative;
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 20;
   display: grid;
   gap: 10px;
+  width: min(280px, calc(100vw - 48px));
   padding: 14px;
+  background: var(--off-white);
   font-size: 0.82rem;
   color: var(--ink);
 }
@@ -2331,8 +2343,9 @@ body:has(.new-script-hitbox:hover) .start-arrow {
 .parser-report-status {
   position: relative;
   z-index: 1;
-  margin: 0;
+  margin: 6px 0 0;
   color: var(--pencil);
+  font-size: 0.78rem;
   font-style: italic;
 }
 
@@ -2568,7 +2581,9 @@ body:has(.new-script-hitbox:hover) .start-arrow {
 
 .foot-actions {
   display: flex;
+  align-items: center;
   justify-content: flex-end;
+  gap: 16px;
 }
 
 .foot-actions .pencil-btn {
@@ -2578,6 +2593,21 @@ body:has(.new-script-hitbox:hover) .start-arrow {
   font-weight: 500;
   letter-spacing: 0.04em;
   text-transform: lowercase;
+}
+
+.foot-end {
+  color: var(--pencil);
+  white-space: nowrap;
+}
+
+.foot-end.is-confirming {
+  color: #8b3d3d;
+}
+
+.foot-cancel {
+  color: var(--pencil);
+  opacity: 0.75;
+  white-space: nowrap;
 }
 
 .foot-link {
@@ -2900,6 +2930,46 @@ body:has(.new-script-hitbox:hover) .start-arrow {
   font-style: italic;
 }
 
+.review-parser-sync {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin: 22px auto 0;
+  padding: 10px 16px;
+  color: var(--ink);
+  font-family: "Inter Tight", Manrope, sans-serif;
+  font-size: 0.86rem;
+}
+
+.review-parser-sync-frame {
+  color: var(--pencil);
+  opacity: 0.7;
+}
+
+.review-parser-sync span,
+.review-parser-sync button {
+  position: relative;
+  z-index: 1;
+}
+
+.review-parser-sync button {
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-weight: 600;
+  text-decoration: underline wavy;
+  text-decoration-color: rgba(90, 82, 73, 0.35);
+  text-underline-offset: 3px;
+  cursor: pointer;
+  padding: 0;
+}
+
+.review-parser-sync.is-error .review-parser-sync-frame {
+  color: #8b3d3d;
+}
+
 .review-actions {
   display: flex;
   flex-wrap: wrap;
@@ -2946,6 +3016,11 @@ body:has(.new-script-hitbox:hover) .start-arrow {
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
+  }
+  .parser-report-panel {
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
   }
   .paper-stage-card {
     width: 100%;

@@ -9,7 +9,7 @@ const API_BASE = (import.meta.env.VITE_API_BASE || "").replace(/\/+$/, "");
 export const EMAILS = {
   metrics: "metrics@yourscript.app", // auto daily digest (sent by the backend)
   impact: "impact@yourscript.app", // success stories + general feedback
-  debug: "debug@yourscript.app", // bug / parser-issue reports
+  debug: "debug@yourscript.app", // app problem reports
 };
 
 // Which inbox a given feedback kind routes to.
@@ -23,7 +23,7 @@ export const FEEDBACK_EMAIL = EMAILS.impact;
 // Playful, page-specific footer prompts.
 const PROMPTS = {
   landing: "Built by a student. Spotted a bug, or have a story to share?",
-  upload: "Parser flubbed a line? Tell me exactly what it missed.",
+  upload: "Upload acting weird? Tell me what happened.",
   setup: "Roles or the start line looking off? Let me know.",
   practice: "How's the run going? Got a note?",
   done: "Did this help you land the part? I'd love to hear about it.",
@@ -39,12 +39,12 @@ export function pagePrompt(page) {
 // Contextual heading + lede for the /feedback page, by where the user came from.
 const CONTEXT = {
   upload: {
-    title: "What went wrong?",
-    lede: "If the parser misread your script, tell me what it got wrong — that's exactly how I make it better.",
+    title: "Something off?",
+    lede: "If upload or parsing went sideways, tell me what you saw. Specific bad cues can be marked from practice.",
   },
   setup: {
     title: "Something off?",
-    lede: "Wrong characters, a bad start line, cues that don't line up? Let me know what you saw.",
+    lede: "Wrong characters, a bad start line, or a confusing setup step? Let me know what you saw.",
   },
   done: {
     title: "How'd the run go?",
@@ -52,7 +52,7 @@ const CONTEXT = {
   },
   practice: {
     title: "A note mid-run?",
-    lede: "Spotted a wrong cue or just want to say something? I read every message.",
+    lede: "For a specific parser slip, use the parser issue button. For anything else, I read every message.",
   },
   dashboard: {
     title: "Say something",

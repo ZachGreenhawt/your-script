@@ -165,17 +165,20 @@ export default function FeedbackPage() {
     [snapshot],
   );
   const requestedKind = search.get("kind") || "";
-  const isIssue = requestedKind === "error" || Boolean(error);
-  const isStory = requestedKind === "story" || from === "done";
+  const wantsGeneral = requestedKind === "general" || requestedKind === "say-hi";
+  const isIssue = !wantsGeneral && (requestedKind === "error" || Boolean(error));
+  const isStory = !wantsGeneral && (requestedKind === "story" || from === "done");
   const isScriptScreen = SCRIPT_SCREENS.has(from);
-  const isSayHi = !isIssue && !isStory && !isScriptScreen;
+  const isSayHi = wantsGeneral || (!isIssue && !isStory && !isScriptScreen);
   const showDiagnostics = isIssue && Boolean(error || snapshot);
   const ctx =
     isIssue ?
       {
-        title: "What went wrong?",
-        lede: "Tell me what broke. If there is a safe parser snapshot, I will attach it to the email.",
+        title: "Report an app problem",
+        lede: "Tell me what broke. Parser corrections are now best sent from the small parser issue button during practice.",
       }
+    : isSayHi ?
+      pageContext("landing")
     : pageContext(from);
   const noteLabel =
     isIssue ? "What went wrong?"
@@ -187,17 +190,14 @@ export default function FeedbackPage() {
     : "Say hi, share an idea, or tell me what felt off...";
   const actions =
     isIssue ? [
-      ["error", "Report parser issue"],
+      ["error", "Send app report"],
       ["general", showDiagnostics ? "Send without debug" : "Send as note", true],
     ]
     : isStory ? [
       ["story", "Send story"],
       ["general", "Send regular note", true],
     ]
-    : isScriptScreen ? [
-      ["general", "Send note"],
-      ["error", "Report parser issue", true],
-    ]
+    : isScriptScreen ? [["general", "Send note"]]
     : [["general", "Say hi"]];
   const mascot = isSayHi ? "" : "/mascots/Primary.svg";
 
@@ -320,8 +320,9 @@ export default function FeedbackPage() {
                 <div className="fb-debug-note">
                   <RoughBox className="fb-debug-frame" seed={7} />
                   <p>
-                    I will include safe parser details with this report. They
-                    show structure only, not your script text.
+                    I will include safe debug details with this report. They
+                    show structure only, not your script text. For a specific
+                    bad cue or line, use parser issue during practice.
                   </p>
                 </div>
                 {snapshot ? (

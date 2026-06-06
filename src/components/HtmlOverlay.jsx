@@ -10,7 +10,7 @@ const TITLE_RULE =
 const ARROW_TO_BOOK = "M 30 30 L 40 18 L 50 30";
 
 const SECTION_NUMS = ["01", "02", "03", "04"];
-const FEEDBACK_HREF = "/feedback?from=landing&kind=general";
+const FEEDBACK_HREF = "/feedback?from=landing&kind=say-hi";
 
 // "Your Script" letters with a shuffled exit stagger — title scatters off
 // rather than wiping when the user scrolls past it.
