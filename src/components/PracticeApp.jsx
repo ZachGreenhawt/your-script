@@ -7,7 +7,7 @@ import {
 } from "react";
 import MascotLoader from "./MascotLoader.jsx";
 import { stashError } from "../feedback.js";
-import { track, EVENTS } from "../analytics.js";
+import { track, EVENTS, sendParserEvent } from "../analytics.js";
 import {
   buildSnapshot,
   stashSnapshot,
@@ -57,6 +57,17 @@ const PARSE_CAPTIONS = [
   "Lining up cues…",
   "Cueing your role…",
   "Pulling out lines…",
+];
+
+const PARSER_ISSUES = [
+  { id: "wrong_speaker", label: "Wrong speaker" },
+  { id: "stage_direction", label: "Stage direction" },
+  { id: "dialogue", label: "Missed dialogue" },
+  { id: "lyric", label: "Song lyric" },
+  { id: "music_cue", label: "Music cue" },
+  { id: "split_block", label: "Split block" },
+  { id: "merge_block", label: "Merged block" },
+  { id: "exclude_line", label: "Should exclude" },
 ];
 
 // Hand-drawn confetti scattered across the cue card on a correct recall.
@@ -184,6 +195,23 @@ async function streamApiResponse(response, onProgress) {
 
 function firstWords(text, n) {
   return (text || "").trim().split(/\s+/).slice(0, n).join(" ");
+}
+
+function wordCount(text) {
+  const trimmed = String(text || "").trim();
+  return trimmed ? trimmed.split(/\s+/).length : 0;
+}
+
+function parserShape(text) {
+  const raw = String(text || "");
+  const trimmed = raw.trim();
+  const bits = [];
+  if (!trimmed) bits.push("blank");
+  if (/^\s+/.test(raw)) bits.push("indent");
+  if (/^[([]/.test(trimmed)) bits.push("bracketed");
+  if (/\p{L}/u.test(trimmed) && trimmed === trimmed.toUpperCase()) bits.push("all caps");
+  if (/[:.]$/.test(trimmed)) bits.push("ends punctuation");
+  return bits.join(", ") || "plain";
 }
 
 // Build a hand-drawn rectangle path that adapts to the container's
@@ -750,6 +778,50 @@ export default function PracticeApp() {
     }
   }
 
+  async function reportParserIssue({ kind, note, item, index }) {
+    if (!item) return null;
+
+    return sendParserEvent({
+      kind,
+      noteMask: maskText(note, 500),
+      parserVersion: "web-client",
+      context: {
+        screen: phase,
+        mode,
+        round: roundLabel,
+        line: index + 1,
+      },
+      settings,
+      parseRun: {
+        input: fileMeta(file, scriptText),
+        sourceLines: parsed?.lineCount || analysis?.lineCount || 0,
+        practiceLines: parsed?.total || practiceItems.length,
+        turns: parsed?.turnCount || 0,
+        bodyStartLine: (parsed?.bodyStartIndex ?? analysis?.bodyStartIndex ?? 0) + 1,
+      },
+      block: {
+        index: index + 1,
+        characterMask: maskText(item.character || targetCharacter, 24, {
+          compact: true,
+        }),
+        cueMask: maskText(item.cue, 120),
+        lineMask: maskText(item.line, 120),
+        cueW: wordCount(item.cue),
+        lineW: wordCount(item.line),
+      },
+      before: {
+        classification: "practice_pair",
+        speaker: maskText(item.character || targetCharacter, 24, { compact: true }),
+      },
+      after: {
+        correctionKind: kind,
+      },
+      formatting: {
+        shape: `cue ${parserShape(item.cue)}; line ${parserShape(item.line)}`,
+      },
+    });
+  }
+
   function startRound(items, label) {
     setPracticeItems(items);
     setRoundLabel(label);
@@ -1153,6 +1225,7 @@ export default function PracticeApp() {
             onPrev={prevCue}
             isFirst={currentIndex === 0}
             isLast={currentIndex + 1 >= practiceItems.length}
+            onReportIssue={reportParserIssue}
           />
         ) : null}
 
@@ -1742,6 +1815,7 @@ function PracticeRoom({
   onPrev,
   isFirst,
   isLast,
+  onReportIssue,
 }) {
   const expected = currentItem.line;
   const character = currentItem.character || targetCharacter;
@@ -1749,6 +1823,18 @@ function PracticeRoom({
   const isWrong = feedback?.status === "wrong";
   const isReviewing = feedback?.status === "review";
   const isCorrect = feedback?.status === "correct" || isReviewing;
+  const [reportOpen, setReportOpen] = useState(false);
+  const [reportKind, setReportKind] = useState(PARSER_ISSUES[0].id);
+  const [reportNote, setReportNote] = useState("");
+  const [reportStatus, setReportStatus] = useState("");
+  const [reportBusy, setReportBusy] = useState(false);
+
+  useEffect(() => {
+    setReportOpen(false);
+    setReportNote("");
+    setReportStatus("");
+    setReportBusy(false);
+  }, [currentIndex]);
 
   // Fit-to-box: rather than scroll (or clip) a long line, shrink the
   // display type until the card body's content fits its available
@@ -1793,6 +1879,29 @@ function PracticeRoom({
   // already graded automatically).
   const showSelfGrade =
     mode === "flashcard" && revealed && !feedback;
+
+  async function submitParserReport(event) {
+    event.preventDefault();
+    if (!onReportIssue || reportBusy) return;
+
+    setReportBusy(true);
+    setReportStatus("");
+    try {
+      const result = await onReportIssue({
+        kind: reportKind,
+        note: reportNote,
+        item: currentItem,
+        index: currentIndex,
+      });
+      const repeated = result?.repeated > 1 ? ` (${result.repeated}x pattern)` : "";
+      setReportStatus(`Saved${repeated}.`);
+      setReportNote("");
+    } catch (error) {
+      setReportStatus(error.message || "Could not save that report.");
+    } finally {
+      setReportBusy(false);
+    }
+  }
 
   // Show the bottom action button differently based on context.
   let primaryAction = null;
@@ -2015,6 +2124,61 @@ function PracticeRoom({
               />
             </div>
           ) : null}
+
+          <div className="parser-report">
+            {!reportOpen ? (
+              <button
+                type="button"
+                className="parser-report-link"
+                onClick={() => setReportOpen(true)}
+              >
+                parser issue?
+              </button>
+            ) : (
+              <form className="parser-report-panel" onSubmit={submitParserReport}>
+                <RoughBox className="parser-report-frame" />
+                <label>
+                  <span>What went wrong?</span>
+                  <select
+                    value={reportKind}
+                    onChange={(event) => setReportKind(event.target.value)}
+                  >
+                    {PARSER_ISSUES.map((issue) => (
+                      <option key={issue.id} value={issue.id}>
+                        {issue.label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  <span>Optional note</span>
+                  <textarea
+                    value={reportNote}
+                    onChange={(event) => setReportNote(event.target.value)}
+                    rows={2}
+                    placeholder="What should it have done?"
+                  />
+                </label>
+                <div className="parser-report-actions">
+                  <button type="submit" disabled={reportBusy}>
+                    {reportBusy ? "saving..." : "save"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setReportOpen(false);
+                      setReportStatus("");
+                    }}
+                  >
+                    cancel
+                  </button>
+                </div>
+                {reportStatus ? (
+                  <p className="parser-report-status">{reportStatus}</p>
+                ) : null}
+              </form>
+            )}
+          </div>
         </aside>
       </div>
 
@@ -2291,7 +2455,7 @@ function SettingsModal({ open, settings, onChange, onClose }) {
             </li>
             <li>
               <Toggle
-                label="Include songs as lines"
+                label="Include music as dialogue"
                 checked={settings.includeMusicAsLines}
                 onChange={(value) => onChange("includeMusicAsLines", value)}
               />

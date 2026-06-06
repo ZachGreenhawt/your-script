@@ -2239,6 +2239,103 @@ body:has(.new-script-hitbox:hover) .start-arrow {
   font-size: 0.86rem;
 }
 
+.parser-report {
+  margin-top: 8px;
+  width: min(230px, 100%);
+  font-family: "Inter Tight", Manrope, sans-serif;
+}
+
+.parser-report-link {
+  border: 0;
+  background: transparent;
+  color: var(--pencil);
+  font: inherit;
+  font-size: 0.82rem;
+  font-style: italic;
+  text-decoration: underline wavy;
+  text-decoration-color: rgba(90, 82, 73, 0.35);
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.parser-report-link:hover {
+  color: var(--ink);
+}
+
+.parser-report-panel {
+  position: relative;
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  font-size: 0.82rem;
+  color: var(--ink);
+}
+
+.parser-report-frame {
+  color: var(--ink);
+  opacity: 0.65;
+}
+
+.parser-report-panel label {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 4px;
+}
+
+.parser-report-panel label span {
+  color: var(--pencil);
+  font-style: italic;
+}
+
+.parser-report-panel select,
+.parser-report-panel textarea {
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid rgba(18, 17, 15, 0.35);
+  border-radius: 0;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  resize: vertical;
+}
+
+.parser-report-panel select:focus,
+.parser-report-panel textarea:focus {
+  outline: none;
+  border-bottom-color: var(--ink);
+}
+
+.parser-report-actions {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  gap: 12px;
+}
+
+.parser-report-actions button {
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+}
+
+.parser-report-actions button:disabled {
+  color: var(--pencil);
+  cursor: default;
+}
+
+.parser-report-status {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  color: var(--pencil);
+  font-style: italic;
+}
+
 /* Paper stage card — the main rehearsal sheet */
 .paper-stage-card {
   position: relative;
@@ -3468,6 +3565,8 @@ body:has(.new-script-hitbox:hover) .start-arrow {
 .settings-modal {
   position: relative;
   width: min(440px, 92vw);
+  max-height: calc(100vh - 32px);
+  overflow: auto;
   padding: 30px 34px 26px;
   /* A lifted paper card — matches the rest of the site instead of a
      foreign dark dialog. */
