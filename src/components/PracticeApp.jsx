@@ -15,10 +15,11 @@ import {
   maskText,
 } from "../diagnostics.js";
 
-// API base — empty in dev (Vite proxies /api → :5174) and for same-origin
-// deploys.  Set VITE_API_BASE to the backend URL (e.g. the Railway URL) to
-// call a separately-hosted backend directly (keeps NDJSON streaming live).
-const API_BASE = (import.meta.env.VITE_API_BASE || "").replace(/\/+$/, "");
+// API base — dev always uses Vite's /api proxy so local checks hit the local
+// backend even when .env contains the production Railway URL.
+const API_BASE = (
+  import.meta.env.DEV ? "" : import.meta.env.VITE_API_BASE || ""
+).replace(/\/+$/, "");
 const api = (path) => `${API_BASE}${path}`;
 
 // Hand-drawn underline used in headings/section dividers (stays a fixed
@@ -843,12 +844,17 @@ export default function PracticeApp() {
     const results = await Promise.allSettled(
       issues.map((issue) => sendParserEvent(issue)),
     );
-    const failed = results.filter((result) => result.status === "rejected");
+    const failedIssues = issues.filter(
+      (_, index) => results[index].status === "rejected",
+    );
+    const sentCount = issues.length - failedIssues.length;
 
-    if (failed.length) {
+    if (failedIssues.length) {
+      setParserIssues(failedIssues);
+      setParserIssueSentCount(sentCount);
       setParserIssueStatus("error");
       setParserIssueError(
-        `Couldn't send ${failed.length} parser note${failed.length === 1 ? "" : "s"}.`,
+        `Couldn't send ${failedIssues.length} parser note${failedIssues.length === 1 ? "" : "s"}.`,
       );
       track(EVENTS.ERROR_OCCURRED);
       return;
@@ -2484,7 +2490,8 @@ function ParserIssueSync({ count, status, error, sentCount, onRetry }) {
   const message =
     status === "sending" ? `Sending ${count} parser note${count === 1 ? "" : "s"}...`
     : status === "sent" ? `Sent ${sentCount} parser note${sentCount === 1 ? "" : "s"}.`
-    : status === "error" ? error || "Parser notes could not be sent."
+    : status === "error" ?
+      `${sentCount ? `Sent ${sentCount}. ` : ""}${error || "Parser notes could not be sent."}`
     : `${count} parser note${count === 1 ? "" : "s"} saved for this session.`;
 
   return (

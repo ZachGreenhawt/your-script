@@ -8,7 +8,9 @@
 // metrics are never dropped.  Sending the digest is gated on RESEND_API_KEY; if
 // that's unset the backend just logs the digest (handy for local testing).
 
-const API_BASE = (import.meta.env.VITE_API_BASE || "").replace(/\/+$/, "");
+const API_BASE = (
+  import.meta.env.DEV ? "" : import.meta.env.VITE_API_BASE || ""
+).replace(/\/+$/, "");
 
 // Tracked events kept in sync with the backend allowlist.
 export const EVENTS = {

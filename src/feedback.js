@@ -4,7 +4,9 @@
 
 import { readSnapshot, formatDiagnostics } from "./diagnostics.js";
 
-const API_BASE = (import.meta.env.VITE_API_BASE || "").replace(/\/+$/, "");
+const API_BASE = (
+  import.meta.env.DEV ? "" : import.meta.env.VITE_API_BASE || ""
+).replace(/\/+$/, "");
 
 export const EMAILS = {
   metrics: "metrics@yourscript.app", // auto daily digest (sent by the backend)
