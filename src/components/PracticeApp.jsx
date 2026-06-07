@@ -7,7 +7,7 @@ import {
 } from "react";
 import MascotLoader from "./MascotLoader.jsx";
 import { stashError } from "../feedback.js";
-import { track, EVENTS, sendParserEvent } from "../analytics.js";
+import { track, EVENTS, sendParserReport } from "../analytics.js";
 import {
   buildSnapshot,
   stashSnapshot,
@@ -389,7 +389,7 @@ function PencilButton({
 // Hand-drawn checkbox — a pencil-sketched box that gets a marker tick when
 // on.  Reads like ticking a box on the notebook page instead of a glossy
 // switch.  Seeded off the label so each box wobbles a little differently.
-function Toggle({ checked, label, onChange }) {
+function Toggle({ checked, label, hint, onChange }) {
   const seed = label ? label.length : 1;
   return (
     <label className={`paper-check ${checked ? "is-checked" : ""}`}>
@@ -413,7 +413,10 @@ function Toggle({ checked, label, onChange }) {
           <path d="M4.5 13 Q 6.8 15.4 9 17.8 Q 13.4 11 19.5 5.8" />
         </svg>
       </span>
-      <span className="paper-check-label">{label}</span>
+      <span className="paper-check-text">
+        <span className="paper-check-label">{label}</span>
+        {hint ? <span className="paper-check-hint">{hint}</span> : null}
+      </span>
     </label>
   );
 }
@@ -841,28 +844,22 @@ export default function PracticeApp() {
     setParserIssueStatus("sending");
     setParserIssueError("");
 
-    const results = await Promise.allSettled(
-      issues.map((issue) => sendParserEvent(issue)),
-    );
-    const failedIssues = issues.filter(
-      (_, index) => results[index].status === "rejected",
-    );
-    const sentCount = issues.length - failedIssues.length;
-
-    if (failedIssues.length) {
-      setParserIssues(failedIssues);
-      setParserIssueSentCount(sentCount);
+    try {
+      // One batched report per session -> the backend sends a single masked
+      // summary email (and records each issue in the daily metrics).
+      await sendParserReport(issues);
+      setParserIssues([]);
+      setParserIssueSentCount(issues.length);
+      setParserIssueStatus("sent");
+    } catch (requestError) {
+      // Keep the issues queued so the "retry" affordance can resend them.
+      setParserIssues(issues);
       setParserIssueStatus("error");
       setParserIssueError(
-        `Couldn't send ${failedIssues.length} parser note${failedIssues.length === 1 ? "" : "s"}.`,
+        `Couldn't send ${issues.length} parser note${issues.length === 1 ? "" : "s"}.`,
       );
       track(EVENTS.ERROR_OCCURRED);
-      return;
     }
-
-    setParserIssues([]);
-    setParserIssueSentCount(issues.length);
-    setParserIssueStatus("sent");
   }
 
   function startRound(items, label) {
@@ -1245,6 +1242,8 @@ export default function PracticeApp() {
             analysis={analysis}
             bodyStartLine={bodyStartLine}
             setBodyStartLine={setBodyStartLine}
+            settings={settings}
+            onOpenSettings={() => setSettingsOpen(true)}
             onBack={() => setSetupStep((s) => Math.max(0, s - 1))}
             onNext={handleNextStep}
             canNext={canStepForward && !loaderActive}
@@ -1324,7 +1323,7 @@ export default function PracticeApp() {
         label={busy === "parse" ? "Building your run" : "Reading your script"}
         progress={loaderActive ? loadProgress : null}
         caption={loadCaption}
-        note={busy === "parse" ? "This might take a while" : ""}
+        note={loaderActive ? "This might take a while" : ""}
       />
 
       <div className="grain-layer" aria-hidden="true" />
@@ -1558,19 +1557,27 @@ function SetupWizard({
   analysis,
   bodyStartLine,
   setBodyStartLine,
+  settings,
+  onOpenSettings,
   onBack,
   onNext,
   canNext,
   busy,
 }) {
-  // Each step gets its own characterful title + a warm, plain-language
-  // prompt — no more three identical "Preferences" headings.
+  // Each step gets its own characterful title, a short prompt, and a warm
+  // plain-language walk-through so it's always clear what this step does and why.
   const titles = ["Tidy up", "Your role", "Curtain up"];
   const subtitles = [
-    "Clear out any repeating headers or page numbers.",
-    "Which part are you running?",
-    "Where does your scene begin?",
+    "Clear out repeating headers or page numbers so they don't become fake cues.",
+    "Pick the part you're running, and drop anything that isn't a real character.",
+    "Tell me where your scene actually starts.",
   ];
+  const intros = [
+    "Scanned scripts often repeat a title, a page number, or a footer on every page. Add those here and I'll strip them so they never show up as a cue or a line. Nothing to remove? Choose “No” and move on.",
+    "Tap a name to make it your role — it fills in and highlights. The × beside a name deletes it from the list. Delete anything that isn't a real character (page headers, scene labels, OCR slip-ups) so your cues stay clean.",
+    "Everything above the line you pick — title page, cast list, director's notes — gets skipped. Tap the first line your scene actually begins on.",
+  ];
+  const isLast = step === SETUP_STEPS.length - 1;
 
   return (
     <div className="paper-stage paper-stage-setup">
@@ -1579,6 +1586,23 @@ function SetupWizard({
         title={titles[step]}
         subtitle={subtitles[step]}
       />
+
+      <p className="setup-intro">{intros[step]}</p>
+
+      <button
+        type="button"
+        className="setup-settings-pointer"
+        onClick={onOpenSettings}
+      >
+        <span className="setup-settings-glyph" aria-hidden="true">
+          <SettingsGlyph />
+        </span>
+        <span>
+          Matching, timing &amp; song handling live in{" "}
+          <strong>Settings</strong> (the gear, top-right). Tweak them any time
+          before you start.
+        </span>
+      </button>
 
       <div className="setup-wizard">
         <div key={step} className={`wizard-step step-${step}`}>
@@ -1614,6 +1638,16 @@ function SetupWizard({
         </div>
       </div>
 
+      {isLast ? (
+        <SetupRecap
+          targetCharacter={targetCharacter}
+          bodyStartLine={bodyStartLine}
+          cleanupKeep={cleanupKeep}
+          cleanupArtifacts={cleanupArtifacts}
+          settings={settings}
+        />
+      ) : null}
+
       <WizardPager
         step={step}
         stepCount={SETUP_STEPS.length}
@@ -1626,6 +1660,52 @@ function SetupWizard({
         }
         canNext={canNext}
       />
+    </div>
+  );
+}
+
+// Final-step recap so the user knows exactly what "Start" will do before the
+// parse fires — role, where it begins, cleanup, and the settings that matter.
+function SetupRecap({
+  targetCharacter,
+  bodyStartLine,
+  cleanupKeep,
+  cleanupArtifacts,
+  settings = {},
+}) {
+  const role = (targetCharacter || "").trim() || "your role";
+  const removed = cleanupKeep ? cleanupArtifacts.length : 0;
+  const rows = [
+    `Pull every cue → line for ${role}`,
+    `Begin at line ${bodyStartLine || "?"}, skipping everything above it`,
+    removed ?
+      `Strip ${removed} flagged line${removed === 1 ? "" : "s"} from the script`
+    : "Keep the script text as-is",
+    settings.includeMusicAsLines ?
+      "Include your sung lines"
+    : "Skip songs & lyrics",
+  ];
+  if (settings.timedMode) rows.push("Time each line as you go");
+
+  return (
+    <div className="setup-recap">
+      <RoughBox className="setup-recap-frame" seed={9} />
+      <div className="setup-recap-body">
+        <h3 className="setup-recap-title">Here's what I'll do</h3>
+        <ul className="setup-recap-list">
+          {rows.map((row) => (
+            <li key={row}>
+              <span className="setup-recap-tick" aria-hidden="true">
+                ✓
+              </span>
+              <span>{row}</span>
+            </li>
+          ))}
+        </ul>
+        <p className="setup-recap-foot">
+          Tap <strong>Start</strong> to build your run.
+        </p>
+      </div>
     </div>
   );
 }
@@ -1735,6 +1815,13 @@ function RoleStep({
     <div className="paper-card paper-card-roles">
       <RoughBox className="paper-card-frame" double />
       <div className="paper-card-body">
+        <p className="role-current">
+          {targetCharacter ?
+            <>
+              Your role: <strong>{targetCharacter}</strong>
+            </>
+          : "Tap a name below to choose your role."}
+        </p>
         {characters.length ? (
           <ul className="role-list">
             {characters.map((character) => {
@@ -2558,45 +2645,67 @@ function SettingsModal({ open, settings, onChange, onClose }) {
             </button>
           </header>
 
-          <ol className="settings-list settings-list-modal">
-            <li>
-              <Toggle
-                label="Stage directions in cue"
-                checked={settings.includeStageDirectionsInCue}
-                onChange={(value) =>
-                  onChange("includeStageDirectionsInCue", value)
-                }
-              />
-            </li>
-            <li>
-              <Toggle
-                label="Case sensitive"
-                checked={settings.caseSensitive}
-                onChange={(value) => onChange("caseSensitive", value)}
-              />
-            </li>
-            <li>
-              <Toggle
-                label="Keep punctuation"
-                checked={settings.punctuation}
-                onChange={(value) => onChange("punctuation", value)}
-              />
-            </li>
-            <li>
-              <Toggle
-                label="Timed mode"
-                checked={settings.timedMode}
-                onChange={(value) => onChange("timedMode", value)}
-              />
-            </li>
-            <li>
-              <Toggle
-                label="Include music as dialogue"
-                checked={settings.includeMusicAsLines}
-                onChange={(value) => onChange("includeMusicAsLines", value)}
-              />
-            </li>
-          </ol>
+          <div className="settings-groups">
+            <section className="settings-group">
+              <h3 className="settings-group-title">Reading the script</h3>
+              <ul className="settings-list settings-list-modal">
+                <li>
+                  <Toggle
+                    label="Stage directions in cue"
+                    hint="Include the script's stage directions in the cue shown before your line."
+                    checked={settings.includeStageDirectionsInCue}
+                    onChange={(value) =>
+                      onChange("includeStageDirectionsInCue", value)
+                    }
+                  />
+                </li>
+                <li>
+                  <Toggle
+                    label="Include songs & lyrics as lines"
+                    hint="Off by default — practice spoken dialogue only. Turn on to rehearse your sung lines too."
+                    checked={settings.includeMusicAsLines}
+                    onChange={(value) => onChange("includeMusicAsLines", value)}
+                  />
+                </li>
+              </ul>
+            </section>
+
+            <section className="settings-group">
+              <h3 className="settings-group-title">Checking your answer</h3>
+              <ul className="settings-list settings-list-modal">
+                <li>
+                  <Toggle
+                    label="Case sensitive"
+                    hint="Require matching capitalization when you type your line."
+                    checked={settings.caseSensitive}
+                    onChange={(value) => onChange("caseSensitive", value)}
+                  />
+                </li>
+                <li>
+                  <Toggle
+                    label="Keep punctuation"
+                    hint="Require commas, periods, and other punctuation to match."
+                    checked={settings.punctuation}
+                    onChange={(value) => onChange("punctuation", value)}
+                  />
+                </li>
+              </ul>
+            </section>
+
+            <section className="settings-group">
+              <h3 className="settings-group-title">Practice</h3>
+              <ul className="settings-list settings-list-modal">
+                <li>
+                  <Toggle
+                    label="Timed mode"
+                    hint="Time each line and the whole run so you can track your pace."
+                    checked={settings.timedMode}
+                    onChange={(value) => onChange("timedMode", value)}
+                  />
+                </li>
+              </ul>
+            </section>
+          </div>
 
           <div className="settings-modal-actions">
             <PencilButton onClick={onClose}>Confirm selection</PencilButton>

@@ -49,3 +49,24 @@ export async function sendParserEvent(correction) {
   }
   return payload;
 }
+
+// Sends every parser issue flagged during a session as one batched report at
+// session end. The backend emails a single masked summary (and still records
+// each issue in the daily metrics). `keepalive` lets it complete even if the
+// session-end click also navigates away.
+export async function sendParserReport(issues) {
+  const list = Array.isArray(issues) ? issues : [];
+  if (!list.length) return { ok: true, recorded: 0 };
+
+  const response = await fetch(`${API_BASE}/api/parser-report`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ issues: list }),
+    keepalive: true,
+  });
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok || payload.ok === false) {
+    throw new Error(payload.error || "Could not send the parser report.");
+  }
+  return payload;
+}

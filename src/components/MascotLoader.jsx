@@ -53,13 +53,19 @@ export default function MascotLoader({
     return () => window.clearInterval(id);
   }, [phase, captions, controlled]);
 
-  // Self-driven adaptive bar — only used when *uncontrolled*.  We can't get
-  // true byte-level progress, so the bar ramps up while a load is active —
-  // decelerating as it nears ~92% so it always feels like it's moving but
-  // never "finishes" early — then snaps to 100% the moment the work
-  // completes (phase leaves the open state, just as the overlay fades).
+  // Self-driven adaptive bar.  We can't get true byte-level progress, so the
+  // bar ramps up while a load is active — decelerating as it nears ~92% so it
+  // always feels like it's moving but never "finishes" early — then snaps to
+  // 100% the moment the work completes (phase leaves the open state, just as
+  // the overlay fades).
+  //
+  // This ramp runs even in *controlled* mode, where it acts as a floor: the
+  // backend streams real checkpoints, but a proxy (Vite dev, Railway, a CDN)
+  // can buffer the ndjson stream so those checkpoints all land at the very end.
+  // Without a floor the bar would sit frozen until then.  We take the max of
+  // the ramp and the real value, so the bar always visibly loads and snaps to
+  // real progress whenever a checkpoint actually arrives ahead of the ramp.
   useLayoutEffect(() => {
-    if (controlled) return undefined;
     if (!isOpen) {
       setAutoProgress(100);
       return undefined;
@@ -73,11 +79,10 @@ export default function MascotLoader({
       );
     }, 130);
     return () => window.clearInterval(id);
-  }, [isOpen, mascot, controlled]);
+  }, [isOpen, mascot]);
 
-  const pct = controlled
-    ? Math.max(0, Math.min(100, progress * 100))
-    : autoProgress;
+  const realPct = controlled ? Math.max(0, Math.min(100, progress * 100)) : 0;
+  const pct = controlled ? Math.max(autoProgress, realPct) : autoProgress;
   const captionText = controlled && caption ? caption : captions[captionIdx];
   const captionKey = controlled ? caption || "…" : captionIdx;
 
