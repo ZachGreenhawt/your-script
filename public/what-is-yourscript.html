@@ -17,10 +17,12 @@
 <meta property="og:description" content="Learn what Your Script does, who uses the app, and how cue based solo rehearsal works for actors and theatre students." />
 <meta property="og:url" content="https://www.yourscript.app/what-is-yourscript" />
 <meta property="og:image" content="https://www.yourscript.app/og/home.png" />
+<meta property="og:image:alt" content="Your Script — A minimalist line rehearsal companion for actors and theatre students." />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="What Is Your Script? | Line Rehearsal Companion" />
 <meta name="twitter:description" content="Learn what Your Script does, who uses the app, and how cue based solo rehearsal works for actors and theatre students." />
 <meta name="twitter:image" content="https://www.yourscript.app/og/home.png" />
+<meta name="twitter:image:alt" content="Your Script — A minimalist line rehearsal companion for actors and theatre students." />
 <style>@font-face{font-family:"Manrope";src:url("/fonts/manrope-latin-400-normal.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap}
 @font-face{font-family:"Inter Tight";src:url("/fonts/inter-tight-latin-500-normal.woff2") format("woff2");font-weight:500;font-style:normal;font-display:swap}
 @font-face{font-family:"Teko";src:url("/fonts/teko-latin-600-normal.woff2") format("woff2");font-weight:600;font-style:normal;font-display:swap}
@@ -67,6 +69,9 @@ h3{font-family:var(--font-display);font-weight:600;font-size:1.42rem;line-height
 p{margin:13px 0}
 ul,ol{margin:13px 0;padding-left:22px}
 li{margin:7px 0}
+dl{margin:16px 0}
+dt{font-family:var(--font-ui);font-weight:600;color:var(--ink);margin-top:14px}
+dd{margin:3px 0 0 0;color:var(--pencil)}
 a{color:var(--maroon)}
 a:hover{color:var(--ink)}
 strong{font-weight:600}
@@ -85,18 +90,21 @@ thead th{font-weight:600;color:var(--ink);border-bottom:1.5px solid rgba(44,39,3
 tbody tr:last-child th,tbody tr:last-child td{border-bottom:0}
 tbody th{font-weight:600}
 .tag{display:inline-block;font-family:var(--font-ui);font-weight:500;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);padding:4px 11px;margin-left:6px;white-space:nowrap}
-/* faq */
+/* faq — one notebook card; questions divided by faint ruling, not per-item boxes */
 .faq{margin-top:30px}
 .faq>h2{margin-bottom:14px}
-.faq-item{position:relative;background:rgba(230,227,216,.38);color:var(--ink);padding:0 20px;margin:12px 0}
-.faq-item .rough-box{color:var(--pencil);opacity:.72}
-.faq details{margin:0}
-.faq summary{cursor:pointer;font-family:var(--font-ui);font-weight:600;font-size:1.02rem;color:var(--ink);padding:16px 0;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:16px}
+.faq-list{position:relative;background:rgba(230,227,216,.5);color:var(--ink);padding:2px 24px}
+.faq-list .rough-box{color:var(--pencil);opacity:.7}
+.faq details{margin:0;border-bottom:1px solid rgba(90,82,73,.16)}
+.faq details:last-child{border-bottom:0}
+.faq summary{cursor:pointer;font-family:var(--font-ui);font-weight:600;font-size:1.02rem;color:var(--ink);padding:17px 0;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:18px}
+.faq summary:hover{color:var(--maroon)}
+.faq summary:hover .squiggle::after{transform:scaleX(1)}
 .faq summary::-webkit-details-marker{display:none}
-.faq summary::after{content:"+";font-family:var(--font-display);font-weight:600;font-size:1.6rem;line-height:1;color:var(--pencil)}
+.faq summary::after{content:"+";font-family:var(--font-display);font-weight:600;font-size:1.7rem;line-height:1;color:var(--pencil);flex:0 0 auto}
 .faq details[open] summary::after{content:"\2013"}
-.faq .answer{padding:0 0 16px}
-.faq .answer p{margin:0}
+.faq .answer{padding:0 0 18px}
+.faq .answer p{margin:0;color:var(--pencil)}
 /* cta */
 .cta{background:rgba(230,227,216,.74);color:var(--ink);padding:26px 22px;margin:40px 0 8px;text-align:center}
 .cta h2{background:none;padding:0;margin:0 0 6px;transform:rotate(-.4deg)}
@@ -115,7 +123,10 @@ tbody th{font-weight:600}
 .site-foot nav ul{list-style:none;display:flex;flex-wrap:wrap;gap:12px 26px;padding:0;margin:0;font-family:var(--font-ui);font-size:.95rem}
 .foot-link{color:var(--pencil);text-decoration:none}
 .foot-link:hover{color:var(--ink)}
-.foot-note{font-family:var(--font-ui);font-style:italic;color:var(--gray);font-size:.86rem;margin-top:18px}
+.foot-note{font-family:var(--font-ui);color:var(--gray);font-size:.86rem;margin:0}
+.foot-bottom{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px 24px;margin-top:18px}
+.foot-sayhi{font-family:var(--font-ui);font-size:.86rem;color:var(--gray);text-decoration:none}
+.foot-sayhi:hover{color:var(--ink)}
 .visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 a:focus-visible,summary:focus-visible,.btn:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 @media(max-width:600px){body{font-size:17px}.chrome{padding-left:18px;padding-right:18px}.chrome-center{display:none}main.sheet,.site-foot{padding-left:18px;padding-right:18px}}
@@ -136,11 +147,15 @@ a:focus-visible,summary:focus-visible,.btn:focus-visible{outline:2px solid var(-
       },
       "inLanguage": "en-US",
       "mainEntity": {
-        "@type": "SoftwareApplication",
+        "@type": [
+          "SoftwareApplication",
+          "WebApplication"
+        ],
         "name": "Your Script",
         "url": "https://www.yourscript.app/",
         "applicationCategory": "EducationalApplication",
         "operatingSystem": "Web",
+        "browserRequirements": "Requires a modern web browser.",
         "description": "A minimalist line rehearsal companion for actors and theatre students.",
         "publisher": {
           "@type": "Organization",
@@ -197,6 +212,46 @@ a:focus-visible,summary:focus-visible,.btn:focus-visible{outline:2px solid var(-
             "@type": "Answer",
             "text": "No. Your Script treats the other characters' lines as your cues. You see the cue, then deliver your line from memory. Use the app when a scene partner is not available or when you need a quick run before rehearsal."
           }
+        },
+        {
+          "@type": "Question",
+          "name": "Do I need to download anything?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. Your Script runs in your web browser, so there is nothing to download or install. Open it on a laptop, tablet, or phone, upload a script, choose your role, and start running lines. It works the same way across your devices."
+          }
+        }
+      ]
+    },
+    {
+      "@type": "Organization",
+      "name": "Your Script",
+      "url": "https://www.yourscript.app/",
+      "logo": "https://www.yourscript.app/brand/logo-mark.png",
+      "description": "A minimalist line rehearsal companion for actors and theatre students.",
+      "sameAs": [
+        "https://www.tiktok.com/@yourscriptapp"
+      ],
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "customer support",
+        "email": "impact@yourscript.app"
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://www.yourscript.app/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "What Is Your Script?",
+          "item": "https://www.yourscript.app/what-is-yourscript"
         }
       ]
     }
@@ -207,7 +262,7 @@ a:focus-visible,summary:focus-visible,.btn:focus-visible{outline:2px solid var(-
 <div class="paper" aria-hidden="true"></div>
 <a class="skip-link" href="#main">Skip to content</a>
 <header class="chrome">
-  <a class="chrome-mark" href="/">Your Script</a>
+  <a class="chrome-mark squiggle" href="/">Your Script</a>
   <span class="chrome-center">About</span>
   <a class="chrome-cta squiggle" href="/upload" rel="nofollow">Open the app <svg class="chrome-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
 </header>
@@ -273,26 +328,40 @@ a:focus-visible,summary:focus-visible,.btn:focus-visible{outline:2px solid var(-
   <p>Your Script is not a teleprompter, casting tool, classroom system, acting coach, or full script platform. The app supports one rehearsal step: learning lines. The creative work stays yours.</p>
 </section>
 
+<section aria-labelledby="key-terms">
+  <h2 id="key-terms">Key terms</h2>
+  <dl>
+    <dt>Cue</dt>
+    <dd>The line, usually another character's, that comes right before yours and signals your turn to speak.</dd>
+    <dt>Cue-to-cue rehearsal</dt>
+    <dd>Practising your lines as answers to the cues that trigger them, so the hand-off between lines becomes automatic.</dd>
+    <dt>Off-book</dt>
+    <dd>Able to perform without holding the script, recalling your lines from memory.</dd>
+    <dt>Sides</dt>
+    <dd>The short excerpt of a script used for an audition, rather than the whole play.</dd>
+  </dl>
+</section>
+
 <section class="faq" aria-labelledby="faq-title">
   <h2 id="faq-title">Frequently asked questions</h2>
-    <div class="faq-item" data-rough data-rough-seed="30">
-      <details>
-        <summary>What is Your Script?</summary>
-        <div class="answer"><p>Your Script is a line rehearsal web app for actors and theatre students. You upload a script, choose your role, and practice each line from its cue. The app keeps the work focused on recall.</p></div>
-      </details>
-    </div>
-    <div class="faq-item" data-rough data-rough-seed="31">
-      <details>
-        <summary>Who is Your Script for?</summary>
-        <div class="answer"><p>Your Script helps actors getting off-book, theatre students working on scenes, and musical theatre performers rehearsing dialogue between songs. The app fits auditions, class scenes, and productions.</p></div>
-      </details>
-    </div>
-    <div class="faq-item" data-rough data-rough-seed="32">
-      <details>
-        <summary>Do I need a scene partner to use Your Script?</summary>
-        <div class="answer"><p>No. Your Script treats the other characters&#39; lines as your cues. You see the cue, then deliver your line from memory. Use the app when a scene partner is not available or when you need a quick run before rehearsal.</p></div>
-      </details>
-    </div>
+  <div class="faq-list" data-rough data-rough-double data-rough-seed="20">
+    <details>
+      <summary><span class="squiggle">What is Your Script?</span></summary>
+      <div class="answer"><p>Your Script is a line rehearsal web app for actors and theatre students. You upload a script, choose your role, and practice each line from its cue. The app keeps the work focused on recall.</p></div>
+    </details>
+    <details>
+      <summary><span class="squiggle">Who is Your Script for?</span></summary>
+      <div class="answer"><p>Your Script helps actors getting off-book, theatre students working on scenes, and musical theatre performers rehearsing dialogue between songs. The app fits auditions, class scenes, and productions.</p></div>
+    </details>
+    <details>
+      <summary><span class="squiggle">Do I need a scene partner to use Your Script?</span></summary>
+      <div class="answer"><p>No. Your Script treats the other characters&#39; lines as your cues. You see the cue, then deliver your line from memory. Use the app when a scene partner is not available or when you need a quick run before rehearsal.</p></div>
+    </details>
+    <details>
+      <summary><span class="squiggle">Do I need to download anything?</span></summary>
+      <div class="answer"><p>No. Your Script runs in your web browser, so there is nothing to download or install. Open it on a laptop, tablet, or phone, upload a script, choose your role, and start running lines. It works the same way across your devices.</p></div>
+    </details>
+  </div>
 </section>
 
 <section class="cta" data-rough data-rough-double data-rough-seed="9" aria-labelledby="cta-title">
@@ -314,9 +383,15 @@ a:focus-visible,summary:focus-visible,.btn:focus-visible{outline:2px solid var(-
         <li><a class="foot-link squiggle" href="/how-to-memorize-a-script.html">How to Memorize a Script</a></li>
         <li><a class="foot-link squiggle" href="/rehearse-without-a-scene-partner.html">Rehearse Without a Scene Partner</a></li>
         <li><a class="foot-link squiggle" href="/compare/line-learning-apps.html">Compare Line Learning Apps</a></li>
+        <li><a class="foot-link squiggle" href="/audition-sides-practice.html">Practice Audition Sides</a></li>
+        <li><a class="foot-link squiggle" href="/memorize-a-monologue.html">Memorize a Monologue</a></li>
+        <li><a class="foot-link squiggle" href="/cue-to-cue-rehearsal.html">Cue-to-Cue Rehearsal</a></li>
       </ul>
     </nav>
-    <p class="foot-note">Your Script. A minimal line rehearsal companion for actors and theatre students.</p>
+    <div class="foot-bottom">
+      <p class="foot-note">Your Script. A minimal line rehearsal companion for actors and theatre students.</p>
+      <a class="foot-sayhi squiggle" href="/feedback?from=resources&amp;kind=say-hi" rel="nofollow">Built by a student. Say hi!</a>
+    </div>
   </footer>
 <script>// Vanilla RoughBox decorator (lifted verbatim from the Your Story design system,
 // preview/roughbox.js). Add data-rough (or data-rough="pill") to a positioned

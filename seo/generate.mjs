@@ -53,6 +53,9 @@ const MASCOTS = {
   "how-to-memorize-a-script": "writing.svg",
   "rehearse-without-a-scene-partner": "listening.svg",
   "compare-line-learning-apps": "sorting.svg",
+  "audition-sides-practice": "Reviewing.svg",
+  "memorize-a-monologue": "writing.svg",
+  "cue-to-cue-rehearsal": "listening.svg",
 };
 // Short uppercase eyebrow + tiny italic subtitle for the PaperHeading hero.
 const EYEBROWS = {
@@ -61,6 +64,9 @@ const EYEBROWS = {
   "how-to-memorize-a-script": "Script memorization",
   "rehearse-without-a-scene-partner": "Solo rehearsal",
   "compare-line-learning-apps": "Choosing an app",
+  "audition-sides-practice": "Audition prep",
+  "memorize-a-monologue": "Monologue work",
+  "cue-to-cue-rehearsal": "Cue practice",
 };
 const SUBTITLES = {
   "what-is-yourscript": "What the app does, who uses the app, and how rehearsal works.",
@@ -68,6 +74,9 @@ const SUBTITLES = {
   "how-to-memorize-a-script": "A clear, step-by-step approach.",
   "rehearse-without-a-scene-partner": "Run lines on your own, off your cues.",
   "compare-line-learning-apps": "Find the workflow that fits how you rehearse.",
+  "audition-sides-practice": "Get sides ready on a short timeline.",
+  "memorize-a-monologue": "Lock a speech without cues to lean on.",
+  "cue-to-cue-rehearsal": "What cues are, and how to drill them solo.",
 };
 const CRUMB = { about: "About", guide: "Guide", comparison: "Compare" };
 
@@ -168,6 +177,9 @@ h3{font-family:var(--font-display);font-weight:600;font-size:1.42rem;line-height
 p{margin:13px 0}
 ul,ol{margin:13px 0;padding-left:22px}
 li{margin:7px 0}
+dl{margin:16px 0}
+dt{font-family:var(--font-ui);font-weight:600;color:var(--ink);margin-top:14px}
+dd{margin:3px 0 0 0;color:var(--pencil)}
 a{color:var(--maroon)}
 a:hover{color:var(--ink)}
 strong{font-weight:600}
@@ -186,18 +198,21 @@ thead th{font-weight:600;color:var(--ink);border-bottom:1.5px solid rgba(44,39,3
 tbody tr:last-child th,tbody tr:last-child td{border-bottom:0}
 tbody th{font-weight:600}
 .tag{display:inline-block;font-family:var(--font-ui);font-weight:500;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);padding:4px 11px;margin-left:6px;white-space:nowrap}
-/* faq */
+/* faq — one notebook card; questions divided by faint ruling, not per-item boxes */
 .faq{margin-top:30px}
 .faq>h2{margin-bottom:14px}
-.faq-item{position:relative;background:rgba(230,227,216,.38);color:var(--ink);padding:0 20px;margin:12px 0}
-.faq-item .rough-box{color:var(--pencil);opacity:.72}
-.faq details{margin:0}
-.faq summary{cursor:pointer;font-family:var(--font-ui);font-weight:600;font-size:1.02rem;color:var(--ink);padding:16px 0;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:16px}
+.faq-list{position:relative;background:rgba(230,227,216,.5);color:var(--ink);padding:2px 24px}
+.faq-list .rough-box{color:var(--pencil);opacity:.7}
+.faq details{margin:0;border-bottom:1px solid rgba(90,82,73,.16)}
+.faq details:last-child{border-bottom:0}
+.faq summary{cursor:pointer;font-family:var(--font-ui);font-weight:600;font-size:1.02rem;color:var(--ink);padding:17px 0;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:18px}
+.faq summary:hover{color:var(--maroon)}
+.faq summary:hover .squiggle::after{transform:scaleX(1)}
 .faq summary::-webkit-details-marker{display:none}
-.faq summary::after{content:"+";font-family:var(--font-display);font-weight:600;font-size:1.6rem;line-height:1;color:var(--pencil)}
+.faq summary::after{content:"+";font-family:var(--font-display);font-weight:600;font-size:1.7rem;line-height:1;color:var(--pencil);flex:0 0 auto}
 .faq details[open] summary::after{content:"\\2013"}
-.faq .answer{padding:0 0 16px}
-.faq .answer p{margin:0}
+.faq .answer{padding:0 0 18px}
+.faq .answer p{margin:0;color:var(--pencil)}
 /* cta */
 .cta{background:rgba(230,227,216,.74);color:var(--ink);padding:26px 22px;margin:40px 0 8px;text-align:center}
 .cta h2{background:none;padding:0;margin:0 0 6px;transform:rotate(-.4deg)}
@@ -216,7 +231,10 @@ tbody th{font-weight:600}
 .site-foot nav ul{list-style:none;display:flex;flex-wrap:wrap;gap:12px 26px;padding:0;margin:0;font-family:var(--font-ui);font-size:.95rem}
 .foot-link{color:var(--pencil);text-decoration:none}
 .foot-link:hover{color:var(--ink)}
-.foot-note{font-family:var(--font-ui);font-style:italic;color:var(--gray);font-size:.86rem;margin-top:18px}
+.foot-note{font-family:var(--font-ui);color:var(--gray);font-size:.86rem;margin:0}
+.foot-bottom{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px 24px;margin-top:18px}
+.foot-sayhi{font-family:var(--font-ui);font-size:.86rem;color:var(--gray);text-decoration:none}
+.foot-sayhi:hover{color:var(--ink)}
 .visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 a:focus-visible,summary:focus-visible,.btn:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 @media(max-width:600px){body{font-size:17px}.chrome{padding-left:18px;padding-right:18px}.chrome-center{display:none}main.sheet,.site-foot{padding-left:18px;padding-right:18px}}
@@ -242,11 +260,12 @@ const ANALYTICS = `(function(){
 // ── structured data ──────────────────────────────────────────────────────────
 function softwareApp() {
   return {
-    "@type": "SoftwareApplication",
+    "@type": ["SoftwareApplication", "WebApplication"],
     name: SITE.name,
     url: SITE.urlBase + "/",
     applicationCategory: "EducationalApplication",
     operatingSystem: "Web",
+    browserRequirements: "Requires a modern web browser.",
     description: SITE.tagline,
     publisher: { "@type": "Organization", name: SITE.name, url: SITE.urlBase + "/" },
     audience: [
@@ -261,6 +280,22 @@ function softwareApp() {
       "Rehearse cue-to-cue",
       "Run lines without a scene partner",
     ],
+  };
+}
+
+function organization() {
+  return {
+    "@type": "Organization",
+    name: SITE.name,
+    url: SITE.urlBase + "/",
+    logo: SITE.urlBase + SITE.logo,
+    description: SITE.tagline,
+    sameAs: SITE.sameAs,
+    contactPoint: {
+      "@type": "ContactPoint",
+      contactType: "customer support",
+      email: SITE.email,
+    },
   };
 }
 
@@ -305,6 +340,15 @@ function jsonGraph(page) {
       if (!types.includes("AboutPage")) graph.push(softwareApp());
     }
   }
+  if (types.includes("AboutPage")) graph.push(organization());
+  // Breadcrumb (Home › this page) — clarifies IA for Google + AI parsers.
+  graph.push({
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: SITE.urlBase + "/" },
+      { "@type": "ListItem", position: 2, name: page.h1 || page.title, item: url },
+    ],
+  });
   return { "@context": "https://schema.org", "@graph": graph };
 }
 
@@ -313,18 +357,18 @@ function renderFaq(faqs) {
   if (!faqs || !faqs.length) return "";
   const items = faqs
     .map(
-      (f, i) => `    <div class="faq-item" data-rough data-rough-seed="${30 + i}">
-      <details>
-        <summary>${esc(f.q)}</summary>
-        <div class="answer"><p>${esc(f.a)}</p></div>
-      </details>
-    </div>`,
+      (f) => `    <details>
+      <summary><span class="squiggle">${esc(f.q)}</span></summary>
+      <div class="answer"><p>${esc(f.a)}</p></div>
+    </details>`,
     )
     .join("\n");
   return `
 <section class="faq" aria-labelledby="faq-title">
   <h2 id="faq-title">Frequently asked questions</h2>
+  <div class="faq-list" data-rough data-rough-double data-rough-seed="20">
 ${items}
+  </div>
 </section>`;
 }
 
@@ -360,7 +404,10 @@ function renderFooter(currentSlug) {
 ${lis}
       </ul>
     </nav>
-    <p class="foot-note">${esc(SITE.name)}. A minimal line rehearsal companion for actors and theatre students.</p>
+    <div class="foot-bottom">
+      <p class="foot-note">${esc(SITE.name)}. A minimal line rehearsal companion for actors and theatre students.</p>
+      <a class="foot-sayhi squiggle" href="/feedback?from=resources&amp;kind=say-hi" rel="nofollow">Built by a student. Say hi!</a>
+    </div>
   </footer>`;
 }
 
@@ -392,10 +439,12 @@ function renderPage(page) {
 <meta property="og:description" content="${d}" />
 <meta property="og:url" content="${url}" />
 <meta property="og:image" content="${ogImg}" />
+<meta property="og:image:alt" content="${esc(SITE.name)} — ${esc(SITE.tagline)}" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="${t}" />
 <meta name="twitter:description" content="${d}" />
 <meta name="twitter:image" content="${ogImg}" />
+<meta name="twitter:image:alt" content="${esc(SITE.name)} — ${esc(SITE.tagline)}" />
 <style>${CSS}</style>
 ${ldScript(jsonGraph(page))}
 </head>
@@ -403,7 +452,7 @@ ${ldScript(jsonGraph(page))}
 <div class="paper" aria-hidden="true"></div>
 <a class="skip-link" href="#main">Skip to content</a>
 <header class="chrome">
-  <a class="chrome-mark" href="/">Your Script</a>
+  <a class="chrome-mark squiggle" href="/">Your Script</a>
   <span class="chrome-center">${esc(crumb)}</span>
   <a class="chrome-cta squiggle" href="/upload" rel="nofollow">Open the app ${ARROW}</a>
 </header>

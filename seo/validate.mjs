@@ -58,12 +58,16 @@ const ldTypes = (html) => {
     let obj;
     try { obj = JSON.parse(b); } catch { return null; } // null = parse failure
     const nodes = obj["@graph"] || [obj];
+    const pushType = (t) => {
+      if (Array.isArray(t)) t.forEach((x) => types.push(x));
+      else if (t) types.push(t);
+    };
     for (const n of nodes) {
       if (!n) continue;
-      if (n["@type"]) types.push(n["@type"]);
+      pushType(n["@type"]); // @type may be a string or an array (e.g. SoftwareApplication+WebApplication)
       // also count a singular embedded mainEntity (e.g. AboutPage → SoftwareApplication)
       const me = n.mainEntity;
-      if (me && !Array.isArray(me) && me["@type"]) types.push(me["@type"]);
+      if (me && !Array.isArray(me)) pushType(me["@type"]);
     }
   }
   return types;
@@ -111,14 +115,15 @@ for (const p of GENERATED_PAGES) {
   const hasFaqs = (p.faqs || []).length > 0;
   ok(hasFaqSchema === hasFaqs, `${tag}: FAQPage schema present iff visible FAQs exist`);
   for (const f of p.faqs || [])
-    ok(html.includes(`<summary>${esc(f.q)}</summary>`), `${tag}: FAQ visible - "${f.q.slice(0, 40)}…"`);
+    ok(html.includes(`${esc(f.q)}</span></summary>`), `${tag}: FAQ visible - "${f.q.slice(0, 40)}…"`);
 
   // crawl path: footer links to >=2 other public pages
   const otherLinks = GENERATED_PAGES.filter((o) => o.slug !== p.slug && html.includes(`href="${staticHref(o)}"`)).length;
   ok(otherLinks >= 2 || html.includes('href="/"'), `${tag}: internal crawl links present`);
 
-  // canonical base everywhere
-  ok(!/https?:\/\/(?!www\.yourscript\.app)[^"']*yourscript/i.test(html), `${tag}: only canonical domain used`);
+  // canonical base everywhere — flag only a non-www *.yourscript.app host
+  // (the real TikTok sameAs URL contains "yourscript" in its path and is fine)
+  ok(!/https?:\/\/(?!www\.)([a-z0-9-]+\.)*yourscript\.app/i.test(html), `${tag}: canonical domain only`);
 
   const tt = titleOf(html);
   if (seenTitles.has(tt)) failures.push(`${tag}: duplicate <title> with ${seenTitles.get(tt)}`); else { seenTitles.set(tt, tag); passN++; }

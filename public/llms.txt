@@ -17,6 +17,9 @@ Your Script is a web app focused on line rehearsal: solo practice, cue-based rep
 - [Memorize Lines Faster](https://www.yourscript.app/memorize-lines): Practical guide to memorizing lines faster, practicing cues, and getting off-book.
 - [How to Memorize a Script](https://www.yourscript.app/how-to-memorize-a-script): Step-by-step guide to memorizing scripts, scenes, class material, and audition sides.
 - [Rehearse Without a Scene Partner](https://www.yourscript.app/rehearse-without-a-scene-partner): Guide to solo rehearsal, cue-based practice, and running lines alone.
+- [Practice Audition Sides](https://www.yourscript.app/audition-sides-practice): How to learn and rehearse audition sides on a short timeline.
+- [Memorize a Monologue](https://www.yourscript.app/memorize-a-monologue): A method for memorizing a monologue: follow the argument, chunk by thought, and anchor the transitions.
+- [Cue-to-Cue Rehearsal](https://www.yourscript.app/cue-to-cue-rehearsal): What a cue line is, what cue-to-cue rehearsal means, and how to drill cues on your own.
 
 ## Comparison
 

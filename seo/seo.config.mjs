@@ -28,6 +28,10 @@ export const SITE = {
   logo: "/brand/logo-mark.png",
   locale: "en_US",
   lang: "en",
+  // Contact + social (real, owner-provided). Surfaced in Organization schema.
+  // The "say hi" feedback form (/feedback?kind=say-hi) routes here.
+  email: "impact@yourscript.app",
+  sameAs: ["https://www.tiktok.com/@yourscriptapp"],
 };
 
 // ── Crawler policy ───────────────────────────────────────────────────────────
@@ -169,6 +173,10 @@ export const PAGES = [
         q: "Do I need a scene partner to use Your Script?",
         a: "No. Your Script treats the other characters' lines as your cues. You see the cue, then deliver your line from memory. Use the app when a scene partner is not available or when you need a quick run before rehearsal.",
       },
+      {
+        q: "Do I need to download anything?",
+        a: "No. Your Script runs in your web browser, so there is nothing to download or install. Open it on a laptop, tablet, or phone, upload a script, choose your role, and start running lines. It works the same way across your devices.",
+      },
     ],
     body: `
 <section class="quick-answer" data-rough data-rough-double data-rough-seed="2" aria-labelledby="quick-answer">
@@ -223,6 +231,20 @@ export const PAGES = [
 <section aria-labelledby="what-it-isnt">
   <h2 id="what-it-isnt">What Your Script is not</h2>
   <p>Your Script is not a teleprompter, casting tool, classroom system, acting coach, or full script platform. The app supports one rehearsal step: learning lines. The creative work stays yours.</p>
+</section>
+
+<section aria-labelledby="key-terms">
+  <h2 id="key-terms">Key terms</h2>
+  <dl>
+    <dt>Cue</dt>
+    <dd>The line, usually another character's, that comes right before yours and signals your turn to speak.</dd>
+    <dt>Cue-to-cue rehearsal</dt>
+    <dd>Practising your lines as answers to the cues that trigger them, so the hand-off between lines becomes automatic.</dd>
+    <dt>Off-book</dt>
+    <dd>Able to perform without holding the script, recalling your lines from memory.</dd>
+    <dt>Sides</dt>
+    <dd>The short excerpt of a script used for an audition, rather than the whole play.</dd>
+  </dl>
 </section>
 `,
   },
@@ -594,6 +616,250 @@ export const PAGES = [
 <section aria-labelledby="where">
   <h2 id="where">Where Your Script fits</h2>
   <p>Your Script fits the minimal, cue based, solo end of the line learning app spectrum. Upload a script, choose your role, and run lines from cues. Choose another approach if you want recording, collaboration, or production tools.</p>
+</section>
+`,
+  },
+
+  // ── /audition-sides-practice (audition prep) ──
+  {
+    slug: "audition-sides-practice",
+    path: "/audition-sides-practice",
+    file: "audition-sides-practice.html",
+    generate: true,
+    inSitemap: true,
+    inLlms: true,
+    llmsSection: "Guides",
+    llmsTitle: "Practice Audition Sides",
+    llmsDesc: "How to learn and rehearse audition sides on a short timeline.",
+    title: "How to Practice Audition Sides | Your Script",
+    description:
+      "Learn audition sides on a short timeline: focus on intention, stay flexible enough to take direction, and rehearse the sides on your own.",
+    h1: "Practice Audition Sides",
+    type: "guide",
+    intent: "Audition sides preparation (learn and practice sides fast)",
+    primaryQueries: ["practice audition sides", "how to memorize audition sides", "memorize sides fast"],
+    secondaryQueries: ["audition preparation", "learn sides overnight", "cold read practice"],
+    internalLinksOut: [
+      "/memorize-lines",
+      "/rehearse-without-a-scene-partner",
+      "/cue-to-cue-rehearsal",
+      "/what-is-yourscript",
+    ],
+    schema: ["WebPage", "FAQPage"],
+    cta: "Got sides to learn? Open Your Script, drop them in, and run them from your cues.",
+    faqs: [
+      {
+        q: "How do I memorize audition sides quickly?",
+        a: "Read the sides for what the scene wants, then drill your lines from their cues in short, repeated passes. Aim to be off-book enough to look up and react, not perfectly word-locked. Re-run the lines you miss right away, and practice out loud.",
+      },
+      {
+        q: "Should I be fully off-book for an audition?",
+        a: "Usually you should be off-book enough to make eye contact and take direction, but you can still hold the sides. Casting often cares more about your choices and how you adjust than about flawless recall, so prioritize intention and flexibility over word-perfect memory.",
+      },
+      {
+        q: "What are audition sides?",
+        a: "Sides are the short excerpt of a script used for an audition, rather than the whole play. They are often only a page or two and may arrive a day, or even minutes, before you read, so a fast, focused way to learn them helps.",
+      },
+      {
+        q: "Can I practice sides without a reader?",
+        a: "Yes. Treat the other character's lines as your cues and answer from memory. Practicing the cues, not just your own lines, keeps your timing steady when a real reader feeds you the scene at the audition.",
+      },
+    ],
+    body: `
+<section class="quick-answer" data-rough data-rough-double data-rough-seed="2" aria-labelledby="quick-answer">
+  <h2 id="quick-answer">Quick answer</h2>
+  <p>To practice audition sides, learn them fast and stay flexible. Read for what the scene wants, drill your lines from their cues, and get off-book enough to look up and take direction. Word-perfect recall matters less than clear choices you can adjust on the spot.</p>
+</section>
+
+<section aria-labelledby="read-first">
+  <h2 id="read-first">Read the sides for choices, not just words</h2>
+  <p>An audition tests your choices and how you take direction. Before you drill, decide what your character wants in the scene and how the lines move toward it. Those choices give your memory something to hold and give the room something to respond to.</p>
+</section>
+
+<section aria-labelledby="flexible">
+  <h2 id="flexible">Learn it well enough to look up</h2>
+  <p>Being glued to the page hides your face; being robotically word-locked makes redirection hard. Aim for the middle: off-book enough to glance up, make eye contact, and shift if the casting director asks for something new.</p>
+</section>
+
+<section aria-labelledby="cues">
+  <h2 id="cues">Drill the cues, not only your lines</h2>
+  <p>At the audition a reader feeds you the other lines. If you have practiced your lines as answers to those cues, their timing will not throw you. Learn the cue that sets up each of your lines so the hand-off stays automatic.</p>
+</section>
+
+<section aria-labelledby="out-loud">
+  <h2 id="out-loud">Practice out loud and on your feet</h2>
+  <p>Say the lines aloud at performance volume, and stand if you will stand in the room. Recall under those conditions is what holds up, far more than silent rereading at your desk.</p>
+</section>
+
+<section aria-labelledby="where">
+  <h2 id="where">Where Your Script helps</h2>
+  <p>Drop your sides into Your Script, choose your role, and run them cue to cue on your own. It is built for exactly this: a short scene to learn quickly, with no reader on hand. For the broader method, see the guide on memorizing lines faster.</p>
+</section>
+`,
+  },
+
+  // ── /memorize-a-monologue (monologue work) ──
+  {
+    slug: "memorize-a-monologue",
+    path: "/memorize-a-monologue",
+    file: "memorize-a-monologue.html",
+    generate: true,
+    inSitemap: true,
+    inLlms: true,
+    llmsSection: "Guides",
+    llmsTitle: "Memorize a Monologue",
+    llmsDesc:
+      "A method for memorizing a monologue: follow the argument, chunk by thought, and anchor the transitions.",
+    title: "How to Memorize a Monologue | Your Script",
+    description:
+      "Memorize a monologue by following its argument, chunking by thought, and anchoring transitions, the method for a speech with no cues to lean on.",
+    h1: "How to Memorize a Monologue",
+    type: "guide",
+    intent: "Monologue memorization (single speaker, no cues)",
+    primaryQueries: ["how to memorize a monologue", "memorize a monologue fast", "monologue memorization"],
+    secondaryQueries: ["learn a monologue", "memorize a speech for acting", "audition monologue"],
+    internalLinksOut: [
+      "/memorize-lines",
+      "/how-to-memorize-a-script",
+      "/audition-sides-practice",
+      "/what-is-yourscript",
+    ],
+    schema: ["WebPage", "FAQPage"],
+    cta: "Working a monologue? Open Your Script and rehearse it line by line.",
+    faqs: [
+      {
+        q: "How is memorizing a monologue different from a scene?",
+        a: "A monologue has no scene partner and no cues to trigger your next line, so you cannot lean on a hand-off. Instead you follow the speech's own logic, the way one thought leads to the next, which makes understanding the argument matter even more than in a scene.",
+      },
+      {
+        q: "How long does it take to memorize a monologue?",
+        a: "It depends on the length and density of the speech and how often you practice. Short, frequent recall sessions across several days lock a monologue in more reliably than one long cram, and a minute-long piece often comes together faster than expected with daily passes.",
+      },
+      {
+        q: "How do I stop blanking in the middle of a monologue?",
+        a: "Blanks usually happen at the seams between thoughts. Find each place the speech turns and rehearse those transitions on their own, so the end of one thought reliably triggers the start of the next. Practicing the joins, not just the lines, removes most mid-speech freezes.",
+      },
+      {
+        q: "Can Your Script help with a monologue?",
+        a: "Yes. Even without another character's cues, you can run a monologue line by line, revealing each line only to check and re-running the ones you miss. That keeps the work on active recall rather than rereading.",
+      },
+    ],
+    body: `
+<section class="quick-answer" data-rough data-rough-double data-rough-seed="2" aria-labelledby="quick-answer">
+  <h2 id="quick-answer">Quick answer</h2>
+  <p>A monologue has no scene partner and no cues, so your memory rides the speech's own logic. Follow the argument, chunk the speech by thought rather than by line, and rehearse the transitions where one thought becomes the next. Then practice recall in short, frequent passes.</p>
+</section>
+
+<section aria-labelledby="argument">
+  <h2 id="argument">Follow the argument, not the words</h2>
+  <p>A monologue is a single line of thought moving somewhere. Map that journey first: what the character wants, and how each idea pushes toward it. When you know why one thought follows another, the words become far easier to recall in order.</p>
+</section>
+
+<section aria-labelledby="chunk">
+  <h2 id="chunk">Chunk by thought, not by line</h2>
+  <p>Break the speech into beats of meaning rather than equal-sized blocks of text. Learn one beat solidly before adding the next. Beats give you natural handholds, so you always know which idea comes next even if a phrase slips.</p>
+</section>
+
+<section aria-labelledby="transitions">
+  <h2 id="transitions">Anchor the transitions</h2>
+  <p>Most blanks happen at the seams between thoughts, not inside them. Rehearse those joins on their own until the end of one beat reliably triggers the start of the next. The transitions are the load-bearing part of a monologue.</p>
+</section>
+
+<section aria-labelledby="recall">
+  <h2 id="recall">Practice recall, in order and out of order</h2>
+  <p>Once the speech is roughly learned, deliver it from memory and check only when stuck. Then test single beats out of order, so your recall does not depend on running from the top every time. That is what keeps a monologue steady under nerves.</p>
+</section>
+
+<section aria-labelledby="where">
+  <h2 id="where">Where Your Script helps</h2>
+  <p>Load your monologue into Your Script and run it line by line, revealing each line only to check and re-running the ones you miss. It keeps the work on recall, even when there are no cues to lean on.</p>
+</section>
+`,
+  },
+
+  // ── /cue-to-cue-rehearsal (definition + method; anchors the core mechanic) ──
+  {
+    slug: "cue-to-cue-rehearsal",
+    path: "/cue-to-cue-rehearsal",
+    file: "cue-to-cue-rehearsal.html",
+    generate: true,
+    inSitemap: true,
+    inLlms: true,
+    llmsSection: "Guides",
+    llmsTitle: "Cue-to-Cue Rehearsal",
+    llmsDesc: "What a cue line is, what cue-to-cue rehearsal means, and how to drill cues on your own.",
+    title: "Cue-to-Cue Rehearsal: What It Is and How to Do It | Your Script",
+    description:
+      "What a cue line is, what cue-to-cue rehearsal means for actors, and how to drill your cues solo so your lines hold up in a run.",
+    h1: "Cue-to-Cue Rehearsal",
+    type: "guide",
+    intent: "Definition and method for cue-to-cue rehearsal and cue lines",
+    primaryQueries: ["cue to cue rehearsal", "what is a cue line", "cue to cue meaning"],
+    secondaryQueries: ["rehearse cues", "cue line practice", "what does off book mean"],
+    internalLinksOut: [
+      "/rehearse-without-a-scene-partner",
+      "/memorize-lines",
+      "/how-to-memorize-a-script",
+      "/what-is-yourscript",
+    ],
+    schema: ["WebPage", "FAQPage"],
+    cta: "Want to drill your cues? Open Your Script and run the scene cue to cue.",
+    faqs: [
+      {
+        q: "What is a cue line?",
+        a: "A cue line is the line spoken right before yours, the trigger that tells you it is your turn. In rehearsal it is the most useful thing to know, because recognizing the cue is what keeps your entrances on time. You do not need other parts word-perfect, just reliable enough to set up your lines.",
+      },
+      {
+        q: "What does cue-to-cue mean for an actor?",
+        a: "For an actor, cue-to-cue rehearsal means practicing each of your lines as the answer to the cue that triggers it, rather than learning your lines in isolation. It mirrors how a scene actually runs, so the lines hold up when there is no time to think.",
+      },
+      {
+        q: "How do I practice cues on my own?",
+        a: "Cover your lines, take each cue, and deliver your line from memory, then check. Re-run anything you miss before moving on. A cue-based tool can hold the cues for you so you stay in the scene instead of managing the page.",
+      },
+      {
+        q: "Why learn cues and not just my lines?",
+        a: "You can know every word and still freeze if you do not recognize when to say it. Learning your cues prevents the long pauses that happen when you remember a line but not its trigger, and it keeps timing tight once you are back with other actors.",
+      },
+    ],
+    body: `
+<section class="quick-answer" data-rough data-rough-double data-rough-seed="2" aria-labelledby="quick-answer">
+  <h2 id="quick-answer">Quick answer</h2>
+  <p>Cue-to-cue rehearsal means practicing your lines as answers to the cues that trigger them. A cue is the line right before yours. By drilling the hand-off rather than your lines alone, you build the trigger-and-response a scene runs on, so your lines hold up under pressure.</p>
+</section>
+
+<section aria-labelledby="terms">
+  <h2 id="terms">The words, defined</h2>
+  <dl>
+    <dt>Cue</dt>
+    <dd>The line, usually another character's, that comes right before yours and signals your turn to speak.</dd>
+    <dt>Cue line</dt>
+    <dd>Another name for that trigger line; the words you listen for so you know your line is next.</dd>
+    <dt>Cue-to-cue rehearsal</dt>
+    <dd>Running your lines as responses to their cues, so each cue reliably triggers the right line.</dd>
+    <dt>Off-book</dt>
+    <dd>Able to perform without holding the script, recalling your lines from memory.</dd>
+  </dl>
+</section>
+
+<section aria-labelledby="why">
+  <h2 id="why">Why cues matter more than your lines alone</h2>
+  <p>Knowing your words is only half the job. In performance, the cue is what tells you when to speak. Actors who learn lines in isolation often freeze waiting for a trigger they never practiced. Learning the cue together with the line removes that gap.</p>
+</section>
+
+<section aria-labelledby="solo">
+  <h2 id="solo">How to rehearse cue-to-cue on your own</h2>
+  <p>Cover your lines. Take the cue, deliver your line from memory, then reveal to check. Re-run any miss right away rather than waiting for the next pass. Keep the loop short and the script out of your hands as soon as you can.</p>
+</section>
+
+<section aria-labelledby="two-meanings">
+  <h2 id="two-meanings">A note on two meanings</h2>
+  <p>In technical rehearsal, a "cue-to-cue" is when a company skips between technical cues to set lights and sound. This page is about the actor's sense: drilling your lines against the cues that trigger them. Both work cue by cue, but the goals differ.</p>
+</section>
+
+<section aria-labelledby="where">
+  <h2 id="where">Where Your Script helps</h2>
+  <p>Your Script turns a scene into cue and line pairs, so you can run cue-to-cue on your own without recording the other parts. See the cue, answer it, and move on. For solo practice more broadly, see rehearsing without a scene partner.</p>
 </section>
 `,
   },

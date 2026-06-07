@@ -30,6 +30,10 @@
     />
     <meta property="og:url" content="https://www.yourscript.app/" />
     <meta property="og:image" content="https://www.yourscript.app/og/home.png" />
+    <meta
+      property="og:image:alt"
+      content="Your Script — a minimal line rehearsal companion for actors and theatre students."
+    />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
@@ -39,6 +43,10 @@
       content="A minimalist line rehearsal companion for actors and theatre students who want to memorize lines, practice cues, and rehearse scenes with less friction."
     />
     <meta name="twitter:image" content="https://www.yourscript.app/og/home.png" />
+    <meta
+      name="twitter:image:alt"
+      content="Your Script — a minimal line rehearsal companion for actors and theatre students."
+    />
 
     <!-- Structured data: homepage (WebSite + Organization + SoftwareApplication).
          Mirrors seo/seo.config.mjs; describes the real app. -->
@@ -57,14 +65,21 @@
             "name": "Your Script",
             "url": "https://www.yourscript.app/",
             "logo": "https://www.yourscript.app/brand/logo-mark.png",
-            "description": "A minimalist line rehearsal companion for actors and theatre students."
+            "description": "A minimalist line rehearsal companion for actors and theatre students.",
+            "sameAs": ["https://www.tiktok.com/@yourscriptapp"],
+            "contactPoint": {
+              "@type": "ContactPoint",
+              "contactType": "customer support",
+              "email": "impact@yourscript.app"
+            }
           },
           {
-            "@type": "SoftwareApplication",
+            "@type": ["SoftwareApplication", "WebApplication"],
             "name": "Your Script",
             "url": "https://www.yourscript.app/",
             "applicationCategory": "EducationalApplication",
             "operatingSystem": "Web",
+            "browserRequirements": "Requires a modern web browser.",
             "description": "A minimalist line rehearsal companion for actors and theatre students.",
             "publisher": {
               "@type": "Organization",
@@ -119,6 +134,33 @@
   </head>
   <body>
     <div id="root"></div>
+    <!-- Raw-HTML fallback for non-JS crawlers / answer engines (Bing, Perplexity,
+         ChatGPT/Claude retrieval). Invisible to anyone with JavaScript, so the 3D
+         homepage is visually unchanged. Real content + links into the cluster. -->
+    <noscript>
+      <main style="max-width:720px;margin:0 auto;padding:48px 24px;font-family:system-ui,-apple-system,sans-serif;color:#2c2722;line-height:1.6">
+        <h1>Your Script — a line rehearsal companion for actors</h1>
+        <p>
+          Your Script is a minimalist web app for rehearsing lines. Upload a
+          script, choose your character, and practice your lines cue by cue — on
+          your own, without a scene partner. It is built for actors getting
+          off-book, theatre students, and musical-theatre performers who want to
+          run lines, practice cues, and prepare audition sides with less friction.
+        </p>
+        <nav aria-label="Resources">
+          <ul>
+            <li><a href="/what-is-yourscript">What is Your Script?</a></li>
+            <li><a href="/memorize-lines">Memorize lines faster</a></li>
+            <li><a href="/how-to-memorize-a-script">How to memorize a script</a></li>
+            <li><a href="/rehearse-without-a-scene-partner">Rehearse without a scene partner</a></li>
+            <li><a href="/audition-sides-practice">Practice audition sides</a></li>
+            <li><a href="/memorize-a-monologue">Memorize a monologue</a></li>
+            <li><a href="/cue-to-cue-rehearsal">Cue-to-cue rehearsal</a></li>
+            <li><a href="/compare/line-learning-apps">Compare line-learning apps</a></li>
+          </ul>
+        </nav>
+      </main>
+    </noscript>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
