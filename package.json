@@ -7,9 +7,13 @@
     "dev": "vite",
     "dev:api": "node server/api-server.js",
     "dev:full": "node server/dev.js",
-    "build": "vite build",
+    "build": "node seo/generate.mjs && vite build",
     "preview": "vite preview",
-    "start": "node server/api-server.js"
+    "start": "node server/api-server.js",
+    "seo:generate": "node seo/generate.mjs",
+    "seo:assets": "node seo/build-assets.mjs",
+    "seo:validate": "node seo/validate.mjs",
+    "test": "node seo/generate.mjs && node seo/validate.mjs"
   },
   "dependencies": {
     "@fontsource/inter-tight": "^5.2.7",

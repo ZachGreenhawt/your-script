@@ -163,7 +163,7 @@ export default function LandingPage() {
             <span>Your Script</span>
             <strong>2026 / Edition 01</strong>
           </div>
-          {/* Small mascot peeking — gives the loading screen a face. */}
+          {/* Small mascot peeking - gives the loading screen a face. */}
           <div className="loader-mascot" aria-hidden="true">
             <img src="/mascots/listening.svg" alt="" />
           </div>

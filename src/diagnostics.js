@@ -1,8 +1,8 @@
 // ─── IP-safe parser diagnostics ─────────────────────────────────────────────
-// When someone reports a parser problem, the maker needs to see WHAT broke —
+// When someone reports a parser problem, the maker needs to see WHAT broke -
 // but the script is copyrighted, so we must never transmit its text.
 //
-// The trick: parser bugs are almost always about *structure*, not words —
+// The trick: parser bugs are almost always about *structure*, not words -
 // capitalization, punctuation, where speaker tags sit, line lengths, how lines
 // were attributed.  So we send a structure-preserving MASK:
 //
@@ -10,7 +10,7 @@
 //
 // Every letter becomes X/x (by case), every digit 9; spacing, punctuation and
 // markup are kept verbatim.  That tells the maker exactly how the parser saw a
-// line — and the original copyrighted text is unrecoverable from it.  Alongside
+// line - and the original copyrighted text is unrecoverable from it.  Alongside
 // the masks we send only counts, positions, and file metadata (type/size).
 
 const SNAP_KEY = "yourscript:lastRun";
@@ -38,7 +38,7 @@ const wordCount = (s) => {
 };
 
 // File metadata that can't identify the work: type, extension, rough size.
-// (We deliberately never send the filename — a title isn't ours to leak.)
+// (We deliberately never send the filename - a title isn't ours to leak.)
 export function fileMeta(file, scriptText = "") {
   if (file) {
     const ext = (file.name?.split(".").pop() || "").toLowerCase().slice(0, 8);
@@ -204,13 +204,13 @@ export function formatDiagnostics(
   { maxLines = Infinity, maxSourceLines = Infinity } = {},
 ) {
   if (!snap) return "";
-  const L = ["— diagnostic snapshot (IP-safe: masked structure only, no script text) —"];
+  const L = ["- diagnostic snapshot (IP-safe: masked structure only, no script text) -"];
 
   if (snap.input) L.push(`input:    ${snap.input.kind} · ~${snap.input.sizeKB} KB`);
   if (snap.speakers)
     L.push(
       `speakers: ${snap.speakers.count} detected` +
-        (snap.speakers.masks?.length ? ` — ${snap.speakers.masks.join(", ")}` : ""),
+        (snap.speakers.masks?.length ? ` - ${snap.speakers.masks.join(", ")}` : ""),
     );
   if (snap.role)
     L.push(
@@ -228,7 +228,7 @@ export function formatDiagnostics(
       `settings: stage dirs in cue ${snap.settings.stageDirectionsInCue ? "on" : "off"} · case ${snap.settings.caseSensitive ? "on" : "off"} · punctuation ${snap.settings.punctuation ? "on" : "off"} · songs as lines ${snap.settings.includeMusicAsLines ? "on" : "off"}`,
     );
   if (snap.cleanup?.length)
-    L.push(`removed:  ${snap.cleanup.length} masked cleanup line(s) — ${snap.cleanup.join(" | ")}`);
+    L.push(`removed:  ${snap.cleanup.length} masked cleanup line(s) - ${snap.cleanup.join(" | ")}`);
   if (snap.stats)
     L.push(
       `parsed:   ${snap.stats.total} practice line(s) from ${snap.stats.sourceLines || "?"} source line(s) · ${snap.stats.turns || 0} turn(s) · avg cue ${snap.stats.avgCueChars}c · avg line ${snap.stats.avgLineChars}c · empty cues ${snap.stats.emptyCues} · empty lines ${snap.stats.emptyLines}`,
@@ -261,12 +261,12 @@ export function formatDiagnostics(
       L.push(`     line "${ln.lineMask}" (${ln.lineW}w)`);
     }
     if (snap.lines.length > shown.length)
-      L.push(`     … ${snap.lines.length - shown.length} more line(s) — see the full copy on the feedback page`);
+      L.push(`     … ${snap.lines.length - shown.length} more line(s) - see the full copy on the feedback page`);
   }
   return L.join("\n");
 }
 
-// ── sessionStorage stash (ephemeral, client-only — never persisted) ─────────
+// ── sessionStorage stash (ephemeral, client-only - never persisted) ─────────
 export function stashSnapshot(snap) {
   try {
     sessionStorage.setItem(SNAP_KEY, JSON.stringify(snap));

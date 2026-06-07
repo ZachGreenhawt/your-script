@@ -5,7 +5,7 @@ const CUE_LINES = ["Upload A Play", "Choose Your Role", "Practice Your Lines"];
 
 // Bullet pops first, then a quick ink guideline writes itself out to the
 // right of the bullet, then the text settles in above it.  Once the text
-// is in place the guideline fades out — like ink drying on a notebook
+// is in place the guideline fades out - like ink drying on a notebook
 // line.  Pure opacity + Y on the text means it never stretches.
 function CueSentence({ cue, index, parentOpacity, progress }) {
   const start = 0.55 + index * 0.06;
@@ -70,7 +70,7 @@ function CueSentence({ cue, index, parentOpacity, progress }) {
   );
 }
 
-// Confident pen stroke under "A Line Learning Tool" — overlapping segments
+// Confident pen stroke under "A Line Learning Tool" - overlapping segments
 // with a low-amplitude sine ride so it reads as one continuous line.
 function PhraseUnderline({ phraseOp, progress }) {
   const draw = smoothstep(0.6, 0.72, progress);

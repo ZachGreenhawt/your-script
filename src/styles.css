@@ -35,7 +35,7 @@
   --ease-out-quart: cubic-bezier(0.32, 0.72, 0, 1);
   --ease-in-out-quart: cubic-bezier(0.65, 0, 0.35, 1);
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
-  /* House curve — every micro-interaction lerps with this so the whole
+  /* House curve - every micro-interaction lerps with this so the whole
      page feels like one author chose it.  Soft start, settled finish. */
   --ease-house: cubic-bezier(0.22, 0.61, 0.36, 1);
   color: var(--ink);
@@ -259,7 +259,7 @@ a {
   display: block;
   width: 100%;
   height: auto;
-  /* Mascots read naturally now that the loader is on cream paper —
+  /* Mascots read naturally now that the loader is on cream paper -
      no inversion, just a soft drop shadow so the figure sits on the page. */
   filter: drop-shadow(0 12px 24px rgba(44, 39, 34, 0.1));
   opacity: 0.92;
@@ -796,6 +796,21 @@ body:has(.new-script-hitbox:hover) .start-arrow {
   font-weight: 500;
 }
 
+.end-footer-links {
+  display: flex;
+  justify-self: end;
+  justify-content: flex-end;
+  align-items: center;
+  gap: clamp(8px, 1.4vw, 14px);
+  flex-wrap: wrap;
+  pointer-events: auto;
+}
+
+.end-footer-separator {
+  color: var(--gray);
+  opacity: 0.7;
+}
+
 /* ─── New-script hit-box ──────────────────────────────────────────────── */
 
 .new-script-hitbox {
@@ -915,7 +930,7 @@ body:has(.new-script-hitbox:hover) .start-arrow {
    .upload-heading, .upload-dropzone, etc.) was removed when /upload was
    rewritten to use the notebook-paper PracticeApp. */
 
-/* The practice page locks vertical scroll on the page itself — the
+/* The practice page locks vertical scroll on the page itself - the
    notebook always fills the viewport.  Long content scrolls inside
    its own container (the practice-shell scrolls; specific overflowing
    cards scroll inside their bodies). */
@@ -969,7 +984,7 @@ body:has(.new-script-hitbox:hover) .start-arrow {
   padding-top: clamp(96px, 13vh, 128px);
 }
 
-/* During the practice phase the whole quiz must fit the viewport — the
+/* During the practice phase the whole quiz must fit the viewport - the
    page never scrolls, only the card body does if a line runs long.  We
    turn the shell into a flex column with a tighter header clearance and
    let the rehearsal-room stretch to fill exactly what's left. */
@@ -988,10 +1003,10 @@ body:has(.new-script-hitbox:hover) .start-arrow {
 
 /* The old practice-page CSS (panels, smooth dropzone, character pills,
    line preview, cue panel, feedback box, done panel, etc.) was deleted
-   when /upload was rewritten onto the notebook-paper aesthetic — see
-   the "Practice app — notebook-paper aesthetic" section below. */
+   when /upload was rewritten onto the notebook-paper aesthetic - see
+   the "Practice app - notebook-paper aesthetic" section below. */
 
-/* Hand-drawn checkbox — a pencil-sketched RoughBox that gets a marker tick
+/* Hand-drawn checkbox - a pencil-sketched RoughBox that gets a marker tick
    when checked.  Used for settings; reads like a notebook checklist rather
    than a glossy switch. */
 .paper-check {
@@ -1240,15 +1255,15 @@ body:has(.new-script-hitbox:hover) .start-arrow {
   color: var(--ink);
 }
 
-/* (Old setup/practice/done CSS removed — the new paper-aesthetic
-   versions live in the "Practice app — notebook-paper aesthetic"
+/* (Old setup/practice/done CSS removed - the new paper-aesthetic
+   versions live in the "Practice app - notebook-paper aesthetic"
    section further down.) */
 
 /* ─── Mascot loader (post-click handoff) ─────────────────────────────── */
 
 /* The loader is layered *on top* of the existing 3D scene so the mascot
    feels like it walked out from the page.  Background stays transparent
-   — no white panel — and the existing sketchbook atmosphere keeps moving
+   - no white panel - and the existing sketchbook atmosphere keeps moving
    behind it.  A tiny black ink ring around the mascot makes it feel
    intentional, like a stamp on the page. */
 .mascot-loader {
@@ -1294,14 +1309,14 @@ body:has(.new-script-hitbox:hover) .start-arrow {
   display: block;
   width: 100%;
   height: auto;
-  /* The provided mascot SVGs are pure black ink — keep them that way
+  /* The provided mascot SVGs are pure black ink - keep them that way
      (matches our sepia ink tone closely enough) and add a soft paper
      shadow so the figure feels like it's standing on the page. */
   filter: drop-shadow(0 2px 0 rgba(44, 39, 34, 0.04))
     drop-shadow(0 14px 32px rgba(44, 39, 34, 0.1));
 }
 
-/* Loader mascot "breathing" — a slightly larger bob with a touch of
+/* Loader mascot "breathing" - a slightly larger bob with a touch of
    scale so the figure feels like it's alive and waiting on you. */
 @keyframes mascot-breathe {
   0%,
@@ -1313,7 +1328,7 @@ body:has(.new-script-hitbox:hover) .start-arrow {
   }
 }
 
-/* Hand-drawn progress strip — a wobbly rect outline with a pencil-line
+/* Hand-drawn progress strip - a wobbly rect outline with a pencil-line
    fill that scrubs across.  No solid bars, no gradients. */
 .mascot-progress {
   position: relative;
@@ -1453,6 +1468,10 @@ body:has(.new-script-hitbox:hover) .start-arrow {
   .end-footer {
     inset: auto 20px 18px;
     font-size: 0.66rem;
+    gap: 10px;
+  }
+  .end-footer-links {
+    gap: 8px;
   }
   .start-here {
     gap: 2px;
@@ -1464,7 +1483,7 @@ body:has(.new-script-hitbox:hover) .start-arrow {
   }
 }
 
-/* ─── Practice app — notebook-paper aesthetic ────────────────────────── */
+/* ─── Practice app - notebook-paper aesthetic ────────────────────────── */
 /* Everything past the Upload screen (Setup wizard → Practice → Review)
    lives on a sketched-paper page: red margin rule, faint horizontal
    guides, and every interactive surface framed by two overlapping
@@ -1544,7 +1563,7 @@ body:has(.new-script-hitbox:hover) .start-arrow {
   overflow: visible;
 }
 
-/* Pencil-drawn button — RoughBox frame behind a label */
+/* Pencil-drawn button - RoughBox frame behind a label */
 .pencil-btn {
   position: relative;
   display: inline-flex;
@@ -1639,7 +1658,7 @@ body:has(.new-script-hitbox:hover) .start-arrow {
 }
 
 /* The setup wizard's pager is fixed to the bottom of the viewport, so the
-   card needs clearance below it — otherwise the card scrolls behind the
+   card needs clearance below it - otherwise the card scrolls behind the
    step dots.  This reserves room so the card always ends above the pager. */
 .paper-stage-setup {
   padding-bottom: clamp(104px, 15vh, 148px);
@@ -1665,7 +1684,7 @@ body:has(.new-script-hitbox:hover) .start-arrow {
   }
 }
 
-/* Paper card — universal "sheet within the sheet" with a rough frame */
+/* Paper card - universal "sheet within the sheet" with a rough frame */
 .paper-card {
   position: relative;
   width: 100%;
@@ -1685,14 +1704,14 @@ body:has(.new-script-hitbox:hover) .start-arrow {
 }
 
 /* The cleanup card has short content (yes/no + one input), so the shared
-   240px min-height left a big empty "box" framed below the field — most
+   240px min-height left a big empty "box" framed below the field - most
    visible on wide screens and the "No" state. Let it hug its content.
    (The roles card keeps the min-height for its scrolling list.) */
 .paper-card-cleanup {
   min-height: 0;
 }
 
-/* Role card — the card is height-capped so the role list scrolls inside
+/* Role card - the card is height-capped so the role list scrolls inside
    it while the "add role" row stays pinned at the bottom (never scrolls
    away).  The list is the only scroller; the add row is a flex footer. */
 .paper-card-roles {
@@ -1711,7 +1730,7 @@ body:has(.new-script-hitbox:hover) .start-arrow {
 .paper-card-roles .role-list {
   flex: 1;
   min-height: 0;
-  /* The list is the only scroller — cap it so a script with many detected
+  /* The list is the only scroller - cap it so a script with many detected
      roles scrolls inside the card instead of overflowing past the add row. */
   max-height: min(42vh, 320px);
   overflow-y: auto;
@@ -1722,7 +1741,7 @@ body:has(.new-script-hitbox:hover) .start-arrow {
 
 .paper-card-roles .role-add {
   flex: 0 0 auto;
-  /* A plain footer below the scrolling list — NOT sticky, so chips can
+  /* A plain footer below the scrolling list - NOT sticky, so chips can
      never scroll underneath and collide with it.  A hairline rule sets it
      apart, and the solid paper fill keeps it clean. */
   margin-top: 0;
@@ -1733,7 +1752,7 @@ body:has(.new-script-hitbox:hover) .start-arrow {
   z-index: 1;
 }
 
-/* Setup step 1 — roles */
+/* Setup step 1 - roles */
 .role-list {
   display: flex;
   flex-wrap: wrap;
@@ -1864,7 +1883,7 @@ body:has(.new-script-hitbox:hover) .start-arrow {
   line-height: 1;
 }
 
-/* Setup step 2 — settings */
+/* Setup step 2 - settings */
 .settings-list {
   list-style: none;
   margin: 0;
@@ -1873,7 +1892,7 @@ body:has(.new-script-hitbox:hover) .start-arrow {
   gap: 20px;
 }
 
-/* Setup step 3 — first line */
+/* Setup step 3 - first line */
 .start-line-field {
   margin-bottom: 20px;
 }
@@ -1964,7 +1983,7 @@ body:has(.new-script-hitbox:hover) .start-arrow {
   /* Full-bleed footer. The buttons keep their previous horizontal insets via
      padding, while a solid base + a short upward fade (in the exact paper
      colour, so it never tints) hides any card or list content that scrolls
-     beneath it. Overflow is never seen poking out around the pager — applies
+     beneath it. Overflow is never seen poking out around the pager - applies
      to the cleanup card, the character list, and any future tall step. */
   padding: clamp(20px, 3.5vh, 36px) max(40px, 4vw)
     calc(clamp(22px, 4vh, 44px) + env(safe-area-inset-bottom, 0px))
@@ -2040,9 +2059,9 @@ body:has(.new-script-hitbox:hover) .start-arrow {
   opacity: 0.45;
 }
 
-/* Practice phase — rehearsal room (proper grid per IMG_3511–3516).
+/* Practice phase - rehearsal room (proper grid per IMG_3511–3516).
    Grid fills the available viewport height so the foot row anchors
-   at the bottom of the page — the progress bar lives low, near the
+   at the bottom of the page - the progress bar lives low, near the
    edge, never floating mid-page. */
 .rehearsal-room {
   position: relative;
@@ -2087,7 +2106,7 @@ body:has(.new-script-hitbox:hover) .start-arrow {
   animation: stage-cue-in 320ms var(--ease-out-expo);
 }
 
-/* Self-grade button (mark correct / review / wrong) — small horizontal
+/* Self-grade button (mark correct / review / wrong) - small horizontal
    card matching IMG_3511's right-side stack of mascot icons + labels. */
 .grade-btn {
   position: relative;
@@ -2112,7 +2131,7 @@ body:has(.new-script-hitbox:hover) .start-arrow {
   transform: translateX(-3px);
 }
 
-/* Subtle alternating rotation on the self-grade stack — feels like
+/* Subtle alternating rotation on the self-grade stack - feels like
    each button was placed by hand. */
 .self-grade-stack .grade-btn:nth-of-type(1) {
   transform: rotate(-0.6deg);
@@ -2218,7 +2237,7 @@ body:has(.new-script-hitbox:hover) .start-arrow {
   outline-offset: 6px;
 }
 
-/* Status badge — small horizontal card (SVG icon + tally count) with
+/* Status badge - small horizontal card (SVG icon + tally count) with
    a label sitting underneath the card.  Matches IMG_3511/3517. */
 .status-badge {
   display: grid;
@@ -2296,7 +2315,7 @@ body:has(.new-script-hitbox:hover) .start-arrow {
   color: #315f5b;
 }
 
-/* Mode toggle — single rough-bordered pill holding both labels with a
+/* Mode toggle - single rough-bordered pill holding both labels with a
    vertical pipe divider between them.  Matches IMG_3511. */
 .mode-toggle {
   position: relative;
@@ -2569,7 +2588,7 @@ body:has(.new-script-hitbox:hover) .start-arrow {
   font-style: italic;
 }
 
-/* Paper stage card — the main rehearsal sheet */
+/* Paper stage card - the main rehearsal sheet */
 .paper-stage-card {
   position: relative;
   width: 100%;
@@ -2779,7 +2798,7 @@ body:has(.new-script-hitbox:hover) .start-arrow {
   justify-content: center;
 }
 
-/* Foot navigation — sits at the bottom of the rehearsal room with
+/* Foot navigation - sits at the bottom of the rehearsal room with
    generous breathing room above so it lives low on the page. */
 .rehearsal-foot {
   position: relative;
@@ -2870,7 +2889,7 @@ body:has(.new-script-hitbox:hover) .start-arrow {
   width: 100%;
 }
 
-/* Wobbly outlined rail — matches the mascot loader's progress strip
+/* Wobbly outlined rail - matches the mascot loader's progress strip
    but bound to actual run progress.  Fill is a dashed pencil line that
    grows from the left as the user completes cues. */
 .foot-progress-rail {
@@ -2907,7 +2926,7 @@ body:has(.new-script-hitbox:hover) .start-arrow {
   opacity: 0.92;
 }
 
-/* Mascot rides the progress rail — at progress=0 it sits at the left
+/* Mascot rides the progress rail - at progress=0 it sits at the left
    end, at progress=1 it sits at the right end. */
 .foot-progress-mascot {
   position: absolute;
@@ -2931,7 +2950,7 @@ body:has(.new-script-hitbox:hover) .start-arrow {
   }
 }
 
-/* Icon-tip — small playful wobble on hover for mascot icon buttons */
+/* Icon-tip - small playful wobble on hover for mascot icon buttons */
 @keyframes icon-tip {
   0% {
     transform: rotate(0);
@@ -3269,13 +3288,13 @@ body:has(.new-script-hitbox:hover) .start-arrow {
   }
 }
 
-/* ─── Upload phase — paper-aesthetic edition ─────────────────────────── */
+/* ─── Upload phase - paper-aesthetic edition ─────────────────────────── */
 /* The /upload landing now lives on the same notebook paper as the rest
    of the app: handwritten heading, rough-pencil dropzone, rough-pencil
    textareas, and a pencil-button submit.  Replaces the smooth-panel
    layout that broke visual continuity with the setup wizard. */
 
-/* Upload phase — per IMG_3503 */
+/* Upload phase - per IMG_3503 */
 
 .upload-stage-paper {
   width: 100%;
@@ -3322,7 +3341,7 @@ body:has(.new-script-hitbox:hover) .start-arrow {
   justify-items: center;
 }
 
-/* The mascot + dropzone pair — kept compact and centered as a unit
+/* The mascot + dropzone pair - kept compact and centered as a unit
    rather than stretching across the page width.  Matches IMG_3503. */
 .upload-row {
   display: inline-grid;
@@ -3346,7 +3365,7 @@ body:has(.new-script-hitbox:hover) .start-arrow {
   transform: rotate(-3deg);
 }
 
-/* Rough-bordered dropzone — sized to feel like a label on the paper,
+/* Rough-bordered dropzone - sized to feel like a label on the paper,
    not a full-width banner.  Matches IMG_3503's mid-sized rectangle. */
 .paper-dropzone {
   position: relative;
@@ -3372,7 +3391,7 @@ body:has(.new-script-hitbox:hover) .start-arrow {
   gap: 3px;
 }
 
-/* Hand-drawn "drop into tray" arrow — nudges down on hover/drag so the
+/* Hand-drawn "drop into tray" arrow - nudges down on hover/drag so the
    affordance feels alive without a heavy icon. */
 .paper-dropzone-arrow {
   width: clamp(30px, 3.4vw, 40px);
@@ -3503,7 +3522,7 @@ body:has(.new-script-hitbox:hover) .start-arrow {
   padding: 14px 32px;
 }
 
-/* Line-pick step (wizard step 3) — no card, just numbered lines on the
+/* Line-pick step (wizard step 3) - no card, just numbered lines on the
    paper with a hand-drawn underline beneath each.  Matches IMG_3508. */
 .line-pick-list {
   list-style: none;
@@ -3629,7 +3648,7 @@ body:has(.new-script-hitbox:hover) .start-arrow {
   height: 18px;
 }
 
-/* Phase crumbs (center of header) — current label + tiny step dots */
+/* Phase crumbs (center of header) - current label + tiny step dots */
 .phase-crumbs {
   display: inline-flex;
   align-items: center;
@@ -3865,7 +3884,7 @@ body:has(.new-script-hitbox:hover) .start-arrow {
   max-height: calc(100vh - 32px);
   overflow: auto;
   padding: 30px 34px 26px;
-  /* A lifted paper card — matches the rest of the site instead of a
+  /* A lifted paper card - matches the rest of the site instead of a
      foreign dark dialog. */
   color: var(--ink);
   background: var(--off-white);
@@ -3952,7 +3971,7 @@ body:has(.new-script-hitbox:hover) .start-arrow {
 }
 
 /* Toggles + confirm button inherit the site's base ink/teal styling now
-   that the modal is paper — no dark-theme overrides needed. */
+   that the modal is paper - no dark-theme overrides needed. */
 .settings-modal-actions {
   display: flex;
   justify-content: center;
@@ -4013,7 +4032,7 @@ body:has(.new-script-hitbox:hover) .start-arrow {
 }
 
 /* ─── Dashboard ────────────────────────────────────────────────────── */
-/* Empty-state landing for the /dashboard route.  Per IMG_3519/3520 — a
+/* Empty-state landing for the /dashboard route.  Per IMG_3519/3520 - a
    centered "Nothing here yet!" message and a hand-drawn link back to
    the upload page. */
 
@@ -4085,7 +4104,7 @@ body:has(.new-script-hitbox:hover) .start-arrow {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
-   Playful pass — hand-drawn life: sketch-boil frames, stat stamps,
+   Playful pass - hand-drawn life: sketch-boil frames, stat stamps,
    correct-answer confetti, and a finish-line flag.  All transform/opacity
    only, and every bit of it is switched off under prefers-reduced-motion
    at the bottom of this block.
@@ -4112,7 +4131,7 @@ body:has(.new-script-hitbox:hover) .start-arrow {
   opacity: 0;
 }
 
-/* Always-on (cue card) — calm ~4fps shimmer. */
+/* Always-on (cue card) - calm ~4fps shimmer. */
 .rough-box.is-boil .boil-frame {
   animation: boil-cycle 0.72s steps(1, jump-end) infinite;
 }
@@ -4187,7 +4206,7 @@ body:has(.new-script-hitbox:hover) .start-arrow {
 /* ── Correct-answer confetti ──────────────────────────────────────────────
    Sibling overlay over the cue card (never inside .stage-body, so it can't
    change the measured scrollHeight that drives the fit-shrink).  Doodles
-   pop, hold, then fade up and vanish — no lingering clutter. */
+   pop, hold, then fade up and vanish - no lingering clutter. */
 .correct-burst {
   position: absolute;
   inset: 0;
@@ -4736,7 +4755,7 @@ body:has(.new-script-hitbox:hover) .start-arrow {
    Contextual feedback + /feedback page
    ═══════════════════════════════════════════════════════════════════════ */
 
-/* Contextual feedback invite on the review screen — a quiet, hand-ruled line,
+/* Contextual feedback invite on the review screen - a quiet, hand-ruled line,
    not a persistent widget.  Feedback only ever surfaces where it's natural: the
    review screen, the error toast, and the landing's end credits. */
 .review-aside {
@@ -4773,17 +4792,15 @@ body:has(.new-script-hitbox:hover) .start-arrow {
   opacity: 0.85;
 }
 
-/* Landing end-footer maker credit — blends with the credits (same uppercase,
+/* Landing end-footer maker credit - blends with the credits (same uppercase,
    letter-spacing and size, inherited), just a quieter colour + hover underline. */
 .end-footer-link {
   position: relative;
   display: inline-flex;
-  justify-self: end;
   pointer-events: auto;
   color: var(--gray);
   text-decoration: none;
   text-align: right;
-  max-width: min(64vw, 34ch);
   transition: color 200ms var(--ease-out-expo);
 }
 .end-footer-link:hover {

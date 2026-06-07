@@ -109,7 +109,7 @@ function SceneContents({ progress }) {
       />
 
       {/* Directional light exists purely for shadow-map generation.
-          MeshBasicMaterial surfaces are unaffected by it — they stay flat
+          MeshBasicMaterial surfaces are unaffected by it - they stay flat
           and hand-drawn.  Only the ShadowMaterial floor plane below will
           show the soft projected shadow, giving modern depth without any
           plastic-looking lighting on the books themselves. */}
@@ -134,7 +134,7 @@ function SceneContents({ progress }) {
       <group ref={worldRef} visible={progress < 0.94}>
         <BookCarousel progress={progress} />
 
-        {/* Shadow-catching floor — transparent except where shadow falls.
+        {/* Shadow-catching floor - transparent except where shadow falls.
             Scales and moves with worldRef so shadows remain consistent
             throughout the carousel phase.  Fades to invisible when the
             world shrinks away. */}

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-// A quiet sketchbook backdrop.  Just paper grain — the discipline lives in
+// A quiet sketchbook backdrop.  Just paper grain - the discipline lives in
 // the negative space, not in decorative doodles.  Clears completely when
 // the mascot loader takes over.
 export default function BackgroundAtmosphere() {

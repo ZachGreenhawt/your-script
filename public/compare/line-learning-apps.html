@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Line Learning App Comparison | Your Script Guide</title>
+<meta name="description" content="Compare line-learning and rehearsal app workflows for actors, theatre students, teachers, and musical theatre performers, including solo rehearsal and cue-based practice." />
+<link rel="canonical" href="https://www.yourscript.app/compare/line-learning-apps" />
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+<link rel="icon" href="/favicon.ico" />
+<link rel="preload" as="font" type="font/woff2" href="/fonts/teko-latin-600-normal.woff2" crossorigin />
+<link rel="preload" as="font" type="font/woff2" href="/fonts/manrope-latin-400-normal.woff2" crossorigin />
+<meta property="og:type" content="website" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:site_name" content="Your Script" />
+<meta property="og:title" content="Line Learning App Comparison | Your Script Guide" />
+<meta property="og:description" content="Compare line-learning and rehearsal app workflows for actors, theatre students, teachers, and musical theatre performers, including solo rehearsal and cue-based practice." />
+<meta property="og:url" content="https://www.yourscript.app/compare/line-learning-apps" />
+<meta property="og:image" content="https://www.yourscript.app/og/home.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Line Learning App Comparison | Your Script Guide" />
+<meta name="twitter:description" content="Compare line-learning and rehearsal app workflows for actors, theatre students, teachers, and musical theatre performers, including solo rehearsal and cue-based practice." />
+<meta name="twitter:image" content="https://www.yourscript.app/og/home.png" />
+<style>@font-face{font-family:"Manrope";src:url("/fonts/manrope-latin-400-normal.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"Inter Tight";src:url("/fonts/inter-tight-latin-500-normal.woff2") format("woff2");font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:"Teko";src:url("/fonts/teko-latin-600-normal.woff2") format("woff2");font-weight:600;font-style:normal;font-display:swap}
+:root{
+ --off-white:#f2f0e8;--paper:#e6e3d8;--ink:#2c2722;--pencil:#5a5249;--gray:#9a958c;--maroon:#3d342a;
+ --rule-margin:rgba(170,60,50,.22);--rule-line:rgba(90,82,73,.07);
+ --ease:cubic-bezier(0.16,1,0.3,1);
+ --font-display:"Teko","Inter Tight","Arial Narrow",sans-serif;
+ --font-ui:"Inter Tight",Manrope,ui-sans-serif,sans-serif;
+ --font-body:"Manrope",Inter,ui-sans-serif,sans-serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{min-height:100vh;margin:0;overflow-x:hidden;background:var(--off-white);color:var(--ink);font-family:var(--font-body);font-weight:400;line-height:1.58;font-size:17px;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:geometricPrecision}
+/* notebook desk: faint ruled guides + radial-dot film grain, fixed behind all */
+.paper{position:fixed;inset:0;z-index:-1;pointer-events:none;background-image:repeating-linear-gradient(to bottom,transparent 0 37px,var(--rule-line) 37px 38px)}
+.paper::after{content:"";position:absolute;inset:0;opacity:.045;mix-blend-mode:multiply;background-image:radial-gradient(circle,var(--ink) 0 .8px,transparent 1px),radial-gradient(circle,var(--ink) 0 .55px,transparent .8px);background-size:21px 21px,37px 37px;background-position:0 0,13px 9px}
+.skip-link{position:absolute;left:-9999px;top:0;background:var(--ink);color:var(--off-white);padding:10px 16px;z-index:30;font-family:var(--font-ui)}
+.skip-link:focus{left:0}
+/* squiggle hover underline */
+.squiggle{position:relative}
+.squiggle::after{content:"";position:absolute;left:0;right:0;bottom:-6px;height:6px;background:currentColor;-webkit-mask:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 8' preserveAspectRatio='none'><path d='M 1 4 Q 10 1 20 4 T 40 4 T 60 4 T 80 4 T 100 4 T 119 4' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round'/></svg>") left center / 100% 100% no-repeat;mask:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 8' preserveAspectRatio='none'><path d='M 1 4 Q 10 1 20 4 T 40 4 T 60 4 T 80 4 T 100 4 T 119 4' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round'/></svg>") left center / 100% 100% no-repeat;transform:scaleX(0);transform-origin:left center;transition:transform .45s var(--ease)}
+.squiggle:hover::after{transform:scaleX(1)}
+/* chrome bar (3-column, matches the app) */
+.chrome{max-width:1080px;margin:0 auto;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:16px;padding:24px clamp(20px,4vw,42px) 0;font-family:var(--font-ui);font-weight:500;font-size:.78rem}
+.chrome-mark{justify-self:start;font-family:var(--font-display);font-weight:600;font-size:clamp(1.08rem,1.45vw,1.35rem);letter-spacing:.015em;text-transform:uppercase;color:var(--ink);text-decoration:none;line-height:1}
+.chrome-center{justify-self:center;color:var(--gray);letter-spacing:.16em;text-transform:uppercase;font-size:.66rem}
+.chrome-cta{justify-self:end;display:inline-flex;align-items:center;gap:8px;color:var(--ink);text-decoration:none}
+.chrome-arrow{width:14px;height:14px;transition:transform .36s var(--ease)}
+.chrome-cta:hover .chrome-arrow{transform:translateX(4px)}
+/* reading sheet + red margin rule */
+main.sheet{max-width:720px;margin:0 auto;padding:6px 28px 0;position:relative}
+main.sheet::before{content:"";position:absolute;top:0;bottom:0;left:9px;width:1.2px;background:var(--rule-margin)}
+/* PaperHeading hero */
+.paper-heading{display:grid;justify-items:center;text-align:center;gap:5px;margin:4px auto clamp(24px,5vh,46px);max-width:680px}
+.greeter{width:92px;height:92px;object-fit:contain;display:block;margin:0 auto 2px}
+.paper-eyebrow{margin:0;font-family:var(--font-ui);font-weight:500;font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gray)}
+h1{margin:2px 0 0;font-family:var(--font-display);font-weight:600;font-size:clamp(2.45rem,6vw,4.25rem);line-height:.9;color:var(--ink);transform:rotate(-.5deg)}
+.paper-heading-rule{width:clamp(180px,44%,360px);height:14px;margin-top:.18em;color:var(--pencil);opacity:.7;overflow:visible}
+.paper-subtitle{margin:.55em 0 0;font-family:var(--font-ui);font-style:italic;font-size:1.02rem;color:var(--pencil)}
+/* prose */
+h2{font-family:var(--font-display);font-weight:600;font-size:clamp(1.62rem,3.5vw,2.28rem);line-height:1;margin:34px 0 11px;padding-bottom:13px;background-image:url("data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%27268%27%20height=%2724%27%20viewBox=%270%200%20268%2024%27%3E%3Cpath%20d=%27M%204%2014%20Q%2032%204%2060%2012%20Q%2088%2020%20116%2012%20Q%20144%204%20172%2012%20Q%20200%2020%20228%2012%20Q%20256%204%20264%2014%27%20fill=%27none%27%20stroke=%27%232c2722%27%20stroke-width=%272.2%27%20stroke-linecap=%27round%27%20stroke-linejoin=%27round%27/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:left bottom;background-size:142px 8px}
+h3{font-family:var(--font-display);font-weight:600;font-size:1.42rem;line-height:1.05;margin:22px 0 4px;color:var(--ink)}
+p{margin:13px 0}
+ul,ol{margin:13px 0;padding-left:22px}
+li{margin:7px 0}
+a{color:var(--maroon)}
+a:hover{color:var(--ink)}
+strong{font-weight:600}
+/* hand-drawn frames (RoughBox injects an <svg class="rough-box"> as first child) */
+[data-rough]{position:relative}
+[data-rough]>*:not(.rough-box){position:relative;z-index:1}
+.quick-answer{background:rgba(230,227,216,.76);color:var(--ink);padding:8px 24px 18px;margin:14px 0 26px}
+.quick-answer h2{font-family:var(--font-ui);font-weight:500;font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gray);background:none;padding:0;margin:18px 0 2px}
+.quick-answer p{margin:6px 0 0}
+/* comparison table, frame is RoughBox, rows use faint ruling (not borders) */
+.table-wrap{background:rgba(230,227,216,.76);color:var(--ink);padding:10px 16px 6px;margin:18px 0}
+table{border-collapse:collapse;width:100%;font-family:var(--font-ui);font-size:.94rem}
+caption{caption-side:bottom;text-align:left;color:var(--pencil);font-style:italic;font-size:.84rem;padding:10px 2px 4px}
+th,td{padding:11px 12px;text-align:left;vertical-align:top;border-bottom:1px solid var(--rule-line)}
+thead th{font-weight:600;color:var(--ink);border-bottom:1.5px solid rgba(44,39,34,.22)}
+tbody tr:last-child th,tbody tr:last-child td{border-bottom:0}
+tbody th{font-weight:600}
+.tag{display:inline-block;font-family:var(--font-ui);font-weight:500;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);padding:4px 11px;margin-left:6px;white-space:nowrap}
+/* faq */
+.faq{margin-top:30px}
+.faq>h2{margin-bottom:14px}
+.faq-item{position:relative;background:rgba(230,227,216,.38);color:var(--ink);padding:0 20px;margin:12px 0}
+.faq-item .rough-box{color:var(--pencil);opacity:.72}
+.faq details{margin:0}
+.faq summary{cursor:pointer;font-family:var(--font-ui);font-weight:600;font-size:1.02rem;color:var(--ink);padding:16px 0;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:16px}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";font-family:var(--font-display);font-weight:600;font-size:1.6rem;line-height:1;color:var(--pencil)}
+.faq details[open] summary::after{content:"\2013"}
+.faq .answer{padding:0 0 16px}
+.faq .answer p{margin:0}
+/* cta */
+.cta{background:rgba(230,227,216,.74);color:var(--ink);padding:26px 22px;margin:40px 0 8px;text-align:center}
+.cta h2{background:none;padding:0;margin:0 0 6px;transform:rotate(-.4deg)}
+.cta p{margin:6px auto 18px;max-width:46ch;color:var(--pencil)}
+.cta-actions{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+/* pencil buttons (RoughBox rect frame behind a label) */
+.btn{position:relative;display:inline-flex;align-items:center;justify-content:center;padding:13px 24px;background:transparent;color:var(--ink);font-family:var(--font-ui);font-weight:500;font-size:.92rem;letter-spacing:.04em;text-decoration:none;cursor:pointer}
+.btn>span{position:relative;z-index:1;display:inline-flex;align-items:center;gap:6px}
+.btn .rough-box{opacity:.82;transition:opacity .22s var(--ease)}
+.btn:hover .rough-box{opacity:1}
+.btn:hover{color:var(--maroon)}
+.btn-ghost{color:var(--pencil)}
+/* footer */
+.site-foot{max-width:720px;margin:48px auto 0;padding:22px 28px 44px;position:relative}
+.site-foot .foot-eyebrow{font-family:var(--font-ui);font-weight:500;font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gray);margin:0 0 12px}
+.site-foot nav ul{list-style:none;display:flex;flex-wrap:wrap;gap:12px 26px;padding:0;margin:0;font-family:var(--font-ui);font-size:.95rem}
+.foot-link{color:var(--pencil);text-decoration:none}
+.foot-link:hover{color:var(--ink)}
+.foot-note{font-family:var(--font-ui);font-style:italic;color:var(--gray);font-size:.86rem;margin-top:18px}
+.visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+a:focus-visible,summary:focus-visible,.btn:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+@media(max-width:600px){body{font-size:17px}.chrome{padding-left:18px;padding-right:18px}.chrome-center{display:none}main.sheet,.site-foot{padding-left:18px;padding-right:18px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}</style>
+<script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebPage",
+      "@id": "https://www.yourscript.app/compare/line-learning-apps#page",
+      "url": "https://www.yourscript.app/compare/line-learning-apps",
+      "name": "Compare Line Learning Apps",
+      "description": "Compare line-learning and rehearsal app workflows for actors, theatre students, teachers, and musical theatre performers, including solo rehearsal and cue-based practice.",
+      "isPartOf": {
+        "@type": "WebSite",
+        "name": "Your Script",
+        "url": "https://www.yourscript.app/"
+      },
+      "inLanguage": "en-US"
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://www.yourscript.app/compare/line-learning-apps#faq",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What should I look for in a line-learning app?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Match the app to your rehearsal habits. Look at audio playback, repetition tools, cue practice, solo use, setup time, and script support. The best tool gets you practicing quickly."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is there a single best app to memorize lines?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No single app fits every actor. Some actors prefer recording and playback. Some want flashcard style repetition. Others want cue based solo rehearsal. Pick for your habits, not for a label."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How is Your Script different from other line-learning apps?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Your Script focuses on minimal cue based solo rehearsal. Upload a script, pick your role, and run your lines from cues. The app leaves out production management and social features."
+          }
+        }
+      ]
+    }
+  ]
+}</script>
+</head>
+<body>
+<div class="paper" aria-hidden="true"></div>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="chrome">
+  <a class="chrome-mark" href="/">Your Script</a>
+  <span class="chrome-center">Compare</span>
+  <a class="chrome-cta squiggle" href="/upload" rel="nofollow">Open the app <svg class="chrome-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+</header>
+<main id="main" class="sheet">
+  <div class="paper-heading">
+    <img class="greeter" src="/mascots/sorting.svg" alt="" width="116" height="116" />
+    <p class="paper-eyebrow">Choosing an app</p>
+    <h1>Compare Line Learning Apps</h1>
+    <svg class="paper-heading-rule" viewBox="0 0 268 24" preserveAspectRatio="none" aria-hidden="true"><path d="M 4 14 Q 32 4 60 12 Q 88 20 116 12 Q 144 4 172 12 Q 200 20 228 12 Q 256 4 264 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/></svg>
+    <p class="paper-subtitle">Find the workflow that fits how you rehearse.</p>
+  </div>
+<section class="quick-answer" data-rough data-rough-double data-rough-seed="2" aria-labelledby="quick-answer">
+  <h2 id="quick-answer">Quick answer</h2>
+  <p>The best line-learning app depends on your rehearsal habits. Common workflows include recording and playback, cue triggered readers, teleprompters, and cue based solo recall. Your Script fits the last group. You run lines from cues without recording every part.</p>
+</section>
+
+<section aria-labelledby="criteria">
+  <h2 id="criteria">What to look for in a line-learning app</h2>
+  <ul>
+    <li><strong>How you learn:</strong> audio playback, repetition, or cue and recall.</li>
+    <li><strong>Solo vs. partner:</strong> whether you mostly rehearse alone.</li>
+    <li><strong>Setup and clutter:</strong> how much work comes before practice.</li>
+    <li><strong>Your material:</strong> whether the app works with the kind of script you use.</li>
+    <li><strong>Focus:</strong> a single rehearsal tool versus a broader platform.</li>
+  </ul>
+</section>
+
+<section aria-labelledby="apps">
+  <h2 id="apps">A few well-known apps</h2>
+  <p>Short, neutral notes on how each tool approaches rehearsal. Features and pricing change often. Check each app&#39;s own site or store listing for current details.</p>
+  <h3 id="coldread">ColdRead</h3>
+  <p>An iOS app built around a cue triggered reader. Speak the last word of your line and the app reads the next line back. The app also includes a teleprompter.</p>
+  <h3 id="rehearsal-pro">Rehearsal Pro</h3>
+  <p>An actor focused app with a teleprompter, line highlighting, blackout, adjustable pacing, repeat and playback, and beat marking.</p>
+  <h3 id="linelearner">LineLearner</h3>
+  <p>Built around recording. You record each character&#39;s lines or split them with castmates, then play them back to rehearse together. The app supports script import as text chunks.</p>
+  <h3 id="script-rehearser">Script Rehearser</h3>
+  <p>Lets you record your own lines or have synthetic voices read them back, after importing a script or typing your lines in.</p>
+</section>
+
+<section aria-labelledby="table">
+  <h2 id="table">Comparison at a glance</h2>
+  <div class="table-wrap" data-rough data-rough-seed="3">
+    <table>
+      <caption>A neutral summary of each tool&#39;s core approach. Features and platforms change. Verify on each app&#39;s site.</caption>
+      <thead>
+        <tr>
+          <th scope="col">App</th>
+          <th scope="col">Core approach</th>
+          <th scope="col">Platform</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><th scope="row">ColdRead</th><td>Cue-triggered reader + teleprompter</td><td>iOS</td></tr>
+        <tr><th scope="row">Rehearsal Pro</th><td>Feature-rich teleprompter (highlight, blackout, pacing)</td><td>iOS</td></tr>
+        <tr><th scope="row">LineLearner</th><td>Record parts and play them back; rehearse with castmates</td><td>iOS &middot; Android</td></tr>
+        <tr><th scope="row">Script Rehearser</th><td>Record or synthetic-voice playback</td><td>iOS</td></tr>
+        <tr><th scope="row">Your Script <span class="tag" data-rough="pill" data-rough-seed="7"><span>Cue-based &middot; solo</span></span></th><td>Run your lines from cues with minimal setup</td><td>Web (any device)</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section aria-labelledby="fit-simple">
+  <h2 id="fit-simple">Best fit for simplicity</h2>
+  <p>If you want the shortest path from "I have a scene" to "I am rehearsing," look for a tool with little setup and few distractions. The less time you spend configuring, recording, or building decks, the more time goes to actual recall practice.</p>
+</section>
+
+<section aria-labelledby="fit-solo">
+  <h2 id="fit-solo">Best fit for solo rehearsal</h2>
+  <p>If you usually rehearse alone, prioritize a cue based workflow. Reading both parts aloud feels useful but does little for recall. Cue and response is closer to stage pressure. See <a href="/rehearse-without-a-scene-partner.html">rehearsing without a scene partner</a> for the method.</p>
+</section>
+
+<section aria-labelledby="fit-broad">
+  <h2 id="fit-broad">Best fit for broader workflows</h2>
+  <p>If you need full script management, scheduling, or collaboration, a broader platform might fit better. Expect more setup. Some actors use a broad tool for organization and a lighter tool for daily line work.</p>
+</section>
+
+<section aria-labelledby="where">
+  <h2 id="where">Where Your Script fits</h2>
+  <p>Your Script fits the minimal, cue based, solo end of the line learning app spectrum. Upload a script, choose your role, and run lines from cues. Choose another approach if you want recording, collaboration, or production tools.</p>
+</section>
+
+<section class="faq" aria-labelledby="faq-title">
+  <h2 id="faq-title">Frequently asked questions</h2>
+    <div class="faq-item" data-rough data-rough-seed="30">
+      <details>
+        <summary>What should I look for in a line-learning app?</summary>
+        <div class="answer"><p>Match the app to your rehearsal habits. Look at audio playback, repetition tools, cue practice, solo use, setup time, and script support. The best tool gets you practicing quickly.</p></div>
+      </details>
+    </div>
+    <div class="faq-item" data-rough data-rough-seed="31">
+      <details>
+        <summary>Is there a single best app to memorize lines?</summary>
+        <div class="answer"><p>No single app fits every actor. Some actors prefer recording and playback. Some want flashcard style repetition. Others want cue based solo rehearsal. Pick for your habits, not for a label.</p></div>
+      </details>
+    </div>
+    <div class="faq-item" data-rough data-rough-seed="32">
+      <details>
+        <summary>How is Your Script different from other line-learning apps?</summary>
+        <div class="answer"><p>Your Script focuses on minimal cue based solo rehearsal. Upload a script, pick your role, and run your lines from cues. The app leaves out production management and social features.</p></div>
+      </details>
+    </div>
+</section>
+
+<section class="cta" data-rough data-rough-double data-rough-seed="9" aria-labelledby="cta-title">
+  <h2 id="cta-title">Try Your Script on your next scene</h2>
+  <p>If a minimal cue based workflow fits your rehearsal, open Your Script and try a scene.</p>
+  <p class="cta-actions">
+    <a class="btn" href="/upload" rel="nofollow" data-rough data-rough-seed="5"><span>Open Your Script <svg class="chrome-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
+    <a class="btn btn-ghost" href="/what-is-yourscript.html" data-rough data-rough-seed="6"><span>What is Your Script?</span></a>
+  </p>
+</section>
+</main>
+
+  <footer class="site-foot">
+    <p class="foot-eyebrow">More from Your Script</p>
+    <nav aria-label="Resources">
+      <ul>
+        <li><a class="foot-link squiggle" href="/">Home</a></li>
+        <li><a class="foot-link squiggle" href="/what-is-yourscript.html">What Is Your Script?</a></li>
+        <li><a class="foot-link squiggle" href="/memorize-lines.html">Memorize Lines Faster</a></li>
+        <li><a class="foot-link squiggle" href="/how-to-memorize-a-script.html">How to Memorize a Script</a></li>
+        <li><a class="foot-link squiggle" href="/rehearse-without-a-scene-partner.html">Rehearse Without a Scene Partner</a></li>
+      </ul>
+    </nav>
+    <p class="foot-note">Your Script. A minimal line rehearsal companion for actors and theatre students.</p>
+  </footer>
+<script>// Vanilla RoughBox decorator (lifted verbatim from the Your Story design system,
+// preview/roughbox.js). Add data-rough (or data-rough="pill") to a positioned
+// element; a hand-drawn SVG pencil frame is injected and kept fitted via
+// ResizeObserver. Optional: data-rough-seed, data-rough-double, data-rough-stroke.
+// Every frame on the SEO pages is this. Never a CSS border.
+(function () {
+  function buildRoughRect(w, h, seed) {
+    const amp = Math.min(1.6, Math.min(w, h) * 0.04);
+    const wob = (n) => Math.sin(seed * 7.3 + n * 1.7) * amp;
+    const r = Math.min(8, h * 0.18, w * 0.18);
+    return [
+      `M ${r + wob(1)} ${wob(2)}`, `L ${w - r + wob(3)} ${wob(4) - 0.5}`,
+      `Q ${w + wob(5)} ${wob(6)} ${w + wob(7) - 0.5} ${r + wob(8)}`,
+      `L ${w + wob(9) - 0.5} ${h - r + wob(10)}`,
+      `Q ${w + wob(11)} ${h + wob(12)} ${w - r + wob(13)} ${h + wob(14) - 0.5}`,
+      `L ${r + wob(15)} ${h + wob(16) - 0.5}`,
+      `Q ${wob(17)} ${h + wob(18)} ${wob(19) + 0.5} ${h - r + wob(20)}`,
+      `L ${wob(21) + 0.5} ${r + wob(22)}`,
+      `Q ${wob(23)} ${wob(24)} ${r + wob(25)} ${wob(26) + 0.5}`, `Z`,
+    ].join(" ");
+  }
+  function buildRoughPill(w, h, seed) {
+    const amp = Math.min(1.4, Math.min(w, h) * 0.04);
+    const wob = (n) => Math.sin(seed * 6.1 + n * 1.9) * amp;
+    const r = Math.min(h / 2, w / 2);
+    const cp = r * 0.55;
+    return [
+      `M ${r + wob(1)} ${wob(2)}`, `L ${w - r + wob(3)} ${wob(4) - 0.5}`,
+      `C ${w - r + cp + wob(5)} ${wob(6)} ${w + wob(7)} ${cp + wob(8)} ${w + wob(9) - 0.5} ${r}`,
+      `C ${w + wob(10)} ${h - cp + wob(11)} ${w - r + cp + wob(12)} ${h + wob(13)} ${w - r + wob(14)} ${h + wob(15) - 0.5}`,
+      `L ${r + wob(16)} ${h + wob(17) - 0.5}`,
+      `C ${r - cp + wob(18)} ${h + wob(19)} ${wob(20)} ${h - cp + wob(21)} ${wob(22) + 0.5} ${r}`,
+      `C ${wob(23)} ${cp + wob(24)} ${r - cp + wob(25)} ${wob(26)} ${r + wob(27)} ${wob(28) + 0.5}`, `Z`,
+    ].join(" ");
+  }
+  const SVGNS = "http://www.w3.org/2000/svg";
+  function decorate(el) {
+    const variant = el.getAttribute("data-rough") || "rect";
+    const seed = Number(el.getAttribute("data-rough-seed") || 1);
+    const sw = Number(el.getAttribute("data-rough-stroke") || 1.4);
+    const dbl = el.hasAttribute("data-rough-double");
+    const builder = variant === "pill" ? buildRoughPill : buildRoughRect;
+    const svg = document.createElementNS(SVGNS, "svg");
+    svg.setAttribute("class", "rough-box");
+    svg.setAttribute("preserveAspectRatio", "none");
+    svg.setAttribute("aria-hidden", "true");
+    svg.style.cssText = "position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none;color:inherit;";
+    const p1 = document.createElementNS(SVGNS, "path");
+    p1.setAttribute("fill", "none"); p1.setAttribute("stroke", "currentColor");
+    p1.setAttribute("stroke-width", sw); p1.setAttribute("stroke-linecap", "round");
+    p1.setAttribute("stroke-linejoin", "round"); p1.setAttribute("vector-effect", "non-scaling-stroke");
+    svg.appendChild(p1);
+    let p2 = null;
+    if (dbl) {
+      p2 = document.createElementNS(SVGNS, "path");
+      p2.setAttribute("fill", "none"); p2.setAttribute("stroke", "currentColor");
+      p2.setAttribute("stroke-width", sw * 0.7); p2.setAttribute("stroke-linecap", "round");
+      p2.setAttribute("stroke-linejoin", "round"); p2.setAttribute("vector-effect", "non-scaling-stroke");
+      p2.setAttribute("opacity", "0.5");
+      svg.appendChild(p2);
+    }
+    el.insertBefore(svg, el.firstChild);
+    const fit = () => {
+      const r = el.getBoundingClientRect();
+      const w = Math.max(20, Math.round(r.width)), h = Math.max(20, Math.round(r.height));
+      svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
+      p1.setAttribute("d", builder(w, h, seed));
+      if (p2) p2.setAttribute("d", builder(w, h, seed + 11));
+    };
+    fit();
+    new ResizeObserver(fit).observe(el);
+  }
+  function run() { document.querySelectorAll("[data-rough]").forEach(decorate); }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", run);
+  else run();
+})();
+</script>
+<script>(function(){
+  function track(name){
+    try{
+      fetch("/api/event",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({event:name}),keepalive:true}).catch(function(){});
+    }catch(e){}
+  }
+  try{
+    track("resource_page_view");
+    document.querySelectorAll("details").forEach(function(d){ d.addEventListener("toggle",function(){ if(d.open) track("faq_expand"); }); });
+    document.querySelectorAll("a.btn").forEach(function(a){ a.addEventListener("click",function(){ track("cta_click"); }); });
+    document.querySelectorAll('a[href^="http"]').forEach(function(a){ a.addEventListener("click",function(){ track("external_link_click"); }); });
+  }catch(e){}
+})();</script>
+</body>
+</html>

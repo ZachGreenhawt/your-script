@@ -50,7 +50,7 @@ const CONTEXT = {
   },
   done: {
     title: "How'd the run go?",
-    lede: "Did Your Script help you learn your lines — or land the part? Stories like yours are the whole point.",
+    lede: "Did Your Script help you learn your lines - or land the part? Stories like yours are the whole point.",
   },
   practice: {
     title: "A note mid-run?",
@@ -58,7 +58,7 @@ const CONTEXT = {
   },
   dashboard: {
     title: "Say something",
-    lede: "Bugs, ideas, or a win — it all comes straight to me.",
+    lede: "Bugs, ideas, or a win - it all comes straight to me.",
   },
   landing: {
     title: "Say hi",
@@ -70,7 +70,7 @@ export function pageContext(from) {
   return (
     CONTEXT[from] || {
       title: "Say something",
-      lede: "Feedback, a bug report, or a success story — it all comes straight to me.",
+      lede: "Feedback, a bug report, or a success story - it all comes straight to me.",
     }
   );
 }
@@ -90,7 +90,7 @@ export function stashError(info) {
       }),
     );
   } catch {
-    // sessionStorage unavailable — non-fatal
+    // sessionStorage unavailable - non-fatal
   }
 }
 
@@ -111,7 +111,7 @@ export function clearStashedError() {
   }
 }
 
-// A structured object — handy if/when we POST to a backend collector later.
+// A structured object - handy if/when we POST to a backend collector later.
 export function buildPayload({
   kind = "general",
   from = "",

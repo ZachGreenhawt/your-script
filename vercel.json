@@ -3,10 +3,31 @@
   "framework": "vite",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
+  "cleanUrls": true,
   "rewrites": [
     {
       "source": "/api/:path*",
       "destination": "https://api.yourscript.app/api/:path*"
+    },
+    {
+      "source": "/what-is-yourscript",
+      "destination": "/what-is-yourscript.html"
+    },
+    {
+      "source": "/memorize-lines",
+      "destination": "/memorize-lines.html"
+    },
+    {
+      "source": "/how-to-memorize-a-script",
+      "destination": "/how-to-memorize-a-script.html"
+    },
+    {
+      "source": "/rehearse-without-a-scene-partner",
+      "destination": "/rehearse-without-a-scene-partner.html"
+    },
+    {
+      "source": "/compare/line-learning-apps",
+      "destination": "/compare/line-learning-apps.html"
     },
     {
       "source": "/(.*)",

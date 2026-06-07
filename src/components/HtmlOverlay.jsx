@@ -10,10 +10,11 @@ const TITLE_RULE =
 const ARROW_TO_BOOK = "M 30 30 L 40 18 L 50 30";
 
 const SECTION_NUMS = ["01", "02", "03", "04"];
+const ABOUT_HREF = "/what-is-yourscript.html";
 const FEEDBACK_HREF = "/feedback?from=landing&kind=say-hi";
 
-// "Your Script" letters with a shuffled exit stagger — title scatters off
-// rather than wiping when the user scrolls past it.
+// "Your Script" letters with a shuffled exit stagger, title scatters off
+// rather than wiping when the user scrolls past the title.
 const TITLE_CHARS = "Your Script".split("");
 // One stagger slot per title character (11 for "Your Script").
 const TITLE_EXIT_STAGGER = [4, 1, 8, 0, 6, 9, 3, 7, 2, 5, 10];
@@ -311,16 +312,31 @@ export default function HtmlOverlay({ progress }) {
           aria-hidden={progress < 0.93}
         >
           <span>Your Script</span>
-          <a
-            className="end-footer-link"
-            href={FEEDBACK_HREF}
-            onClick={(e) => {
-              e.preventDefault();
-              window.location.assign(FEEDBACK_HREF);
-            }}
-          >
-            Built by a student. Say hi!
-          </a>
+          <nav className="end-footer-links" aria-label="Footer links">
+            <a
+              className="end-footer-link"
+              href={ABOUT_HREF}
+              onClick={(e) => {
+                e.preventDefault();
+                window.location.assign(ABOUT_HREF);
+              }}
+            >
+              What is Your Script?
+            </a>
+            <span className="end-footer-separator" aria-hidden="true">
+              |
+            </span>
+            <a
+              className="end-footer-link"
+              href={FEEDBACK_HREF}
+              onClick={(e) => {
+                e.preventDefault();
+                window.location.assign(FEEDBACK_HREF);
+              }}
+            >
+              Built by a student. Say hi!
+            </a>
+          </nav>
         </footer>
       </div>
     </>

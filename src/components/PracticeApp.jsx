@@ -10,7 +10,7 @@ import {
   maskText,
 } from "../diagnostics.js";
 
-// API base — dev always uses Vite's /api proxy so local checks hit the local
+// API base - dev always uses Vite's /api proxy so local checks hit the local
 // backend even when .env contains the production Railway URL.
 const API_BASE = (
   import.meta.env.DEV ?
@@ -214,8 +214,8 @@ function parserShape(text) {
 
 // Build a hand-drawn rectangle path that adapts to the container's
 // actual pixel dimensions.  Wobble amplitudes are deterministic (sin-
-// seeded) so the same box always looks the same — no random regen on
-// re-render — while still feeling drawn-by-hand.
+// seeded) so the same box always looks the same - no random regen on
+// re-render - while still feeling drawn-by-hand.
 function buildRoughRect(w, h, seed = 1) {
   const amp = Math.min(1.6, Math.min(w, h) * 0.04);
   const wob = (n) => Math.sin(seed * 7.3 + n * 1.7) * amp;
@@ -255,7 +255,7 @@ function buildRoughPill(w, h, seed = 1) {
 
 // Reusable pencil-drawn rectangle.  Watches its parent element with a
 // ResizeObserver, so the SVG path is regenerated whenever the container
-// resizes — the box ALWAYS fits its content, at any aspect ratio,
+// resizes - the box ALWAYS fits its content, at any aspect ratio,
 // without distortion.
 function RoughBox({
   className = "",
@@ -383,7 +383,7 @@ function PencilButton({
   );
 }
 
-// Hand-drawn checkbox — a pencil-sketched box that gets a marker tick when
+// Hand-drawn checkbox - a pencil-sketched box that gets a marker tick when
 // on.  Reads like ticking a box on the notebook page instead of a glossy
 // switch.  Seeded off the label so each box wobbles a little differently.
 function Toggle({ checked, label, hint, onChange }) {
@@ -503,11 +503,11 @@ function ModeToggle({ mode, onChange }) {
   );
 }
 
-// Compact status card per IMG_3511 — small rough-bordered rectangle
+// Compact status card per IMG_3511 - small rough-bordered rectangle
 // holding a mascot SVG on the left and the running tally on the right.
 // Title (Stuck / Reviewing / Progress) sits underneath the rectangle.
 function StatusBadge({ tone, value, label }) {
-  // When the tally ticks up, give the card a quick "stamp" — the number
+  // When the tally ticks up, give the card a quick "stamp" - the number
   // pops and the mascot hops.  We detect the rise against the previous
   // render and flag `is-bump` for one animation cycle.
   const prevValue = useRef(value);
@@ -623,7 +623,7 @@ export default function PracticeApp() {
     : 0;
 
   // Cleanup phrases get serialized to a newline-joined string before being
-  // sent to the backend — the API has always expected `cleanup` as a string.
+  // sent to the backend - the API has always expected `cleanup` as a string.
   const cleanupString = useMemo(
     () => (cleanupKeep ? cleanupArtifacts.join("\n") : ""),
     [cleanupKeep, cleanupArtifacts],
@@ -691,7 +691,7 @@ export default function PracticeApp() {
       if (file) {
         const form = new FormData();
         form.append("script", file);
-        // Cleanup is gathered in the wizard, after analyze — we still send
+        // Cleanup is gathered in the wizard, after analyze - we still send
         // whatever the user has so far in case it helps body detection.
         form.append("cleanup", cleanupString);
         response = await fetch(api("/api/analyze"), {
@@ -1172,7 +1172,7 @@ export default function PracticeApp() {
     clearStashedError();
   }
 
-  // Download the user's cue/line list as a .txt — handy to print or study away
+  // Download the user's cue/line list as a .txt - handy to print or study away
   // from the screen.  (Built from the current run; nothing leaves the browser.)
   function exportLines() {
     track(EVENTS.EXPORT_CLICKED);
@@ -1186,13 +1186,13 @@ export default function PracticeApp() {
           `${i + 1}.\n  cue · ${displayCue(it.cue)}\n  ${who} · ${it.line}`,
       )
       .join("\n\n");
-    const blob = new Blob([`${base} — ${who}\n\n${body}\n`], {
+    const blob = new Blob([`${base} - ${who}\n\n${body}\n`], {
       type: "text/plain;charset=utf-8",
     });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `${base} — ${who} lines.txt`;
+    a.download = `${base} - ${who} lines.txt`;
     document.body.appendChild(a);
     a.click();
     a.remove();
@@ -1211,7 +1211,7 @@ export default function PracticeApp() {
   // ─────────────────────────────────────────────────────────────────────
   // Render
   // ─────────────────────────────────────────────────────────────────────
-  // Settings only apply during the wizard setup — once practice has
+  // Settings only apply during the wizard setup - once practice has
   // started, the settings are locked in for the session.
   const showSettingsButton = phase === "setup";
 
@@ -1244,7 +1244,7 @@ export default function PracticeApp() {
           : null}
           {(() => {
             // Once a script is in play (setup / quiz / review), the "back"
-            // CTA returns to the upload page to start a new script — only the
+            // CTA returns to the upload page to start a new script - only the
             // upload screen itself links all the way out to landing.
             const inSession = phase !== "upload";
             return (
@@ -1436,7 +1436,7 @@ export default function PracticeApp() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────
-// Sub-components — kept in this file because they're each used once and
+// Sub-components - kept in this file because they're each used once and
 // the indirection of separate files would just add noise.
 // ─────────────────────────────────────────────────────────────────────────
 
@@ -1530,7 +1530,7 @@ function UploadStage({
         <p className="paper-eyebrow">Line rehearsal</p>
         <h1 className="upload-title">Upload a script</h1>
         <p className="upload-lede">
-          Drop in your script — we'll pull every cue for your part.
+          Drop in your script - we'll pull every cue for your part.
         </p>
       </header>
 
@@ -1685,8 +1685,8 @@ function SetupWizard({
   ];
   const intros = [
     "Scanned scripts often repeat a title, a page number, or a footer on every page. Add those here and I'll strip them so they never show up as a cue or a line. Nothing to remove? Choose “No” and move on.",
-    "Tap a name to make it your role — it fills in and highlights. The × beside a name deletes it from the list. Delete anything that isn't a real character (page headers, scene labels, OCR slip-ups) so your cues stay clean.",
-    "Everything above the line you pick — title page, cast list, director's notes — gets skipped. Tap the first line your scene actually begins on.",
+    "Tap a name to make it your role - it fills in and highlights. The × beside a name deletes it from the list. Delete anything that isn't a real character (page headers, scene labels, OCR slip-ups) so your cues stay clean.",
+    "Everything above the line you pick - title page, cast list, director's notes - gets skipped. Tap the first line your scene actually begins on.",
   ];
   const isLast = step === SETUP_STEPS.length - 1;
 
@@ -1777,7 +1777,7 @@ function SetupWizard({
 }
 
 // Final-step recap so the user knows exactly what "Start" will do before the
-// parse fires — role, where it begins, cleanup, and the settings that matter.
+// parse fires - role, where it begins, cleanup, and the settings that matter.
 function SetupRecap({
   targetCharacter,
   bodyStartLine,
@@ -1997,7 +1997,7 @@ function RoleStep({
   );
 }
 
-// Per IMG_3508 — no card wrapper, just numbered lines on the paper with
+// Per IMG_3508 - no card wrapper, just numbered lines on the paper with
 // a wavy hand-drawn underline beneath each.  Clicking a line sets it as
 // the start; the picked line gets a heavier underline.
 function FirstLineStep({ analysis, bodyStartLine, setBodyStartLine }) {
@@ -2028,7 +2028,7 @@ function FirstLineStep({ analysis, bodyStartLine, setBodyStartLine }) {
   );
 }
 
-// Self-grade button — small horizontal card matching IMG_3511's
+// Self-grade button - small horizontal card matching IMG_3511's
 // "mark correct / mark for review / mark wrong" stack on the right side.
 function SelfGradeBtn({ tone, label, onClick }) {
   return (
@@ -2161,7 +2161,7 @@ function PracticeRoom({
   const cardHandleClick = cardClickable ? onReveal : undefined;
 
   // Self-grade rail appears after the user has seen their line and now
-  // needs to mark how it went (flashcard mode only — active recall has
+  // needs to mark how it went (flashcard mode only - active recall has
   // already graded automatically).
   const showSelfGrade = mode === "flashcard" && revealed && !feedback;
 
@@ -2395,7 +2395,7 @@ function PracticeRoom({
                 </div>
               </button>
               // Flashcard mode: hint is replaced with a direct "mark for
-              // review" button — sends this line to the review pile and
+              // review" button - sends this line to the review pile and
               // advances without needing to reveal first.
             : <button
                 type="button"
@@ -2856,7 +2856,7 @@ function SettingsModal({ open, settings, onChange, onClose }) {
                 <li>
                   <Toggle
                     label="Include songs & lyrics as lines"
-                    hint="Off by default — practice spoken dialogue only. Turn on to rehearse your sung lines too."
+                    hint="Off by default - practice spoken dialogue only. Turn on to rehearse your sung lines too."
                     checked={settings.includeMusicAsLines}
                     onChange={(value) => onChange("includeMusicAsLines", value)}
                   />

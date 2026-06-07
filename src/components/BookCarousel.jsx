@@ -4,7 +4,7 @@ import Book from "./Book.jsx";
 import { COLORS, lerp, smoothstep } from "../utils/animationMath.js";
 
 // ─── The library row ─────────────────────────────────────────────────────
-// Seven plays in a single upright row.  Your Script is the centre book — no
+// Seven plays in a single upright row.  Your Script is the centre book - no
 // special standalone treatment, no orbital rotation, no flying paths that
 // could intersect.  The camera does all the motion.
 //
@@ -23,14 +23,14 @@ const BOOKS = [
   { title: "Scene Work",   color: COLORS.offBlack, x:  3.72, rotZ: -0.035 },
 ];
 
-// Reveal stagger — Your Script shows first, then siblings ripple outward
+// Reveal stagger - Your Script shows first, then siblings ripple outward
 // from the centre.  Index-distance-based.
 const REVEAL_STAGGER = [0.18, 0.14, 0.08, 0.0, 0.08, 0.14, 0.18];
 
 function ShelfBook({ book, index, titleOpacity, enter, exit }) {
   const groupRef = useRef(null);
 
-  // Tiny independent breathing — different phase per index so the row
+  // Tiny independent breathing - different phase per index so the row
   // never moves as one block.  Amplitude well below "floating".
   useFrame((state) => {
     if (!groupRef.current) return;
@@ -38,12 +38,12 @@ function ShelfBook({ book, index, titleOpacity, enter, exit }) {
     groupRef.current.position.y = Math.sin(t * 0.6 + index * 0.7) * 0.012;
   });
 
-  // Entrance — books rise into place from slightly below with a soft
+  // Entrance - books rise into place from slightly below with a soft
   // opacity ramp.  No lateral slide so no two books ever cross paths.
   const slide = 1 - enter;
   const enterDrop = slide * -0.4;
 
-  // Exit — every book sinks straight down and fades.  Uniform motion
+  // Exit - every book sinks straight down and fades.  Uniform motion
   // means no intersections, no scale mismatches, no overlap weirdness.
   const exitDrop = -exit * 1.8;
   const exitFade = 1 - exit;
@@ -84,7 +84,7 @@ export default function BookCarousel({ progress }) {
   // Titles only become readable once the row is settled.
   const titleReveal = smoothstep(0.06, 0.22, progress) * 0.95;
 
-  // Per-book enter window — hero first, then outward.
+  // Per-book enter window - hero first, then outward.
   // All books exit together (sink + fade) during the phrase approach.
   const exit = smoothstep(0.48, 0.62, progress);
 

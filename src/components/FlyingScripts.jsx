@@ -52,7 +52,7 @@ function lerpArray(from, to, t) {
   return from.map((value, index) => lerp(value, to[index], t));
 }
 
-// Clean, evenly-spaced body rule — a single thin line of ink on the page.
+// Clean, evenly-spaced body rule - a single thin line of ink on the page.
 function BodyRule({ width, y, z, color, opacity }) {
   return (
     <mesh position={[0, y, z]}>

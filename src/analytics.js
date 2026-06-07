@@ -1,7 +1,7 @@
 // ─── Anonymous event tracking ───────────────────────────────────────────────
 // Fire-and-forget pings to the backend, which tallies them per day and emails a
 // single daily digest of the named counts to metrics@yourscript.app (via
-// Resend's free tier).  No personal data, no script content — just an event
+// Resend's free tier).  No personal data, no script content - just an event
 // name.  Never blocks the UI and never throws.
 //
 // The /api/event endpoint is rate-limit-exempt on the backend, so a busy user's

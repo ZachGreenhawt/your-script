@@ -1,0 +1,27 @@
+# Your Script
+
+> A minimalist line rehearsal companion for actors and theatre students.
+
+Your Script is a web app focused on line rehearsal: solo practice, cue-based repetition, and getting off-book without a complicated production-management workflow.
+
+- Canonical: https://www.yourscript.app/
+- Sitemap: https://www.yourscript.app/sitemap.xml
+
+## Core
+
+- [Homepage](https://www.yourscript.app/): Product homepage for Your Script.
+- [What Is Your Script?](https://www.yourscript.app/what-is-yourscript): Clear explanation of what Your Script does, who uses the app, what problem the app solves, and how rehearsal works.
+
+## Guides
+
+- [Memorize Lines Faster](https://www.yourscript.app/memorize-lines): Practical guide to memorizing lines faster, practicing cues, and getting off-book.
+- [How to Memorize a Script](https://www.yourscript.app/how-to-memorize-a-script): Step-by-step guide to memorizing scripts, scenes, class material, and audition sides.
+- [Rehearse Without a Scene Partner](https://www.yourscript.app/rehearse-without-a-scene-partner): Guide to solo rehearsal, cue-based practice, and running lines alone.
+
+## Comparison
+
+- [Compare Line Learning Apps](https://www.yourscript.app/compare/line-learning-apps): Neutral guide to choosing a line-learning or rehearsal app based on workflow.
+
+## Optional
+
+- [Sitemap](https://www.yourscript.app/sitemap.xml): Canonical public URLs available for crawling.

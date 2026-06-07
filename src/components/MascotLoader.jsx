@@ -1,11 +1,11 @@
 import { useEffect, useLayoutEffect, useState } from "react";
 
 // ─── Hand-drawn mascot loader ────────────────────────────────────────────
-// A full-screen overlay used between phases — the mascot illustration
+// A full-screen overlay used between phases - the mascot illustration
 // from /public/mascots, a wobbly pencil progress strip, and a rotating
 // caption.  Two consumers:
 //   1. LandingPage  → end-of-scroll handoff (writing.svg, default
-//      "Sharpening pencils…" captions, *uncontrolled* — the bar ramps on
+//      "Sharpening pencils…" captions, *uncontrolled* - the bar ramps on
 //      its own since there's no real work to measure)
 //   2. PracticeApp  → API calls (sorting / listening mascots).  Passes a
 //      *controlled* `progress` (0–1) + `caption` streamed from the backend
@@ -54,8 +54,8 @@ export default function MascotLoader({
   }, [phase, captions, controlled]);
 
   // Self-driven adaptive bar.  We can't get true byte-level progress, so the
-  // bar ramps up while a load is active — decelerating as it nears ~92% so it
-  // always feels like it's moving but never "finishes" early — then snaps to
+  // bar ramps up while a load is active - decelerating as it nears ~92% so it
+  // always feels like it's moving but never "finishes" early - then snaps to
   // 100% the moment the work completes (phase leaves the open state, just as
   // the overlay fades).
   //
@@ -97,7 +97,7 @@ export default function MascotLoader({
           <img src={mascot} alt="" className="mascot-img" aria-hidden="true" />
         </div>
 
-        {/* Hand-drawn progress strip — wobble rect outline + dashed
+        {/* Hand-drawn progress strip - wobble rect outline + dashed
             pencil fill that scrubs left-to-right + three tick marks. */}
         <div className="mascot-progress" aria-hidden="true">
           <svg viewBox="0 0 220 24" preserveAspectRatio="none">

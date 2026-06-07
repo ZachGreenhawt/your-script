@@ -4,10 +4,10 @@ import { COLORS, lerp, smoothstep } from "../utils/animationMath.js";
 import TextPlane from "./TextPlane.jsx";
 
 // Notebook line y-positions as fractions of page height.
-// Six clean evenly-spaced rules — no wobble, all the same width — so the
+// Six clean evenly-spaced rules - no wobble, all the same width - so the
 // page reads as a proper printed notebook rather than a noisy sketch.
 const NOTEBOOK_FRACS = [0.32, 0.18, 0.04, -0.1, -0.24, -0.38];
-// Indices 0, 2, 4  → fracs  0.32, 0.04, -0.24  — used for the three text lines.
+// Indices 0, 2, 4  → fracs  0.32, 0.04, -0.24  - used for the three text lines.
 const TEXT_LINE_INDICES = [0, 2, 4];
 
 // Clean ruled-paper rendering.  Uniform line width and length; left margin
@@ -30,7 +30,7 @@ function PageLines({ width, height, depth, openAmount }) {
         />
       </mesh>
 
-      {/* Horizontal ruled lines — clean, uniform */}
+      {/* Horizontal ruled lines - clean, uniform */}
       {NOTEBOOK_FRACS.map((frac, i) => (
         <mesh key={i} position={[0.02, frac * height, 0.003]}>
           <boxGeometry args={[lineW, 0.004, 0.003]} />
@@ -46,7 +46,7 @@ function PageLines({ width, height, depth, openAmount }) {
   );
 }
 
-// Thin "binding edge" rim drawn just inside the spine — gives the book a
+// Thin "binding edge" rim drawn just inside the spine - gives the book a
 // sketched outline feel without resorting to wireframes.
 function SpineRules({ height, depth, opacity }) {
   return (
@@ -73,7 +73,7 @@ function SpineRules({ height, depth, opacity }) {
   );
 }
 
-// Single clean fore-edge line on the right side of the page block —
+// Single clean fore-edge line on the right side of the page block -
 // suggests the stack of pages without the noisy random tick marks.
 function PageEdge({ width, height, depth, opacity }) {
   return (
@@ -299,10 +299,10 @@ export default function Book({
             openAmount,
           );
           // Position text so it sits just above the corresponding notebook
-          // line — visually the text "writes on" the ruled line below it.
+          // line - visually the text "writes on" the ruled line below it.
           const lineFrac = NOTEBOOK_FRACS[TEXT_LINE_INDICES[index]];
           const lineY = lineFrac * height;
-          // TextPlane height: single line of text — sized to sit neatly
+          // TextPlane height: single line of text - sized to sit neatly
           // between two ruled lines.
           const planeH = height * 0.11;
           // Center the plane so its bottom baseline lands on the ruled

@@ -4,7 +4,118 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="/favicon.ico" />
-    <title>Your Script</title>
+
+    <!-- Primary metadata (homepage). Private SPA routes that share this shell are
+         switched to noindex by the inline script below. -->
+    <title>Your Script | Minimal Line Rehearsal Companion</title>
+    <meta
+      name="description"
+      content="Your Script is a minimalist line rehearsal companion for actors and theatre students who want to memorize lines, practice cues, and rehearse scenes with less friction."
+    />
+    <link id="canonical-link" rel="canonical" href="https://www.yourscript.app/" />
+    <meta
+      id="robots-meta"
+      name="robots"
+      content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+    />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:site_name" content="Your Script" />
+    <meta property="og:title" content="Your Script | Minimal Line Rehearsal Companion" />
+    <meta
+      property="og:description"
+      content="A minimalist line rehearsal companion for actors and theatre students who want to memorize lines, practice cues, and rehearse scenes with less friction."
+    />
+    <meta property="og:url" content="https://www.yourscript.app/" />
+    <meta property="og:image" content="https://www.yourscript.app/og/home.png" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Your Script | Minimal Line Rehearsal Companion" />
+    <meta
+      name="twitter:description"
+      content="A minimalist line rehearsal companion for actors and theatre students who want to memorize lines, practice cues, and rehearse scenes with less friction."
+    />
+    <meta name="twitter:image" content="https://www.yourscript.app/og/home.png" />
+
+    <!-- Structured data: homepage (WebSite + Organization + SoftwareApplication).
+         Mirrors seo/seo.config.mjs; describes the real app. -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "name": "Your Script",
+            "alternateName": ["yourscript.app"],
+            "url": "https://www.yourscript.app/"
+          },
+          {
+            "@type": "Organization",
+            "name": "Your Script",
+            "url": "https://www.yourscript.app/",
+            "logo": "https://www.yourscript.app/brand/logo-mark.png",
+            "description": "A minimalist line rehearsal companion for actors and theatre students."
+          },
+          {
+            "@type": "SoftwareApplication",
+            "name": "Your Script",
+            "url": "https://www.yourscript.app/",
+            "applicationCategory": "EducationalApplication",
+            "operatingSystem": "Web",
+            "description": "A minimalist line rehearsal companion for actors and theatre students.",
+            "publisher": {
+              "@type": "Organization",
+              "name": "Your Script",
+              "url": "https://www.yourscript.app/"
+            },
+            "audience": [
+              { "@type": "Audience", "audienceType": "Actors" },
+              { "@type": "Audience", "audienceType": "Theatre students" },
+              { "@type": "Audience", "audienceType": "Musical theatre performers" }
+            ],
+            "featureList": [
+              "Upload a script",
+              "Parse a script into characters and dialogue",
+              "Practice lines",
+              "Rehearse cue-to-cue",
+              "Run lines without a scene partner"
+            ]
+          }
+        ]
+      }
+    </script>
+
+    <!-- Private/app SPA routes share this single index.html. Switch them to
+         noindex so only the public marketing/guide pages are indexed. Keep this
+         list in sync with PRIVATE_ROUTES in seo/seo.config.mjs. -->
+    <script>
+      (function () {
+        var PRIVATE = [
+          "/upload",
+          "/dashboard",
+          "/feedback",
+          "/account",
+          "/admin",
+          "/auth",
+          "/login",
+          "/signup",
+          "/settings",
+        ];
+        var p = location.pathname.replace(/\/+$/, "") || "/";
+        var isPrivate = PRIVATE.some(function (r) {
+          return p === r || p.indexOf(r + "/") === 0;
+        });
+        if (isPrivate) {
+          var robots = document.getElementById("robots-meta");
+          if (robots) robots.setAttribute("content", "noindex, nofollow");
+          var canon = document.getElementById("canonical-link");
+          if (canon) canon.setAttribute("href", location.origin + location.pathname);
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
