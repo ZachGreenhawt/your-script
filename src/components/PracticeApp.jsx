@@ -783,11 +783,19 @@ export default function PracticeApp() {
     }
   }
 
-  function reportParserIssue({ kind, note, item, index, correction = {} }) {
+  function reportParserIssue({
+    kind,
+    note,
+    item,
+    index,
+    correction = {},
+    shareSnippet = false,
+  }) {
     if (!item) return null;
 
     const issue = {
       kind,
+      note: note.trim().slice(0, 500),
       noteMask: maskText(note, 500),
       parserVersion: "web-client",
       context: {
@@ -831,6 +839,18 @@ export default function PracticeApp() {
         shape: `cue ${parserShape(item.cue)}; line ${parserShape(item.line)}`,
       },
     };
+
+    if (shareSnippet) {
+      issue.unmasked = {
+        allowed: true,
+        permission:
+          "User confirmed they have rights/permission to send this snippet for debugging.",
+        speaker: (item.character || targetCharacter || "").slice(0, 80),
+        cue: (item.cue || "").slice(0, 300),
+        line: (item.line || "").slice(0, 300),
+        expectedSpeaker: (correction.expectedSpeaker || "").slice(0, 80),
+      };
+    }
 
     setParserIssues((current) => [...current, issue]);
     setParserIssueStatus("queued");
@@ -1996,6 +2016,7 @@ function PracticeRoom({
   const [reportKind, setReportKind] = useState(PARSER_ISSUES[0].id);
   const [reportNote, setReportNote] = useState("");
   const [reportSpeaker, setReportSpeaker] = useState("");
+  const [reportShareSnippet, setReportShareSnippet] = useState(false);
   const [reportStatus, setReportStatus] = useState("");
   const [reportBusy, setReportBusy] = useState(false);
   const [confirmEnd, setConfirmEnd] = useState(false);
@@ -2015,6 +2036,7 @@ function PracticeRoom({
     setReportOpen(false);
     setReportNote("");
     setReportSpeaker("");
+    setReportShareSnippet(false);
     setReportStatus("");
     setReportBusy(false);
     setConfirmEnd(false);
@@ -2079,10 +2101,12 @@ function PracticeRoom({
           expectedSpeaker:
             reportKind === "wrong_speaker" ? reportSpeaker : "",
         },
+        shareSnippet: reportShareSnippet,
       });
       setReportStatus("Saved for end of session.");
       setReportNote("");
       setReportSpeaker("");
+      setReportShareSnippet(false);
       setReportOpen(false);
     } catch (error) {
       setReportStatus(error.message || "Could not save that report.");
@@ -2391,6 +2415,12 @@ function PracticeRoom({
                     placeholder="What should it have done?"
                   />
                 </label>
+                <Toggle
+                  checked={reportShareSnippet}
+                  label="Send unmasked snippet"
+                  hint="I have rights/permission to send this cue and line for debugging."
+                  onChange={setReportShareSnippet}
+                />
                 <div className="parser-report-actions">
                   <button type="submit" disabled={reportBusy}>
                     {reportBusy ? "saving..." : "save for end"}

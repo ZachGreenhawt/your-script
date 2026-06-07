@@ -2511,6 +2511,28 @@ body:has(.new-script-hitbox:hover) .start-arrow {
   border-bottom-color: var(--ink);
 }
 
+.parser-report-panel .paper-check {
+  grid-template-columns: 24px 1fr;
+  gap: 9px;
+  font-size: 0.78rem;
+}
+
+.parser-report-panel .paper-check-box {
+  width: 24px;
+  height: 24px;
+}
+
+.parser-report-panel .paper-check-hint {
+  color: var(--pencil);
+  font-style: italic;
+  line-height: 1.25;
+}
+
+.parser-report-panel .paper-check-label {
+  color: var(--ink);
+  font-style: normal;
+}
+
 .parser-report-actions {
   position: relative;
   z-index: 1;
