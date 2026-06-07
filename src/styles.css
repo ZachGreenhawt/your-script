@@ -1684,6 +1684,14 @@ body:has(.new-script-hitbox:hover) .start-arrow {
   z-index: 1;
 }
 
+/* The cleanup card has short content (yes/no + one input), so the shared
+   240px min-height left a big empty "box" framed below the field — most
+   visible on wide screens and the "No" state. Let it hug its content.
+   (The roles card keeps the min-height for its scrolling list.) */
+.paper-card-cleanup {
+  min-height: 0;
+}
+
 /* Role card — the card is height-capped so the role list scrolls inside
    it while the "add role" row stays pinned at the bottom (never scrolls
    away).  The list is the only scroller; the add row is a flex footer. */
