@@ -1,9 +1,10 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import MascotLoader from "./MascotLoader.jsx";
-import { stashError } from "../feedback.js";
+import { clearStashedError, stashError } from "../feedback.js";
 import { track, EVENTS, sendParserReport } from "../analytics.js";
 import {
   buildSnapshot,
+  clearSnapshot,
   stashSnapshot,
   fileMeta,
   maskText,
@@ -545,6 +546,8 @@ function StatusBadge({ tone, value, label }) {
 export default function PracticeApp() {
   const fileInputRef = useRef(null);
   const answerRef = useRef(null);
+  const deletedScriptIdRef = useRef("");
+  const cleanupTargetRef = useRef("");
   const [phase, setPhase] = useState("upload");
   const [file, setFile] = useState(null);
   const [scriptText, setScriptText] = useState("");
@@ -587,6 +590,7 @@ export default function PracticeApp() {
   const [parserIssueStatus, setParserIssueStatus] = useState("idle");
   const [parserIssueError, setParserIssueError] = useState("");
   const [parserIssueSentCount, setParserIssueSentCount] = useState(0);
+  const [scriptCleanupStatus, setScriptCleanupStatus] = useState("idle");
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -649,12 +653,15 @@ export default function PracticeApp() {
   // ── handlers ───────────────────────────────────────────────────────────
   function chooseFile(nextFile) {
     if (!nextFile) return;
+    cleanupTargetRef.current = "";
+    deletedScriptIdRef.current = "";
     setFile(nextFile);
     setScriptText("");
     setAnalysis(null);
     setParsed(null);
     setPhase("upload");
     setError("");
+    setScriptCleanupStatus("idle");
   }
 
   // Stream callback for the loader. Forward-only so a late/duplicate
@@ -705,12 +712,15 @@ export default function PracticeApp() {
       const payload = await streamApiResponse(response, handleLoadProgress);
       setLoadProgress(1);
       const detected = payload.characters || [];
+      cleanupTargetRef.current = "";
+      deletedScriptIdRef.current = "";
       setAnalysis(payload);
       setCharacters(detected);
       setTargetCharacter(detected[0] || "");
       setBodyStartLine((payload.bodyStartIndex || 0) + 1);
       setSetupStep(0);
       setPhase("setup");
+      setScriptCleanupStatus("idle");
       track(EVENTS.SCRIPT_ANALYZED);
     } catch (requestError) {
       setError(requestError.message);
@@ -886,6 +896,35 @@ export default function PracticeApp() {
     }
   }
 
+  function deleteServerSession(scriptId = analysis?.scriptId) {
+    if (!scriptId || deletedScriptIdRef.current === scriptId) return;
+
+    deletedScriptIdRef.current = scriptId;
+    cleanupTargetRef.current = scriptId;
+    setScriptCleanupStatus("deleting");
+
+    fetch(api("/api/session/end"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ scriptId }),
+      keepalive: true,
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Could not delete the server copy.");
+        }
+        if (cleanupTargetRef.current === scriptId) {
+          setScriptCleanupStatus("deleted");
+        }
+      })
+      .catch(() => {
+        deletedScriptIdRef.current = "";
+        if (cleanupTargetRef.current === scriptId) {
+          setScriptCleanupStatus("error");
+        }
+      });
+  }
+
   function startRound(items, label) {
     setPracticeItems(items);
     setRoundLabel(label);
@@ -1052,6 +1091,7 @@ export default function PracticeApp() {
     track(EVENTS.PRACTICE_COMPLETED);
     setPhase("done");
     sendParserIssues(parserIssues);
+    deleteServerSession();
   }
 
   function nextCue() {
@@ -1091,6 +1131,45 @@ export default function PracticeApp() {
     setParserIssueStatus("idle");
     setParserIssueError("");
     setParserIssueSentCount(0);
+  }
+
+  function completeSession() {
+    deleteServerSession();
+    cleanupTargetRef.current = "";
+    setPhase("upload");
+    setFile(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+    setScriptText("");
+    setAnalysis(null);
+    setCharacters([]);
+    setTargetCharacter("");
+    setNewCharacter("");
+    setBodyStartLine(1);
+    setParsed(null);
+    setPracticeItems([]);
+    setRoundLabel("Full run");
+    setCurrentIndex(0);
+    setAnswer("");
+    setFeedback(null);
+    setStats({ right: 0, wrong: 0, review: 0 });
+    setMissed([]);
+    setHistory([]);
+    setSessionStartedAt(0);
+    setLineStartedAt(0);
+    setCleanupKeep(true);
+    setCleanupArtifacts([]);
+    setNewArtifact("");
+    setSetupStep(0);
+    setParserIssues([]);
+    setParserIssueStatus("idle");
+    setParserIssueError("");
+    setParserIssueSentCount(0);
+    setScriptCleanupStatus("idle");
+    setError("");
+    clearSnapshot();
+    clearStashedError();
   }
 
   // Download the user's cue/line list as a .txt — handy to print or study away
@@ -1322,8 +1401,9 @@ export default function PracticeApp() {
             hasMissed={missed.length > 0}
             onRetryAll={() => startRound(parsed?.items || [], "Full run")}
             onRetryMissed={retryMissed}
-            onBackToSetup={resetToSetup}
+            onBackToSetup={parsed?.total ? completeSession : resetToSetup}
             onExport={exportLines}
+            cleanupStatus={scriptCleanupStatus}
             parserIssueCount={parserIssues.length}
             parserIssueStatus={parserIssueStatus}
             parserIssueError={parserIssueError}
@@ -2563,6 +2643,7 @@ function DoneSession({
   onRetryMissed,
   onBackToSetup,
   onExport,
+  cleanupStatus,
   parserIssueCount,
   parserIssueStatus,
   parserIssueError,
@@ -2636,6 +2717,8 @@ function DoneSession({
         onRetry={onRetryParserIssues}
       />
 
+      <ScriptCleanupStatus status={cleanupStatus} />
+
       <div className="review-actions">
         {parsedTotal ?
           <PencilButton onClick={onExport}>Download lines</PencilButton>
@@ -2687,6 +2770,23 @@ function ParserIssueSync({ count, status, error, sentCount, onRetry }) {
           try again
         </button>
       : null}
+    </div>
+  );
+}
+
+function ScriptCleanupStatus({ status }) {
+  if (status === "idle") return null;
+
+  const message =
+    status === "deleted" ? "Server copy deleted."
+    : status === "error" ?
+      "Server copy could not be deleted yet."
+    : "Deleting server copy...";
+
+  return (
+    <div className={`review-parser-sync is-cleanup-${status}`}>
+      <RoughBox className="review-parser-sync-frame" />
+      <span>{message}</span>
     </div>
   );
 }

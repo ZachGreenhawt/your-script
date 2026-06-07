@@ -3181,7 +3181,8 @@ body:has(.new-script-hitbox:hover) .start-arrow {
   padding: 0;
 }
 
-.review-parser-sync.is-error .review-parser-sync-frame {
+.review-parser-sync.is-error .review-parser-sync-frame,
+.review-parser-sync.is-cleanup-error .review-parser-sync-frame {
   color: #8b3d3d;
 }
 
