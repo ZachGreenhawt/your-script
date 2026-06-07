@@ -2463,13 +2463,18 @@ body:has(.new-script-hitbox:hover) .start-arrow {
 }
 
 .parser-report-panel {
-  position: absolute;
-  top: calc(100% + 8px);
-  right: 0;
-  z-index: 20;
+  --parser-panel-top: clamp(88px, 12vh, 124px);
+  position: fixed;
+  top: var(--parser-panel-top);
+  right: clamp(16px, 4vw, 42px);
+  z-index: 60;
   display: grid;
+  align-content: start;
   gap: 10px;
-  width: min(280px, calc(100vw - 48px));
+  width: min(300px, calc(100vw - 32px));
+  max-height: calc(100vh - var(--parser-panel-top) - 18px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
   padding: 14px;
   background: var(--off-white);
   font-size: 0.82rem;
@@ -3234,9 +3239,10 @@ body:has(.new-script-hitbox:hover) .start-arrow {
     justify-content: center;
   }
   .parser-report-panel {
-    left: 50%;
-    right: auto;
-    transform: translateX(-50%);
+    --parser-panel-top: 76px;
+    left: 16px;
+    right: 16px;
+    width: auto;
   }
   .paper-stage-card {
     width: 100%;
