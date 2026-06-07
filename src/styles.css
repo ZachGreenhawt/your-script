@@ -1953,16 +1953,28 @@ body:has(.new-script-hitbox:hover) .start-arrow {
 /* Wizard pager (fixed at bottom of viewport) */
 .wizard-pager {
   position: fixed;
-  left: max(82px, 9.5vw);
-  right: max(40px, 4vw);
-  bottom: calc(clamp(24px, 4vh, 44px) + env(safe-area-inset-bottom, 0px));
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 14;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 24px;
-  z-index: 14;
-  padding: 8px 0;
-  background: var(--off-white);
+  /* Full-bleed footer. The buttons keep their previous horizontal insets via
+     padding, while a solid base + a short upward fade (in the exact paper
+     colour, so it never tints) hides any card or list content that scrolls
+     beneath it. Overflow is never seen poking out around the pager — applies
+     to the cleanup card, the character list, and any future tall step. */
+  padding: clamp(20px, 3.5vh, 36px) max(40px, 4vw)
+    calc(clamp(22px, 4vh, 44px) + env(safe-area-inset-bottom, 0px))
+    max(82px, 9.5vw);
+  background: linear-gradient(
+    to top,
+    var(--off-white) 0,
+    var(--off-white) 76%,
+    rgba(242, 240, 232, 0) 100%
+  );
   font-family: "Teko", "Inter Tight", sans-serif;
   font-weight: 600;
   font-size: clamp(1.15rem, 1.5vw, 1.4rem);

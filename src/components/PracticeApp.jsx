@@ -1,10 +1,4 @@
-import {
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import MascotLoader from "./MascotLoader.jsx";
 import { stashError } from "../feedback.js";
 import { track, EVENTS, sendParserReport } from "../analytics.js";
@@ -18,8 +12,9 @@ import {
 // API base — dev always uses Vite's /api proxy so local checks hit the local
 // backend even when .env contains the production Railway URL.
 const API_BASE = (
-  import.meta.env.DEV ? "" : import.meta.env.VITE_API_BASE || ""
-).replace(/\/+$/, "");
+  import.meta.env.DEV ?
+    ""
+  : import.meta.env.VITE_API_BASE || "").replace(/\/+$/, "");
 const api = (path) => `${API_BASE}${path}`;
 
 // Hand-drawn underline used in headings/section dividers (stays a fixed
@@ -210,7 +205,8 @@ function parserShape(text) {
   if (!trimmed) bits.push("blank");
   if (/^\s+/.test(raw)) bits.push("indent");
   if (/^[([]/.test(trimmed)) bits.push("bracketed");
-  if (/\p{L}/u.test(trimmed) && trimmed === trimmed.toUpperCase()) bits.push("all caps");
+  if (/\p{L}/u.test(trimmed) && trimmed === trimmed.toUpperCase())
+    bits.push("all caps");
   if (/[:.]$/.test(trimmed)) bits.push("ends punctuation");
   return bits.join(", ") || "plain";
 }
@@ -332,7 +328,7 @@ function RoughBox({
             strokeLinejoin="round"
             vectorEffect="non-scaling-stroke"
           />
-          {path2 ? (
+          {path2 ?
             <path
               d={path2}
               fill="none"
@@ -343,7 +339,7 @@ function RoughBox({
               vectorEffect="non-scaling-stroke"
               opacity="0.5"
             />
-          ) : null}
+          : null}
         </>
       }
     </svg>
@@ -415,7 +411,9 @@ function Toggle({ checked, label, hint, onChange }) {
       </span>
       <span className="paper-check-text">
         <span className="paper-check-label">{label}</span>
-        {hint ? <span className="paper-check-hint">{hint}</span> : null}
+        {hint ?
+          <span className="paper-check-hint">{hint}</span>
+        : null}
       </span>
     </label>
   );
@@ -450,7 +448,8 @@ function WizardPager({
             key={i}
             className={
               i === step ? "is-active"
-              : i < step ? "is-done"
+              : i < step ?
+                "is-done"
               : "is-todo"
             }
           />
@@ -489,16 +488,13 @@ function ModeToggle({ mode, onChange }) {
             className={`mode-seg ${active ? "is-active" : ""}`}
             onClick={() => onChange(entry.id)}
           >
-            {active ? (
-              <RoughBox
-                className="mode-seg-active-frame"
-                variant="pill"
-              />
-            ) : null}
+            {active ?
+              <RoughBox className="mode-seg-active-frame" variant="pill" />
+            : null}
             <span className="mode-seg-label">{entry.label}</span>
-            {i === 0 ? (
+            {i === 0 ?
               <span className="mode-divider" aria-hidden="true" />
-            ) : null}
+            : null}
           </button>
         );
       })}
@@ -642,10 +638,8 @@ export default function PracticeApp() {
 
   const loaderActive = busy === "analyze" || busy === "parse";
   const loaderMascot =
-    busy === "analyze" ?
-      "/mascots/Sorting Cues.svg"
-    : busy === "parse" ?
-      "/mascots/Listening for Cue.svg"
+    busy === "analyze" ? "/mascots/Sorting Cues.svg"
+    : busy === "parse" ? "/mascots/Listening for Cue.svg"
     : "/mascots/writing.svg";
   const loaderCaptions =
     busy === "analyze" ? ANALYZE_CAPTIONS
@@ -693,7 +687,10 @@ export default function PracticeApp() {
         // Cleanup is gathered in the wizard, after analyze — we still send
         // whatever the user has so far in case it helps body detection.
         form.append("cleanup", cleanupString);
-        response = await fetch(api("/api/analyze"), { method: "POST", body: form });
+        response = await fetch(api("/api/analyze"), {
+          method: "POST",
+          body: form,
+        });
       } else {
         response = await fetch(api("/api/analyze-text"), {
           method: "POST",
@@ -805,7 +802,8 @@ export default function PracticeApp() {
         sourceLines: parsed?.lineCount || analysis?.lineCount || 0,
         practiceLines: parsed?.total || practiceItems.length,
         turns: parsed?.turnCount || 0,
-        bodyStartLine: (parsed?.bodyStartIndex ?? analysis?.bodyStartIndex ?? 0) + 1,
+        bodyStartLine:
+          (parsed?.bodyStartIndex ?? analysis?.bodyStartIndex ?? 0) + 1,
       },
       block: {
         index: index + 1,
@@ -819,7 +817,9 @@ export default function PracticeApp() {
       },
       before: {
         classification: "practice_pair",
-        speaker: maskText(item.character || targetCharacter, 24, { compact: true }),
+        speaker: maskText(item.character || targetCharacter, 24, {
+          compact: true,
+        }),
       },
       after: {
         correctionKind: kind,
@@ -856,7 +856,8 @@ export default function PracticeApp() {
       setParserIssues(issues);
       setParserIssueStatus("error");
       setParserIssueError(
-        `Couldn't send ${issues.length} parser note${issues.length === 1 ? "" : "s"}.`,
+        requestError.message ||
+          `Couldn't send ${issues.length} parser note${issues.length === 1 ? "" : "s"}.`,
       );
       track(EVENTS.ERROR_OCCURRED);
     }
@@ -935,8 +936,7 @@ export default function PracticeApp() {
     if (!currentItem || feedback) return;
     const lineTimeMs = Date.now() - lineStartedAt;
     const correct =
-      status === "submit" &&
-      answerMatches(answer, currentItem.line, settings);
+      status === "submit" && answerMatches(answer, currentItem.line, settings);
 
     if (correct) {
       if (hintShown) {
@@ -1130,7 +1130,7 @@ export default function PracticeApp() {
           />
         </span>
         <div className="chrome-right">
-          {showSettingsButton ? (
+          {showSettingsButton ?
             <button
               type="button"
               className="chrome-icon-btn"
@@ -1139,7 +1139,7 @@ export default function PracticeApp() {
             >
               <SettingsGlyph />
             </button>
-          ) : null}
+          : null}
           {(() => {
             // Once a script is in play (setup / quiz / review), the "back"
             // CTA returns to the upload page to start a new script — only the
@@ -1172,7 +1172,7 @@ export default function PracticeApp() {
         </div>
       </header>
 
-      {error ? (
+      {error ?
         <div className="practice-toast" role="alert">
           <svg viewBox="0 0 20 20" aria-hidden="true" className="toast-icon">
             <circle cx="10" cy="10" r="9" fill="currentColor" />
@@ -1199,14 +1199,14 @@ export default function PracticeApp() {
             ×
           </button>
         </div>
-      ) : null}
+      : null}
 
       <section
         className={`practice-shell on-paper ${
           phase === "practice" ? "is-rehearsal" : ""
         }`}
       >
-        {phase === "upload" ? (
+        {phase === "upload" ?
           <UploadStage
             file={file}
             dragging={dragging}
@@ -1220,9 +1220,9 @@ export default function PracticeApp() {
             onDragEnd={() => setDragging(false)}
             onSubmit={analyzeScript}
           />
-        ) : null}
+        : null}
 
-        {phase === "setup" ? (
+        {phase === "setup" ?
           <SetupWizard
             step={setupStep}
             cleanupKeep={cleanupKeep}
@@ -1249,9 +1249,9 @@ export default function PracticeApp() {
             canNext={canStepForward && !loaderActive}
             busy={busy}
           />
-        ) : null}
+        : null}
 
-        {phase === "practice" && currentItem ? (
+        {phase === "practice" && currentItem ?
           <PracticeRoom
             currentItem={currentItem}
             currentIndex={currentIndex}
@@ -1284,9 +1284,9 @@ export default function PracticeApp() {
             parserIssueCount={parserIssues.length}
             onEndSession={endSession}
           />
-        ) : null}
+        : null}
 
-        {phase === "done" ? (
+        {phase === "done" ?
           <DoneSession
             history={history}
             stats={stats}
@@ -1306,7 +1306,7 @@ export default function PracticeApp() {
             parserIssueSentCount={parserIssueSentCount}
             onRetryParserIssues={() => sendParserIssues(parserIssues)}
           />
-        ) : null}
+        : null}
       </section>
 
       <SettingsModal
@@ -1348,10 +1348,14 @@ function PaperBackdrop() {
 function PaperHeading({ eyebrow, title, subtitle }) {
   return (
     <header className="paper-heading">
-      {eyebrow ? <p className="paper-eyebrow">{eyebrow}</p> : null}
+      {eyebrow ?
+        <p className="paper-eyebrow">{eyebrow}</p>
+      : null}
       <h1>{title}</h1>
       <HandUnderline className="paper-heading-rule" />
-      {subtitle ? <p className="paper-subtitle">{subtitle}</p> : null}
+      {subtitle ?
+        <p className="paper-subtitle">{subtitle}</p>
+      : null}
     </header>
   );
 }
@@ -1368,7 +1372,8 @@ function PhaseCrumbs({ phase, setupStep, stepCount, roundLabel }) {
               key={i}
               className={
                 i === setupStep ? "is-active"
-                : i < setupStep ? "is-done"
+                : i < setupStep ?
+                  "is-done"
                 : ""
               }
             />
@@ -1449,12 +1454,15 @@ function UploadStage({
               onChoose(event.dataTransfer.files?.[0]);
             }}
           >
-            <RoughBox className="paper-dropzone-frame" strokeWidth={1.3} double />
+            <RoughBox
+              className="paper-dropzone-frame"
+              strokeWidth={1.3}
+              double
+            />
             <span className="paper-dropzone-inner">
-              {file ? (
+              {file ?
                 <span className="paper-dropzone-text">{file.name}</span>
-              ) : (
-                <>
+              : <>
                   <svg
                     className="paper-dropzone-arrow"
                     viewBox="0 0 40 40"
@@ -1472,7 +1480,7 @@ function UploadStage({
                   <span className="paper-dropzone-text">Drop it here</span>
                   <span className="paper-dropzone-hint">.pdf or .txt</span>
                 </>
-              )}
+              }
             </span>
           </button>
         </div>
@@ -1485,7 +1493,7 @@ function UploadStage({
         />
 
         <div className="upload-secondary">
-          {!showPaste && !scriptText ? (
+          {!showPaste && !scriptText ?
             <button
               type="button"
               className="upload-text-link"
@@ -1493,8 +1501,7 @@ function UploadStage({
             >
               or paste script text
             </button>
-          ) : (
-            <div className="upload-textarea-wrap upload-paste-wrap">
+          : <div className="upload-textarea-wrap upload-paste-wrap">
               <textarea
                 id="script-text"
                 value={scriptText}
@@ -1512,10 +1519,10 @@ function UploadStage({
               />
               <RoughBox className="upload-textarea-frame" />
             </div>
-          )}
+          }
         </div>
 
-        {hasInput ? (
+        {hasInput ?
           <div className="upload-actions">
             <PencilButton
               type="submit"
@@ -1531,7 +1538,7 @@ function UploadStage({
               }
             </PencilButton>
           </div>
-        ) : null}
+        : null}
       </form>
     </div>
   );
@@ -1598,15 +1605,14 @@ function SetupWizard({
           <SettingsGlyph />
         </span>
         <span>
-          Matching, timing &amp; song handling live in{" "}
-          <strong>Settings</strong> (the gear, top-right). Tweak them any time
-          before you start.
+          Matching, timing &amp; song handling live in <strong>Settings</strong>{" "}
+          (the gear, top-right). Tweak them any time before you start.
         </span>
       </button>
 
       <div className="setup-wizard">
         <div key={step} className={`wizard-step step-${step}`}>
-          {step === 0 ? (
+          {step === 0 ?
             <CleanupStep
               cleanupKeep={cleanupKeep}
               setCleanupKeep={setCleanupKeep}
@@ -1616,8 +1622,8 @@ function SetupWizard({
               setNewArtifact={setNewArtifact}
               addArtifact={addArtifact}
             />
-          ) : null}
-          {step === 1 ? (
+          : null}
+          {step === 1 ?
             <RoleStep
               characters={characters}
               targetCharacter={targetCharacter}
@@ -1627,18 +1633,18 @@ function SetupWizard({
               onNewCharacter={setNewCharacter}
               onAdd={addCharacter}
             />
-          ) : null}
-          {step === 2 ? (
+          : null}
+          {step === 2 ?
             <FirstLineStep
               analysis={analysis}
               bodyStartLine={bodyStartLine}
               setBodyStartLine={setBodyStartLine}
             />
-          ) : null}
+          : null}
         </div>
       </div>
 
-      {isLast ? (
+      {isLast ?
         <SetupRecap
           targetCharacter={targetCharacter}
           bodyStartLine={bodyStartLine}
@@ -1646,7 +1652,7 @@ function SetupWizard({
           cleanupArtifacts={cleanupArtifacts}
           settings={settings}
         />
-      ) : null}
+      : null}
 
       <WizardPager
         step={step}
@@ -1655,7 +1661,9 @@ function SetupWizard({
         onNext={onNext}
         nextLabel={
           step === SETUP_STEPS.length - 1 ?
-            busy === "parse" ? "Building…" : "Start"
+            busy === "parse" ?
+              "Building…"
+            : "Start"
           : "Next"
         }
         canNext={canNext}
@@ -1723,7 +1731,11 @@ function CleanupStep({
     <div className="paper-card paper-card-cleanup">
       <RoughBox className="paper-card-frame" double />
       <div className="paper-card-body">
-        <div className="yesno-row" role="radiogroup" aria-label="Remove repeated headers">
+        <div
+          className="yesno-row"
+          role="radiogroup"
+          aria-label="Remove repeated headers"
+        >
           <button
             type="button"
             role="radio"
@@ -1746,12 +1758,12 @@ function CleanupStep({
           </button>
         </div>
 
-        {cleanupKeep ? (
+        {cleanupKeep ?
           <div className="artifact-block">
             <p className="artifact-helper">
               Each line you add gets stripped from the script.
             </p>
-            {cleanupArtifacts.length ? (
+            {cleanupArtifacts.length ?
               <ul className="artifact-list">
                 {cleanupArtifacts.map((artifact) => (
                   <li key={artifact}>
@@ -1766,7 +1778,7 @@ function CleanupStep({
                   </li>
                 ))}
               </ul>
-            ) : null}
+            : null}
             <div className="artifact-add">
               <label className="artifact-add-field">
                 <input
@@ -1792,11 +1804,10 @@ function CleanupStep({
               </PencilButton>
             </div>
           </div>
-        ) : (
-          <p className="artifact-helper artifact-helper-muted">
+        : <p className="artifact-helper artifact-helper-muted">
             We'll keep the script as-is.
           </p>
-        )}
+        }
       </div>
     </div>
   );
@@ -1822,7 +1833,7 @@ function RoleStep({
             </>
           : "Tap a name below to choose your role."}
         </p>
-        {characters.length ? (
+        {characters.length ?
           <ul className="role-list">
             {characters.map((character) => {
               const active = character === targetCharacter;
@@ -1851,9 +1862,7 @@ function RoleStep({
               );
             })}
           </ul>
-        ) : (
-          <p className="role-empty">No roles were detected.</p>
-        )}
+        : <p className="role-empty">No roles were detected.</p>}
 
         <div className="role-add">
           <label className="role-add-field">
@@ -1894,7 +1903,10 @@ function FirstLineStep({ analysis, bodyStartLine, setBodyStartLine }) {
       {preview.map((line) => {
         const picked = Number(bodyStartLine) - 1 === line.index;
         return (
-          <li key={line.index} className={`line-pick ${picked ? "is-picked" : ""}`}>
+          <li
+            key={line.index}
+            className={`line-pick ${picked ? "is-picked" : ""}`}
+          >
             <button
               type="button"
               onClick={() => setBodyStartLine(line.lineNumber)}
@@ -2031,8 +2043,7 @@ function PracticeRoom({
   // Self-grade rail appears after the user has seen their line and now
   // needs to mark how it went (flashcard mode only — active recall has
   // already graded automatically).
-  const showSelfGrade =
-    mode === "flashcard" && revealed && !feedback;
+  const showSelfGrade = mode === "flashcard" && revealed && !feedback;
 
   async function submitParserReport(event) {
     event.preventDefault();
@@ -2118,74 +2129,80 @@ function PracticeRoom({
           <div
             ref={stageBodyRef}
             className={`paper-card-body stage-body ${isWrong ? "is-wrong" : ""}`}
-            key={`${currentIndex}-${mode === "flashcard" ? (revealed ? "line" : "cue") : "active"}`}
+            key={`${currentIndex}-${
+              mode === "flashcard" ?
+                revealed ? "line"
+                : "cue"
+              : "active"
+            }`}
           >
-            {mode === "flashcard" && !isWrong && !isCorrect ? (
-              // Single-section flashcard view: either the cue OR the
-              // user's line, never both at once.  Flips on click.
-              <div className="stage-row stage-single">
-                <p className="stage-label">
-                  {revealed ? "Your line" : "Cue line"}
-                </p>
-                <p className="stage-line">
-                  {revealed ? expected : displayCue(currentItem.cue)}
-                </p>
-                {revealed ? (
-                  <p className="stage-character">[ {character} ]</p>
-                ) : (
-                  <span className="stage-hint-text">Click to reveal your line</span>
-                )}
-              </div>
-            ) : (
-              // Two-section view for active recall + all feedback states.
-              <>
-                <div className="stage-row stage-cue">
-                  {isWrong ? (
-                    <p className="wrong-headline">You were wrong</p>
-                  ) : (
-                    <>
-                      <p className="stage-label">Cue line</p>
-                      <p className="stage-line">
-                        {displayCue(currentItem.cue)}
-                      </p>
-                    </>
-                  )}
-                </div>
-
-                <div className="stage-divider" aria-hidden="true">
-                  <HandUnderline />
-                </div>
-
-                <div className="stage-row stage-your">
+            {
+              mode === "flashcard" && !isWrong && !isCorrect ?
+                // Single-section flashcard view: either the cue OR the
+                // user's line, never both at once.  Flips on click.
+                <div className="stage-row stage-single">
                   <p className="stage-label">
-                    {isWrong ?
-                      "The correct line was"
-                    : isCorrect ?
-                      "Your line"
-                    : "Your line"}
+                    {revealed ? "Your line" : "Cue line"}
                   </p>
-                  {isWrong ? (
-                    <p className="stage-line revealed">{expected}</p>
-                  ) : null}
-                  {!isWrong && mode === "active" ? (
-                    <div className="answer-field">
-                      <textarea
-                        ref={answerRef}
-                        value={answer}
-                        onChange={(event) => onAnswer(event.target.value)}
-                        disabled={Boolean(feedback)}
-                        placeholder="What's your response?"
-                        rows={3}
-                      />
-                      <RoughBox className="answer-field-frame" />
-                    </div>
-                  ) : null}
-                  <p className="stage-character">[ {character} ]</p>
+                  <p className="stage-line">
+                    {revealed ? expected : displayCue(currentItem.cue)}
+                  </p>
+                  {revealed ?
+                    <p className="stage-character">[ {character} ]</p>
+                  : <span className="stage-hint-text">
+                      Click to reveal your line
+                    </span>
+                  }
                 </div>
-              </>
-            )}
+                // Two-section view for active recall + all feedback states.
+              : <>
+                  <div className="stage-row stage-cue">
+                    {isWrong ?
+                      <p className="wrong-headline">You were wrong</p>
+                    : <>
+                        <p className="stage-label">Cue line</p>
+                        <p className="stage-line">
+                          {displayCue(currentItem.cue)}
+                        </p>
+                      </>
+                    }
+                  </div>
 
-            {isCorrect ? (
+                  <div className="stage-divider" aria-hidden="true">
+                    <HandUnderline />
+                  </div>
+
+                  <div className="stage-row stage-your">
+                    <p className="stage-label">
+                      {isWrong ?
+                        "The correct line was"
+                      : isCorrect ?
+                        "Your line"
+                      : "Your line"}
+                    </p>
+                    {isWrong ?
+                      <p className="stage-line revealed">{expected}</p>
+                    : null}
+                    {!isWrong && mode === "active" ?
+                      <div className="answer-field">
+                        <textarea
+                          ref={answerRef}
+                          value={answer}
+                          onChange={(event) => onAnswer(event.target.value)}
+                          disabled={Boolean(feedback)}
+                          placeholder="What's your response?"
+                          rows={3}
+                        />
+                        <RoughBox className="answer-field-frame" />
+                      </div>
+                    : null}
+                    <p className="stage-character">[ {character} ]</p>
+                  </div>
+                </>
+
+            }
+
+            {isCorrect ?
               <div
                 className={`stage-feedback ${isReviewing ? "is-review" : "is-correct"}`}
               >
@@ -2196,7 +2213,7 @@ function PracticeRoom({
                   : ""}
                 </span>
               </div>
-            ) : null}
+            : null}
           </div>
 
           {/* Celebratory doodle burst on a correct recall.  Rendered as a
@@ -2204,8 +2221,12 @@ function PracticeRoom({
               measured scrollHeight that drives the fit-to-card shrink, and
               pointer-events:none so it never eats clicks. Keyed on the line
               so it re-pops for each new correct answer. */}
-          {isCorrect && !isReviewing ? (
-            <div className="correct-burst" aria-hidden="true" key={currentIndex}>
+          {isCorrect && !isReviewing ?
+            <div
+              className="correct-burst"
+              aria-hidden="true"
+              key={currentIndex}
+            >
               {CORRECT_SPARKS.map((s, i) => (
                 <span
                   key={i}
@@ -2219,60 +2240,61 @@ function PracticeRoom({
                 />
               ))}
             </div>
-          ) : null}
+          : null}
         </article>
 
         <aside className="rehearsal-aside">
-          {mode === "active" ? (
-            <button
-              type="button"
-              className={`hint-card ${hintShown ? "is-shown" : ""}`}
-              onClick={(e) => {
-                e.stopPropagation();
-                onHint();
-              }}
-              disabled={hintShown || Boolean(feedback)}
-            >
-              <RoughBox className="hint-card-frame" boil="hover" />
-              <img
-                src="/mascots/Hint.svg"
-                alt=""
-                aria-hidden="true"
-                className="hint-card-icon"
-              />
-              <div className="hint-card-text">
-                <strong>Hint?</strong>
-                <span>{hintShown ? hint : "First few words"}</span>
-              </div>
-            </button>
-          ) : (
-            // Flashcard mode: hint is replaced with a direct "mark for
-            // review" button — sends this line to the review pile and
-            // advances without needing to reveal first.
-            <button
-              type="button"
-              className="hint-card flashcard-review-btn"
-              onClick={(e) => {
-                e.stopPropagation();
-                onSelfGrade("review");
-              }}
-              disabled={Boolean(feedback)}
-            >
-              <RoughBox className="hint-card-frame" boil="hover" />
-              <img
-                src="/mascots/Reviewing.svg"
-                alt=""
-                aria-hidden="true"
-                className="hint-card-icon"
-              />
-              <div className="hint-card-text">
-                <strong>Mark for review</strong>
-                <span>save for later</span>
-              </div>
-            </button>
-          )}
+          {
+            mode === "active" ?
+              <button
+                type="button"
+                className={`hint-card ${hintShown ? "is-shown" : ""}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onHint();
+                }}
+                disabled={hintShown || Boolean(feedback)}
+              >
+                <RoughBox className="hint-card-frame" boil="hover" />
+                <img
+                  src="/mascots/Hint.svg"
+                  alt=""
+                  aria-hidden="true"
+                  className="hint-card-icon"
+                />
+                <div className="hint-card-text">
+                  <strong>Hint?</strong>
+                  <span>{hintShown ? hint : "First few words"}</span>
+                </div>
+              </button>
+              // Flashcard mode: hint is replaced with a direct "mark for
+              // review" button — sends this line to the review pile and
+              // advances without needing to reveal first.
+            : <button
+                type="button"
+                className="hint-card flashcard-review-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onSelfGrade("review");
+                }}
+                disabled={Boolean(feedback)}
+              >
+                <RoughBox className="hint-card-frame" boil="hover" />
+                <img
+                  src="/mascots/Reviewing.svg"
+                  alt=""
+                  aria-hidden="true"
+                  className="hint-card-icon"
+                />
+                <div className="hint-card-text">
+                  <strong>Mark for review</strong>
+                  <span>save for later</span>
+                </div>
+              </button>
 
-          {showSelfGrade ? (
+          }
+
+          {showSelfGrade ?
             <div className="self-grade-stack">
               <SelfGradeBtn
                 tone="right"
@@ -2285,10 +2307,10 @@ function PracticeRoom({
                 onClick={() => onSelfGrade("stuck")}
               />
             </div>
-          ) : null}
+          : null}
 
           <div className="parser-report">
-            {!reportOpen ? (
+            {!reportOpen ?
               <>
                 <button
                   type="button"
@@ -2299,12 +2321,14 @@ function PracticeRoom({
                     `parser issues (${parserIssueCount})`
                   : "parser issue?"}
                 </button>
-                {reportStatus ? (
+                {reportStatus ?
                   <p className="parser-report-status">{reportStatus}</p>
-                ) : null}
+                : null}
               </>
-            ) : (
-              <form className="parser-report-panel" onSubmit={submitParserReport}>
+            : <form
+                className="parser-report-panel"
+                onSubmit={submitParserReport}
+              >
                 <RoughBox className="parser-report-frame" />
                 <label>
                   <span>What went wrong?</span>
@@ -2342,11 +2366,11 @@ function PracticeRoom({
                     cancel
                   </button>
                 </div>
-                {reportStatus ? (
+                {reportStatus ?
                   <p className="parser-report-status">{reportStatus}</p>
-                ) : null}
+                : null}
               </form>
-            )}
+            }
           </div>
         </aside>
       </div>
@@ -2416,7 +2440,7 @@ function PracticeRoom({
               }}
             />
           </div>
-          {settings.timedMode ? (
+          {settings.timedMode ?
             <span className="foot-progress-meta">
               <em>{clockTime(lineElapsed)}</em>
               <i aria-hidden="true">·</i>
@@ -2426,11 +2450,10 @@ function PracticeRoom({
                 {currentIndex + 1}/{total}
               </span>
             </span>
-          ) : (
-            <span className="foot-progress-meta">
+          : <span className="foot-progress-meta">
               {currentIndex + 1} / {total}
             </span>
-          )}
+          }
         </div>
 
         <div className="foot-actions">
@@ -2441,7 +2464,7 @@ function PracticeRoom({
           >
             {confirmEnd ? "yes, end" : "end session"}
           </button>
-          {confirmEnd ? (
+          {confirmEnd ?
             <button
               type="button"
               className="foot-link foot-cancel"
@@ -2449,7 +2472,7 @@ function PracticeRoom({
             >
               cancel
             </button>
-          ) : null}
+          : null}
           {primaryAction}
         </div>
       </footer>
@@ -2495,7 +2518,7 @@ function DoneSession({
         <StatusBadge tone="right" value={stats.right} label="Right" />
       </div>
 
-      {history.length ? (
+      {history.length ?
         <ol className="review-list">
           {history.map((entry, idx) => {
             const tone = toneFor(entry.status);
@@ -2512,16 +2535,18 @@ function DoneSession({
                   <p className="review-row-head">
                     <strong>{idx + 1}.</strong>
                     <span className="review-row-mode">
-                      {entry.mode === "flashcard" ? "Flashcard" : "Active recall"}
+                      {entry.mode === "flashcard" ?
+                        "Flashcard"
+                      : "Active recall"}
                     </span>
                     <span className={`review-row-tag tone-${tone}`}>
                       {labelFor(entry.status)}
                     </span>
-                    {settings.timedMode ? (
+                    {settings.timedMode ?
                       <span className="review-row-time">
                         {seconds(entry.lineTimeMs)}
                       </span>
-                    ) : null}
+                    : null}
                   </p>
                   <p className="review-row-line">{entry.item.line}</p>
                   <p className="review-row-cue">
@@ -2532,9 +2557,7 @@ function DoneSession({
             );
           })}
         </ol>
-      ) : (
-        <p className="review-empty">No lines to review yet.</p>
-      )}
+      : <p className="review-empty">No lines to review yet.</p>}
 
       <ParserIssueSync
         count={parserIssueCount}
@@ -2545,28 +2568,31 @@ function DoneSession({
       />
 
       <div className="review-actions">
-        {parsedTotal ? (
+        {parsedTotal ?
           <PencilButton onClick={onExport}>Download lines</PencilButton>
-        ) : null}
-        {parsedTotal ? (
+        : null}
+        {parsedTotal ?
           <PencilButton onClick={onRetryAll}>Try again</PencilButton>
-        ) : null}
-        {hasMissed ? (
+        : null}
+        {hasMissed ?
           <PencilButton onClick={onRetryMissed}>Retry missed</PencilButton>
-        ) : null}
+        : null}
         <PencilButton onClick={onBackToSetup}>
           {parsedTotal ? "Complete session" : "Back to settings"}
         </PencilButton>
       </div>
 
-      {parsedTotal ? (
+      {parsedTotal ?
         <p className="review-aside">
           Did this help you learn your lines?{" "}
-          <a className="review-aside-link" href="/feedback?from=done&kind=story">
+          <a
+            className="review-aside-link"
+            href="/feedback?from=done&kind=story"
+          >
             Tell the maker&nbsp;→
           </a>
         </p>
-      ) : null}
+      : null}
     </div>
   );
 }
@@ -2575,8 +2601,10 @@ function ParserIssueSync({ count, status, error, sentCount, onRetry }) {
   if (status === "idle" || (!count && status !== "sent")) return null;
 
   const message =
-    status === "sending" ? `Sending ${count} parser note${count === 1 ? "" : "s"}...`
-    : status === "sent" ? `Sent ${sentCount} parser note${sentCount === 1 ? "" : "s"}.`
+    status === "sending" ?
+      `Sending ${count} parser note${count === 1 ? "" : "s"}...`
+    : status === "sent" ?
+      `Sent ${sentCount} parser note${sentCount === 1 ? "" : "s"}.`
     : status === "error" ?
       `${sentCount ? `Sent ${sentCount}. ` : ""}${error || "Parser notes could not be sent."}`
     : `${count} parser note${count === 1 ? "" : "s"} saved for this session.`;
@@ -2585,11 +2613,11 @@ function ParserIssueSync({ count, status, error, sentCount, onRetry }) {
     <div className={`review-parser-sync is-${status}`}>
       <RoughBox className="review-parser-sync-frame" />
       <span>{message}</span>
-      {status === "error" ? (
+      {status === "error" ?
         <button type="button" onClick={onRetry}>
           try again
         </button>
-      ) : null}
+      : null}
     </div>
   );
 }
@@ -2626,10 +2654,7 @@ function SettingsModal({ open, settings, onChange, onClose }) {
       role="dialog"
       aria-label="Settings"
     >
-      <div
-        className="settings-modal"
-        onClick={(e) => e.stopPropagation()}
-      >
+      <div className="settings-modal" onClick={(e) => e.stopPropagation()}>
         <RoughBox className="settings-modal-frame" strokeWidth={1.4} double />
         <div className="settings-modal-body">
           <header className="settings-modal-head">
