@@ -783,7 +783,7 @@ export default function PracticeApp() {
     }
   }
 
-  function reportParserIssue({ kind, note, item, index }) {
+  function reportParserIssue({ kind, note, item, index, correction = {} }) {
     if (!item) return null;
 
     const issue = {
@@ -823,6 +823,9 @@ export default function PracticeApp() {
       },
       after: {
         correctionKind: kind,
+        expectedSpeakerMask: maskText(correction.expectedSpeaker, 24, {
+          compact: true,
+        }),
       },
       formatting: {
         shape: `cue ${parserShape(item.cue)}; line ${parserShape(item.line)}`,
@@ -1273,6 +1276,7 @@ export default function PracticeApp() {
             revealed={revealed}
             onReveal={() => setRevealed(true)}
             targetCharacter={targetCharacter}
+            characters={characters}
             onCheck={() => gradeCurrent("submit")}
             onRevealAnswer={() => gradeCurrent("reveal")}
             onSelfGrade={selfGrade}
@@ -1971,6 +1975,7 @@ function PracticeRoom({
   revealed,
   onReveal,
   targetCharacter,
+  characters = [],
   onCheck,
   onSelfGrade,
   onNext,
@@ -1990,13 +1995,26 @@ function PracticeRoom({
   const [reportOpen, setReportOpen] = useState(false);
   const [reportKind, setReportKind] = useState(PARSER_ISSUES[0].id);
   const [reportNote, setReportNote] = useState("");
+  const [reportSpeaker, setReportSpeaker] = useState("");
   const [reportStatus, setReportStatus] = useState("");
   const [reportBusy, setReportBusy] = useState(false);
   const [confirmEnd, setConfirmEnd] = useState(false);
+  const speakerOptions = useMemo(() => {
+    const seen = new Set();
+    const out = [];
+    for (const name of [targetCharacter, character, ...characters]) {
+      const cleaned = cleanCharacterName(name || "");
+      if (!cleaned || seen.has(cleaned)) continue;
+      seen.add(cleaned);
+      out.push(cleaned);
+    }
+    return out;
+  }, [character, characters, targetCharacter]);
 
   useEffect(() => {
     setReportOpen(false);
     setReportNote("");
+    setReportSpeaker("");
     setReportStatus("");
     setReportBusy(false);
     setConfirmEnd(false);
@@ -2057,9 +2075,14 @@ function PracticeRoom({
         note: reportNote,
         item: currentItem,
         index: currentIndex,
+        correction: {
+          expectedSpeaker:
+            reportKind === "wrong_speaker" ? reportSpeaker : "",
+        },
       });
       setReportStatus("Saved for end of session.");
       setReportNote("");
+      setReportSpeaker("");
       setReportOpen(false);
     } catch (error) {
       setReportStatus(error.message || "Could not save that report.");
@@ -2343,6 +2366,22 @@ function PracticeRoom({
                     ))}
                   </select>
                 </label>
+                {reportKind === "wrong_speaker" ? (
+                  <label>
+                    <span>Should be speaker</span>
+                    <select
+                      value={reportSpeaker}
+                      onChange={(event) => setReportSpeaker(event.target.value)}
+                    >
+                      <option value="">Not sure</option>
+                      {speakerOptions.map((name) => (
+                        <option key={name} value={name}>
+                          {name}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                ) : null}
                 <label>
                   <span>Optional note</span>
                   <textarea
