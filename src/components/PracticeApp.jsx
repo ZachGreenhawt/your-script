@@ -18,6 +18,26 @@ const API_BASE = (
   : import.meta.env.VITE_API_BASE || "").replace(/\/+$/, "");
 const api = (path) => `${API_BASE}${path}`;
 
+// iPhones photograph in HEIC/HEIF, which most browsers can't hand to the server
+// in a readable form. Convert to JPEG in the browser first. heic2any is loaded
+// lazily so it only downloads when someone actually picks a HEIC photo.
+function isHeic(file) {
+  if (!file) return false;
+  return /image\/hei[cf]/i.test(file.type) || /\.(heic|heif)$/i.test(file.name);
+}
+
+async function heicToJpeg(file) {
+  const { default: heic2any } = await import("heic2any");
+  const converted = await heic2any({
+    blob: file,
+    toType: "image/jpeg",
+    quality: 0.92,
+  });
+  const blob = Array.isArray(converted) ? converted[0] : converted;
+  const base = file.name.replace(/\.(heic|heif)$/i, "") || "photo";
+  return new File([blob], `${base}.jpg`, { type: "image/jpeg" });
+}
+
 // Hand-drawn underline used in headings/section dividers (stays a fixed
 // path; it's always rendered at a known aspect ratio).
 const HAND_UNDERLINE =
@@ -677,7 +697,9 @@ export default function PracticeApp() {
   async function analyzeScript(event) {
     event.preventDefault();
     if (!file && !scriptText.trim()) {
-      setError("Choose a .txt or .pdf script, or paste script text.");
+      setError(
+        "Choose a .txt, .pdf, or photo of your script, or paste script text.",
+      );
       return;
     }
 
@@ -690,7 +712,18 @@ export default function PracticeApp() {
       let response;
       if (file) {
         const form = new FormData();
-        form.append("script", file);
+        let uploadFile = file;
+        if (isHeic(file)) {
+          setLoadCaption("Converting photo");
+          try {
+            uploadFile = await heicToJpeg(file);
+          } catch {
+            throw new Error(
+              "That photo couldn't be converted. Try saving it as JPEG or PNG, then upload again.",
+            );
+          }
+        }
+        form.append("script", uploadFile);
         // Cleanup is gathered in the wizard, after analyze - we still send
         // whatever the user has so far in case it helps body detection.
         form.append("cleanup", cleanupString);
@@ -1582,7 +1615,9 @@ function UploadStage({
                     <path d="M9 31 Q 20 33.4 31 31" />
                   </svg>
                   <span className="paper-dropzone-text">Drop it here</span>
-                  <span className="paper-dropzone-hint">.pdf or .txt</span>
+                  <span className="paper-dropzone-hint">
+                    .pdf, .txt, or a photo
+                  </span>
                 </>
               }
             </span>
@@ -1591,7 +1626,7 @@ function UploadStage({
         <input
           ref={fileInputRef}
           type="file"
-          accept=".txt,.pdf,text/plain,application/pdf"
+          accept=".txt,.pdf,.jpg,.jpeg,.png,.heic,.heif,.webp,image/*,text/plain,application/pdf"
           hidden
           onChange={(event) => onChoose(event.target.files?.[0])}
         />
