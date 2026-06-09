@@ -41,6 +41,25 @@ export function track(event, amount) {
   }
 }
 
+export function trackPageView(path, title) {
+  try {
+    if (typeof window === "undefined" || typeof window.gtag !== "function") {
+      return;
+    }
+
+    const pagePath =
+      path ||
+      `${window.location.pathname}${window.location.search}${window.location.hash}`;
+    window.gtag("event", "page_view", {
+      page_path: pagePath,
+      page_location: `${window.location.origin}${pagePath}`,
+      page_title: title || document.title,
+    });
+  } catch {
+    // Google Analytics must never break the app
+  }
+}
+
 export async function sendParserEvent(correction) {
   const response = await fetch(`${API_BASE}/api/parser-event`, {
     method: "POST",

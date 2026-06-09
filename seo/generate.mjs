@@ -45,6 +45,15 @@ const PUB = join(ROOT, "public");
 
 // Vendored hand-drawn frame decorator (brand non-negotiable: frames are RoughBox).
 const ROUGHBOX = readFileSync(resolve(__dirname, "roughbox.js"), "utf8");
+const GOOGLE_TAG = `<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-4G73FH1XCL"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-4G73FH1XCL');
+</script>`;
 
 // Per-page mascot greeter (real ink SVGs in public/mascots, space-free filenames).
 const MASCOTS = {
@@ -423,6 +432,7 @@ function renderPage(page) {
   return `<!doctype html>
 <html lang="${SITE.lang}">
 <head>
+${GOOGLE_TAG}
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>${t}</title>

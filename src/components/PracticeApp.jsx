@@ -1,7 +1,12 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import MascotLoader from "./MascotLoader.jsx";
 import { clearStashedError, stashError } from "../feedback.js";
-import { track, EVENTS, sendParserReport } from "../analytics.js";
+import {
+  track,
+  trackPageView,
+  EVENTS,
+  sendParserReport,
+} from "../analytics.js";
 import {
   buildSnapshot,
   clearSnapshot,
@@ -616,6 +621,18 @@ export default function PracticeApp() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
+  }, [phase]);
+
+  useEffect(() => {
+    if (phase === "upload") return;
+
+    const titles = {
+      setup: "Your Script | Setup",
+      practice: "Your Script | Practice",
+      done: "Your Script | Practice Complete",
+    };
+
+    trackPageView(`/upload/${phase}`, titles[phase]);
   }, [phase]);
 
   useEffect(() => {
