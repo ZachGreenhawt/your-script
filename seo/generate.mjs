@@ -98,6 +98,20 @@ const esc = (s = "") =>
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#39;");
 
+const escJs = (s = "") =>
+  String(s)
+    .replace(/\\/g, "\\\\")
+    .replace(/'/g, "\\'")
+    .replace(/\n/g, "\\n")
+    .replace(/\r/g, "\\r");
+
+function gaClick(event, params = {}) {
+  const entries = Object.entries({ app_name: "your_script", ...params })
+    .map(([key, value]) => `${key}:'${escJs(value)}'`)
+    .join(",");
+  return `onclick="window.gtag&amp;&amp;gtag('event','${escJs(event)}',{${entries}})"`;
+}
+
 const STATIC_HREFS = new Map(GENERATED_PAGES.map((p) => [p.path, "/" + p.file]));
 
 function hrefFor(path) {
@@ -392,7 +406,7 @@ function renderCta(page) {
   <h2 id="cta-title">Try Your Script on your next scene</h2>
   <p>${esc(note)}</p>
   <p class="cta-actions">
-    <a class="btn" href="/upload" rel="nofollow" data-rough data-rough-seed="5"><span>Open Your Script ${ARROW}</span></a>
+    <a class="btn" href="/upload" rel="nofollow" data-rough data-rough-seed="5" ${gaClick("cta_start_click", { source: "resource_cta", page_slug: page.slug })}><span>Open Your Script ${ARROW}</span></a>
     <a class="btn btn-ghost" href="${secondary.href}" data-rough data-rough-seed="6"><span>${esc(secondary.label)}</span></a>
   </p>
 </section>`;
@@ -464,7 +478,7 @@ ${ldScript(jsonGraph(page))}
 <header class="chrome">
   <a class="chrome-mark squiggle" href="/">Your Script</a>
   <span class="chrome-center">${esc(crumb)}</span>
-  <a class="chrome-cta squiggle" href="/upload" rel="nofollow">Open the app ${ARROW}</a>
+  <a class="chrome-cta squiggle" href="/upload" rel="nofollow" ${gaClick("cta_start_click", { source: "resource_header", page_slug: page.slug })}>Open the app ${ARROW}</a>
 </header>
 <main id="main" class="sheet">
   <div class="paper-heading">

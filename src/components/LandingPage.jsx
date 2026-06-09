@@ -8,6 +8,7 @@ import BackgroundAtmosphere from "./BackgroundAtmosphere.jsx";
 import MascotLoader from "./MascotLoader.jsx";
 import ScrollProgress from "./ScrollProgress.jsx";
 import useScrollTimeline from "../hooks/useScrollTimeline.js";
+import { GA_EVENTS } from "../analytics.js";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -36,7 +37,10 @@ function ReducedMotionFallback() {
         <button
           type="button"
           className="new-script-fallback"
-          onClick={() => window.location.assign("/upload")}
+          onClick={() => {
+            GA_EVENTS.ctaStartClick("landing_reduced_motion");
+            window.location.assign("/upload");
+          }}
         >
           New Script
         </button>
@@ -61,6 +65,7 @@ export default function LandingPage() {
 
   useEffect(() => {
     const handler = () => {
+      GA_EVENTS.ctaStartClick("landing_book");
       // Give the 3D book a beat to open in place, *then* layer the mascot.
       window.setTimeout(() => setLoaderPhase("opening"), 650);
       window.setTimeout(() => setLoaderPhase("open"), 1300);

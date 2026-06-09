@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { lerp, smoothstep, easeOutQuart } from "../utils/animationMath.js";
+import { GA_EVENTS } from "../analytics.js";
 
 const WAVY_UNDERLINE =
   "M 4 12 Q 30 4 56 10 Q 82 18 108 10 Q 134 2 160 10 Q 186 18 212 10 Q 238 4 264 12";
@@ -218,6 +219,7 @@ export default function HtmlOverlay({ progress }) {
             href="#upload"
             onClick={(e) => {
               e.preventDefault();
+              GA_EVENTS.ctaStartClick("landing_nav_upload");
               scrollToBottom();
             }}
           >

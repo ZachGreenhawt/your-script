@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { GA_EVENTS } from "../analytics.js";
 
 // Empty-state dashboard.  Once we add session persistence (localStorage
 // or a backend), this is where the user's past runs will live.  For
@@ -6,6 +7,7 @@ import { useEffect } from "react";
 // real destination.
 export default function Dashboard() {
   useEffect(() => {
+    GA_EVENTS.dashboardOpened();
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {

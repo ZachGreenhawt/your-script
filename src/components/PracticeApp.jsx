@@ -4,6 +4,7 @@ import { clearStashedError, stashError } from "../feedback.js";
 import {
   track,
   trackPageView,
+  GA_EVENTS,
   EVENTS,
   sendParserReport,
 } from "../analytics.js";
@@ -29,6 +30,15 @@ const api = (path) => `${API_BASE}${path}`;
 function isHeic(file) {
   if (!file) return false;
   return /image\/hei[cf]/i.test(file.type) || /\.(heic|heif)$/i.test(file.name);
+}
+
+function fileKind(file) {
+  if (!file) return "text";
+  if (isHeic(file)) return "heic";
+  if (/pdf/i.test(file.type) || /\.pdf$/i.test(file.name)) return "pdf";
+  if (/text/i.test(file.type) || /\.txt$/i.test(file.name)) return "txt";
+  if (/image/i.test(file.type)) return "image";
+  return "other";
 }
 
 async function heicToJpeg(file) {
@@ -573,6 +583,7 @@ export default function PracticeApp() {
   const answerRef = useRef(null);
   const deletedScriptIdRef = useRef("");
   const cleanupTargetRef = useRef("");
+  const pasteTrackedRef = useRef(false);
   const [phase, setPhase] = useState("upload");
   const [file, setFile] = useState(null);
   const [scriptText, setScriptText] = useState("");
@@ -633,6 +644,9 @@ export default function PracticeApp() {
     };
 
     trackPageView(`/upload/${phase}`, titles[phase]);
+    if (phase === "setup") {
+      GA_EVENTS.setupStarted(characters.length);
+    }
   }, [phase]);
 
   useEffect(() => {
@@ -710,6 +724,8 @@ export default function PracticeApp() {
     if (!nextFile) return;
     cleanupTargetRef.current = "";
     deletedScriptIdRef.current = "";
+    pasteTrackedRef.current = false;
+    GA_EVENTS.uploadInputSelected("file", fileKind(nextFile));
     setFile(nextFile);
     setScriptText("");
     setAnalysis(null);
@@ -717,6 +733,14 @@ export default function PracticeApp() {
     setPhase("upload");
     setError("");
     setScriptCleanupStatus("idle");
+  }
+
+  function handlePasteText(value) {
+    setScriptText(value);
+    if (value.trim() && !pasteTrackedRef.current) {
+      pasteTrackedRef.current = true;
+      GA_EVENTS.uploadInputSelected("paste", "text");
+    }
   }
 
   // Stream callback for the loader. Forward-only so a late/duplicate
@@ -743,6 +767,7 @@ export default function PracticeApp() {
     setLoadCaption("Reading your script");
     setError("");
     track(EVENTS.SCRIPT_UPLOADED);
+    const inputMethod = file ? "file" : "paste";
     try {
       let response;
       if (file) {
@@ -798,6 +823,7 @@ export default function PracticeApp() {
         input: fileMeta(file, scriptText),
       });
       track(EVENTS.ERROR_OCCURRED);
+      GA_EVENTS.analyzeFailed(inputMethod, "analyze_request_failed");
     } finally {
       setBusy("");
     }
@@ -813,6 +839,10 @@ export default function PracticeApp() {
     setLoadProgress(0);
     setLoadCaption("Building your run");
     setError("");
+    GA_EVENTS.parseStarted({
+      settings,
+      cleanupRuleCount: cleanupKeep ? cleanupArtifacts.length : 0,
+    });
     try {
       const response = await fetch(api("/api/parse"), {
         method: "POST",
@@ -848,6 +878,11 @@ export default function PracticeApp() {
         // diagnostics must never block a successful parse
       }
       startRound(payload.items || [], "Full run");
+      GA_EVENTS.parseSuccess({
+        practiceLineCount: payload.total || payload.items?.length || 0,
+        turnCount: payload.turnCount || 0,
+        sourceLines: payload.lineCount || analysis?.lineCount || 0,
+      });
     } catch (requestError) {
       setError(requestError.message);
       stashError({
@@ -856,6 +891,7 @@ export default function PracticeApp() {
         input: fileMeta(file, scriptText),
       });
       track(EVENTS.ERROR_OCCURRED);
+      GA_EVENTS.parseFailed("parse_request_failed");
     } finally {
       setBusy("");
     }
@@ -984,6 +1020,7 @@ export default function PracticeApp() {
         if (cleanupTargetRef.current === scriptId) {
           setScriptCleanupStatus("deleted");
         }
+        GA_EVENTS.scriptDeleted();
       })
       .catch(() => {
         deletedScriptIdRef.current = "";
@@ -1009,12 +1046,15 @@ export default function PracticeApp() {
     setSessionStartedAt(Date.now());
     setLineStartedAt(Date.now());
     setNow(Date.now());
-    if (items.length) track(EVENTS.PRACTICE_STARTED);
+    if (items.length) {
+      track(EVENTS.PRACTICE_STARTED);
+    }
     setPhase(items.length ? "practice" : "done");
   }
 
   function updateSetting(key, value) {
     setSettings((current) => ({ ...current, [key]: value }));
+    GA_EVENTS.settingChanged(key, value);
   }
 
   function addCharacter() {
@@ -1023,15 +1063,18 @@ export default function PracticeApp() {
       setNewCharacter("");
       return;
     }
-    setCharacters((current) => [...current, cleaned].sort());
+    const next = [...characters, cleaned].sort();
+    setCharacters(next);
     setTargetCharacter(cleaned);
     setNewCharacter("");
+    GA_EVENTS.roleAdded(next.length);
   }
 
   function removeCharacter(character) {
     const next = characters.filter((item) => item !== character);
     setCharacters(next);
     if (targetCharacter === character) setTargetCharacter(next[0] || "");
+    GA_EVENTS.roleRemoved(next.length);
   }
 
   function addArtifact() {
@@ -1040,12 +1083,45 @@ export default function PracticeApp() {
       setNewArtifact("");
       return;
     }
-    setCleanupArtifacts((current) => [...current, trimmed]);
+    const next = [...cleanupArtifacts, trimmed];
+    setCleanupArtifacts(next);
     setNewArtifact("");
+    GA_EVENTS.cleanupRuleAdded(next.length);
   }
 
   function removeArtifact(artifact) {
-    setCleanupArtifacts((current) => current.filter((a) => a !== artifact));
+    const next = cleanupArtifacts.filter((a) => a !== artifact);
+    setCleanupArtifacts(next);
+    GA_EVENTS.cleanupRuleRemoved(next.length);
+  }
+
+  function chooseTargetCharacter(character) {
+    setTargetCharacter(character);
+  }
+
+  function chooseCleanupKeep(value) {
+    setCleanupKeep(value);
+    GA_EVENTS.cleanupChoiceChanged(value);
+  }
+
+  function chooseBodyStartLine(line) {
+    setBodyStartLine(line);
+    GA_EVENTS.startingLineSelected(line);
+  }
+
+  function trackAnswer(result, lineTimeMs) {
+    GA_EVENTS.answerChecked({
+      result,
+      mode,
+      lineNumber: currentIndex + 1,
+      lineTimeMs,
+      usedHint: hintShown,
+    });
+  }
+
+  function rehearsalSeconds() {
+    const start = sessionStartRef.current || sessionStartedAt;
+    return start ? Math.max(0, Math.round((Date.now() - start) / 1000)) : 0;
   }
 
   function recordItem(status) {
@@ -1079,6 +1155,7 @@ export default function PracticeApp() {
           lineTimeMs,
         });
         recordItem("review");
+        trackAnswer("review", lineTimeMs);
         return;
       }
       setStats((s) => ({ ...s, right: s.right + 1 }));
@@ -1089,6 +1166,7 @@ export default function PracticeApp() {
         lineTimeMs,
       });
       recordItem("right");
+      trackAnswer("correct", lineTimeMs);
       return;
     }
 
@@ -1101,6 +1179,7 @@ export default function PracticeApp() {
       lineTimeMs,
     });
     recordItem("wrong");
+    trackAnswer(status === "reveal" ? "revealed" : "wrong", lineTimeMs);
   }
 
   // Flashcard self-grade: Got it / Review / Stuck.  Review marks the
@@ -1120,6 +1199,7 @@ export default function PracticeApp() {
           lineTimeMs,
         });
         recordItem("review");
+        trackAnswer("review", lineTimeMs);
         return;
       }
       setStats((s) => ({ ...s, right: s.right + 1 }));
@@ -1130,6 +1210,7 @@ export default function PracticeApp() {
         lineTimeMs,
       });
       recordItem("right");
+      trackAnswer("right", lineTimeMs);
       return;
     }
     if (status === "review") {
@@ -1142,6 +1223,7 @@ export default function PracticeApp() {
         lineTimeMs,
       });
       recordItem("review");
+      trackAnswer("review", lineTimeMs);
       return;
     }
     setStats((s) => ({ ...s, wrong: s.wrong + 1 }));
@@ -1153,6 +1235,7 @@ export default function PracticeApp() {
       lineTimeMs,
     });
     recordItem("wrong");
+    trackAnswer("stuck", lineTimeMs);
   }
 
   // Report this session's rehearsal time once, from whichever fires first:
@@ -1160,16 +1243,25 @@ export default function PracticeApp() {
   function reportRehearsal() {
     const start = sessionStartRef.current;
     if (!start || rehearsalReportedRef.current) return;
-    const seconds = Math.round((Date.now() - start) / 1000);
+    const seconds = rehearsalSeconds();
     if (seconds > 0) {
       rehearsalReportedRef.current = true;
       track(EVENTS.REHEARSAL_SECONDS, seconds);
     }
   }
 
-  function endSession() {
+  function endSession(reason = "completed") {
+    const completedLineCount = stats.right + stats.review + stats.wrong;
     reportRehearsal();
-    track(EVENTS.PRACTICE_COMPLETED);
+    if (reason === "early") {
+      GA_EVENTS.sessionAbandoned({
+        completedLineCount,
+        practiceLineCount: practiceItems.length,
+      });
+    }
+    if (reason === "completed") {
+      track(EVENTS.PRACTICE_COMPLETED);
+    }
     setPhase("done");
     sendParserIssues(parserIssues);
     deleteServerSession();
@@ -1197,7 +1289,14 @@ export default function PracticeApp() {
   }
 
   function retryMissed() {
+    GA_EVENTS.retryStarted("missed", missed.length);
     startRound(missed, "Missed lines");
+  }
+
+  function retryFullRun() {
+    const items = parsed?.items || [];
+    GA_EVENTS.retryStarted("full_run", items.length);
+    startRound(items, "Full run");
   }
 
   function resetToSetup() {
@@ -1217,6 +1316,7 @@ export default function PracticeApp() {
   function completeSession() {
     deleteServerSession();
     cleanupTargetRef.current = "";
+    pasteTrackedRef.current = false;
     setPhase("upload");
     setFile(null);
     if (fileInputRef.current) {
@@ -1256,9 +1356,9 @@ export default function PracticeApp() {
   // Download the user's cue/line list as a .txt - handy to print or study away
   // from the screen.  (Built from the current run; nothing leaves the browser.)
   function exportLines() {
-    track(EVENTS.EXPORT_CLICKED);
     const items = parsed?.items || practiceItems || [];
     if (!items.length) return;
+    track(EVENTS.EXPORT_CLICKED);
     const who = (targetCharacter || "MY LINES").toUpperCase();
     const base = (analysis?.fileName || "your-script").replace(/\.[^.]+$/, "");
     const body = items
@@ -1281,7 +1381,9 @@ export default function PracticeApp() {
   }
 
   function handleNextStep() {
-    if (setupStep === 1) track(EVENTS.CHARACTER_SELECTED);
+    if (setupStep === 1) {
+      track(EVENTS.CHARACTER_SELECTED);
+    }
     if (setupStep < SETUP_STEPS.length - 1) {
       setSetupStep((s) => s + 1);
       return;
@@ -1397,7 +1499,7 @@ export default function PracticeApp() {
             busy={busy}
             fileInputRef={fileInputRef}
             onChoose={chooseFile}
-            onPaste={setScriptText}
+            onPaste={handlePasteText}
             clearFile={() => setFile(null)}
             onDragStart={() => setDragging(true)}
             onDragEnd={() => setDragging(false)}
@@ -1409,7 +1511,7 @@ export default function PracticeApp() {
           <SetupWizard
             step={setupStep}
             cleanupKeep={cleanupKeep}
-            setCleanupKeep={setCleanupKeep}
+            setCleanupKeep={chooseCleanupKeep}
             cleanupArtifacts={cleanupArtifacts}
             removeArtifact={removeArtifact}
             newArtifact={newArtifact}
@@ -1417,14 +1519,14 @@ export default function PracticeApp() {
             addArtifact={addArtifact}
             characters={characters}
             targetCharacter={targetCharacter}
-            setTargetCharacter={setTargetCharacter}
+            setTargetCharacter={chooseTargetCharacter}
             removeCharacter={removeCharacter}
             newCharacter={newCharacter}
             setNewCharacter={setNewCharacter}
             addCharacter={addCharacter}
             analysis={analysis}
             bodyStartLine={bodyStartLine}
-            setBodyStartLine={setBodyStartLine}
+            setBodyStartLine={chooseBodyStartLine}
             settings={settings}
             onOpenSettings={() => setSettingsOpen(true)}
             onBack={() => setSetupStep((s) => Math.max(0, s - 1))}
@@ -1440,7 +1542,10 @@ export default function PracticeApp() {
             currentIndex={currentIndex}
             total={practiceItems.length}
             mode={mode}
-            onModeChange={setMode}
+            onModeChange={(nextMode) => {
+              setMode(nextMode);
+              GA_EVENTS.practiceModeChanged(nextMode);
+            }}
             stats={stats}
             reviewCount={stats.review}
             answer={answer}
@@ -1452,9 +1557,17 @@ export default function PracticeApp() {
             sessionElapsed={sessionElapsed}
             progressFrac={progressFrac}
             hintShown={hintShown}
-            onHint={() => setHintShown(true)}
+            onHint={() => {
+              setHintShown(true);
+              GA_EVENTS.hintOpened(currentIndex + 1);
+            }}
             revealed={revealed}
-            onReveal={() => setRevealed(true)}
+            onReveal={() => {
+              if (!revealed) {
+                GA_EVENTS.answerRevealed(currentIndex + 1, mode);
+              }
+              setRevealed(true);
+            }}
             targetCharacter={targetCharacter}
             characters={characters}
             onCheck={() => gradeCurrent("submit")}
@@ -1466,7 +1579,7 @@ export default function PracticeApp() {
             isLast={currentIndex + 1 >= practiceItems.length}
             onReportIssue={reportParserIssue}
             parserIssueCount={parserIssues.length}
-            onEndSession={endSession}
+            onEndSession={() => endSession("early")}
           />
         : null}
 
@@ -1480,7 +1593,7 @@ export default function PracticeApp() {
             roundLabel={roundLabel}
             parsedTotal={parsed?.total || 0}
             hasMissed={missed.length > 0}
-            onRetryAll={() => startRound(parsed?.items || [], "Full run")}
+            onRetryAll={retryFullRun}
             onRetryMissed={retryMissed}
             onBackToSetup={parsed?.total ? completeSession : resetToSetup}
             onExport={exportLines}
@@ -2524,7 +2637,10 @@ function PracticeRoom({
                 <button
                   type="button"
                   className="parser-report-link"
-                  onClick={() => setReportOpen(true)}
+                  onClick={() => {
+                    setReportOpen(true);
+                    GA_EVENTS.parserIssueOpened(currentIndex + 1);
+                  }}
                 >
                   {parserIssueCount ?
                     `parser issues (${parserIssueCount})`

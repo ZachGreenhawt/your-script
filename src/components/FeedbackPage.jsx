@@ -11,6 +11,7 @@ import {
   clearSnapshot,
   formatDiagnostics,
 } from "../diagnostics.js";
+import { GA_EVENTS } from "../analytics.js";
 
 const SCRIPT_SCREENS = new Set(["upload", "setup", "practice", "done"]);
 const HAND_UNDERLINE =
@@ -210,6 +211,15 @@ export default function FeedbackPage() {
   const [sending, setSending] = useState("");
 
   useEffect(() => {
+    const kind =
+      isSayHi ? "say_hi"
+      : isIssue ? "error"
+      : isStory ? "story"
+      : requestedKind || "general";
+    GA_EVENTS.feedbackOpened(kind, from);
+  }, [from, isIssue, isSayHi, isStory, requestedKind]);
+
+  useEffect(() => {
     const prev = document.body.style.overflow;
     document.body.style.overflow = "auto";
     return () => {
@@ -243,8 +253,14 @@ export default function FeedbackPage() {
         clearStashedError();
         clearSnapshot();
       }
+      if (isSayHi) {
+        GA_EVENTS.sayHiSubmitted(from);
+      } else {
+        GA_EVENTS.feedbackSubmitted(kind, from);
+      }
       setSent(true);
     } catch (err) {
+      GA_EVENTS.feedbackFailed(kind, from);
       setSendError(err.message || "Could not send feedback.");
     } finally {
       setSending("");
