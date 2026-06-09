@@ -9,8 +9,9 @@
 // that's unset the backend just logs the digest (handy for local testing).
 
 const API_BASE = (
-  import.meta.env.DEV ? "" : import.meta.env.VITE_API_BASE || ""
-).replace(/\/+$/, "");
+  import.meta.env.DEV ?
+    ""
+  : import.meta.env.VITE_API_BASE || "").replace(/\/+$/, "");
 
 // Tracked events kept in sync with the backend allowlist.
 export const EVENTS = {
@@ -19,17 +20,20 @@ export const EVENTS = {
   CHARACTER_SELECTED: "character_selected",
   PRACTICE_STARTED: "practice_started",
   PRACTICE_COMPLETED: "practice_completed",
+  REHEARSAL_SECONDS: "rehearsal_seconds",
   EXPORT_CLICKED: "export_clicked",
   ERROR_OCCURRED: "error_occurred",
   PARSER_CORRECTION: "parser_correction",
 };
 
-export function track(event) {
+export function track(event, amount) {
   try {
+    const body = { event };
+    if (Number.isFinite(amount) && amount > 0) body.amount = amount;
     fetch(`${API_BASE}/api/event`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ event }),
+      body: JSON.stringify(body),
       keepalive: true, // still sent if the page is navigating away
     }).catch(() => {});
   } catch {

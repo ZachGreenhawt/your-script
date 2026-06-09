@@ -593,6 +593,8 @@ export default function PracticeApp() {
   const [sessionStartedAt, setSessionStartedAt] = useState(0);
   const [lineStartedAt, setLineStartedAt] = useState(0);
   const [now, setNow] = useState(Date.now());
+  const sessionStartRef = useRef(0);
+  const rehearsalReportedRef = useRef(false);
 
   // Cleanup wizard step state (split out from the legacy single textarea)
   const [cleanupKeep, setCleanupKeep] = useState(true);
@@ -621,6 +623,22 @@ export default function PracticeApp() {
     const id = window.setInterval(() => setNow(Date.now()), 250);
     return () => window.clearInterval(id);
   }, [phase, settings.timedMode]);
+
+  // Keep a ref copy of the session start so the pagehide beacon reads the live
+  // value, and reset the "already reported" guard whenever a new session begins.
+  useEffect(() => {
+    sessionStartRef.current = sessionStartedAt;
+    if (sessionStartedAt) rehearsalReportedRef.current = false;
+  }, [sessionStartedAt]);
+
+  // If the tab closes (or the user navigates away) mid-session, still count the
+  // rehearsal time. pagehide + keepalive fetch survives the unload.
+  useEffect(() => {
+    const onHide = () => reportRehearsal();
+    window.addEventListener("pagehide", onHide);
+    return () => window.removeEventListener("pagehide", onHide);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (phase !== "practice" || mode !== "active") return;
@@ -1120,7 +1138,20 @@ export default function PracticeApp() {
     recordItem("wrong");
   }
 
+  // Report this session's rehearsal time once, from whichever fires first:
+  // endSession or the pagehide beacon.
+  function reportRehearsal() {
+    const start = sessionStartRef.current;
+    if (!start || rehearsalReportedRef.current) return;
+    const seconds = Math.round((Date.now() - start) / 1000);
+    if (seconds > 0) {
+      rehearsalReportedRef.current = true;
+      track(EVENTS.REHEARSAL_SECONDS, seconds);
+    }
+  }
+
   function endSession() {
+    reportRehearsal();
     track(EVENTS.PRACTICE_COMPLETED);
     setPhase("done");
     sendParserIssues(parserIssues);
@@ -2213,8 +2244,7 @@ function PracticeRoom({
         item: currentItem,
         index: currentIndex,
         correction: {
-          expectedSpeaker:
-            reportKind === "wrong_speaker" ? reportSpeaker : "",
+          expectedSpeaker: reportKind === "wrong_speaker" ? reportSpeaker : "",
         },
         shareSnippet: reportShareSnippet,
       });
@@ -2505,7 +2535,7 @@ function PracticeRoom({
                     ))}
                   </select>
                 </label>
-                {reportKind === "wrong_speaker" ? (
+                {reportKind === "wrong_speaker" ?
                   <label>
                     <span>Should be speaker</span>
                     <select
@@ -2520,7 +2550,7 @@ function PracticeRoom({
                       ))}
                     </select>
                   </label>
-                ) : null}
+                : null}
                 <label>
                   <span>Optional note</span>
                   <textarea
@@ -2814,8 +2844,7 @@ function ScriptCleanupStatus({ status }) {
 
   const message =
     status === "deleted" ? "Server copy deleted."
-    : status === "error" ?
-      "Server copy could not be deleted yet."
+    : status === "error" ? "Server copy could not be deleted yet."
     : "Deleting server copy...";
 
   return (
