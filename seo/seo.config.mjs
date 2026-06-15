@@ -863,6 +863,95 @@ export const PAGES = [
 </section>
 `,
   },
+  {
+    slug: "privacy",
+    path: "/privacy",
+    file: "privacy.html",
+    generate: true,
+    inSitemap: true,
+    inLlms: false,
+    inFooterNav: false,
+    noCta: true,
+    llmsTitle: "Privacy",
+    title: "Privacy | Your Script",
+    description:
+      "How Your Script handles your uploads: scripts are processed to build cues, stored only briefly, and deleted when you finish or step away. The text of your script is never sent to analytics or problem reports.",
+    h1: "Your privacy",
+    type: "legal",
+    schema: ["WebPage"],
+    faqs: [],
+    body: `
+<section class="quick-answer" data-rough data-rough-double data-rough-seed="2" aria-labelledby="privacy-summary">
+  <h2 id="privacy-summary">The short version</h2>
+  <p>Your Script is a line rehearsal tool. You upload a script, it builds cues, you practice. To do that the app processes your file on a server, but it keeps your script only as long as your session needs it, never shows it to anyone, and never includes the actual words of your script in analytics or problem reports. There are no accounts and nothing to sign up for.</p>
+  <p class="paper-subtitle">Last updated 14 June 2026.</p>
+</section>
+
+<section aria-labelledby="your-scripts">
+  <h2 id="your-scripts">Your scripts</h2>
+  <p>When you upload a file or photo, it is sent to the Your Script backend so the text can be read, cleaned, and turned into cue-and-line pairs. While you are working, the upload is held in temporary server storage tied to your session.</p>
+  <ul>
+    <li>It is deleted as soon as you finish a session.</li>
+    <li>If you step away, an idle session and its file are removed automatically after about 30 minutes.</li>
+    <li>Your script is never sold, shared, published, shown to other users, or used to train anything.</li>
+    <li>Scripts can be copyrighted material, so the app is built to hold them briefly and let go.</li>
+  </ul>
+</section>
+
+<section aria-labelledby="never-sent">
+  <h2 id="never-sent">What never leaves with the text</h2>
+  <p>Usage analytics and problem reports never contain the words of your script. When you report a parsing problem, the app sends a structure-preserving mask of the affected lines &mdash; capitalization, punctuation, indentation, line lengths, and where speaker names sit &mdash; along with counts and the file type and size. The original words cannot be reconstructed from it, and a masked snapshot is only attached if you opt in when reporting.</p>
+</section>
+
+<section aria-labelledby="no-account">
+  <h2 id="no-account">No accounts</h2>
+  <p>Your Script has no login and no user profiles. It does not ask for your name, and it never asks you to enter a password, payment details, or other personal information.</p>
+</section>
+
+<section aria-labelledby="analytics">
+  <h2 id="analytics">Analytics and Google Signals</h2>
+  <p>The site uses Google Analytics to understand how the app is used &mdash; for example, page views, button clicks, and how long a practice run takes. Google Signals is enabled: for visitors who are signed in to Google with Ads Personalization turned on, Google may add aggregated demographics and interests to this measurement and share audiences with a linked Google Ads account. Google Analytics sets cookies, and signed-in users can review or delete this activity through Google&rsquo;s My Activity.</p>
+  <p>Your Script does <strong>not</strong> use Analytics&rsquo; user-provided data collection. Because there are no accounts, it never sends your name, email, or other personal identifiers to Google, and the words of your script are never part of analytics.</p>
+  <p><strong>Your control.</strong> In the EU, the UK, and Switzerland these features stay off until you accept the banner shown on your first visit. Everywhere else they are on by default and you can turn them off at any time.</p>
+  <p><button type="button" class="btn btn-ghost" data-ys-privacy-choices data-rough data-rough-seed="7"><span>Manage privacy choices</span></button></p>
+</section>
+
+<section aria-labelledby="feedback">
+  <h2 id="feedback">Feedback and problem reports</h2>
+  <p>If you choose to send feedback or report a problem, your message is emailed to the maker through Resend, an email delivery service. If you add your email address it is included so a reply is possible; leaving it out is fine. A problem report may also carry the masked, text-free diagnostics described above.</p>
+</section>
+
+<section aria-labelledby="providers">
+  <h2 id="providers">Service providers</h2>
+  <p>A few services help run the app and process limited data on its behalf: Vercel hosts the website, Railway runs the backend that parses your script, Google provides analytics, and Resend delivers email. Like any web service, the hosts keep standard request logs (including IP address) used for reliability, security, and rate limiting.</p>
+</section>
+
+<section aria-labelledby="choices">
+  <h2 id="choices">Your choices</h2>
+  <ul>
+    <li>Click <strong>Finish</strong> when you are done to delete your script from the server right away.</li>
+    <li>Only upload material you are comfortable processing this way.</li>
+    <li>Use <strong>Privacy choices</strong> &mdash; in the footer or in the section above &mdash; to turn analytics and ad features on or off at any time.</li>
+    <li>You can also block analytics with your browser settings or a content blocker without affecting practice.</li>
+  </ul>
+</section>
+
+<section aria-labelledby="children">
+  <h2 id="children">Children</h2>
+  <p>Your Script is meant for actors and theatre students and is not directed at children under 13, and it does not knowingly collect personal information from them.</p>
+</section>
+
+<section aria-labelledby="changes">
+  <h2 id="changes">Changes</h2>
+  <p>If this policy changes, the date at the top will be updated. Because the app stores so little, changes are expected to be small.</p>
+</section>
+
+<section aria-labelledby="contact">
+  <h2 id="contact">Contact</h2>
+  <p>Questions about privacy are welcome. Your Script is built by a student &mdash; use the feedback link in the footer to get in touch.</p>
+</section>
+`,
+  },
 ];
 
 // Convenience: only the generated static pages.

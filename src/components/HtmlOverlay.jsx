@@ -13,6 +13,7 @@ const ARROW_TO_BOOK = "M 30 30 L 40 18 L 50 30";
 const SECTION_NUMS = ["01", "02", "03", "04"];
 const ABOUT_HREF = "/what-is-yourscript.html";
 const FEEDBACK_HREF = "/feedback?from=landing&kind=say-hi";
+const PRIVACY_HREF = "/privacy.html";
 
 // "Your Script" letters with a shuffled exit stagger, title scatters off
 // rather than wiping when the user scrolls past the title.
@@ -313,7 +314,19 @@ export default function HtmlOverlay({ progress }) {
           }}
           aria-hidden={progress < 0.93}
         >
-          <span>Your Script</span>
+          <a
+            className="end-footer-mark"
+            href={PRIVACY_HREF}
+            onClick={(e) => {
+              e.preventDefault();
+              window.location.assign(PRIVACY_HREF);
+            }}
+          >
+            <span className="end-footer-mark-full">
+              Your Privacy and Your Script
+            </span>
+            <span className="end-footer-mark-short">Privacy</span>
+          </a>
           <nav className="end-footer-links" aria-label="Footer links">
             <a
               className="end-footer-link"

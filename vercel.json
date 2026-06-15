@@ -40,6 +40,10 @@
       "destination": "/compare/line-learning-apps.html"
     },
     {
+      "source": "/privacy",
+      "destination": "/privacy.html"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }

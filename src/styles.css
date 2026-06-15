@@ -616,6 +616,7 @@ a {
 /* Hand-drawn squiggle underline on hover.  Built as a masked currentColor
    block so the squiggle picks up the link's text color automatically. */
 .chrome-link::after,
+.end-footer-mark::after,
 .end-footer-link::after {
   content: "";
   position: absolute;
@@ -634,6 +635,7 @@ a {
 }
 
 .chrome-link:hover::after,
+.end-footer-mark:hover::after,
 .end-footer-link:hover::after {
   transform: scaleX(1);
 }
@@ -791,9 +793,19 @@ body:has(.new-script-hitbox:hover) .start-arrow {
   transition: opacity 360ms var(--ease-in-out-quart);
 }
 
-.end-footer span:nth-child(1) {
+.end-footer-mark {
+  position: relative;
   justify-self: start;
+  align-self: center;
+  min-width: 0;
   font-weight: 500;
+  color: var(--ink);
+  text-decoration: none;
+  pointer-events: auto;
+  transition: color 200ms var(--ease-out-expo);
+}
+.end-footer-mark-short {
+  display: none;
 }
 
 .end-footer-links {
@@ -1469,6 +1481,12 @@ body:has(.new-script-hitbox:hover) .start-arrow {
     inset: auto 20px 18px;
     font-size: 0.66rem;
     gap: 10px;
+  }
+  .end-footer-mark-full {
+    display: none;
+  }
+  .end-footer-mark-short {
+    display: inline;
   }
   .end-footer-links {
     gap: 8px;

@@ -45,15 +45,29 @@ const PUB = join(ROOT, "public");
 
 // Vendored hand-drawn frame decorator (brand non-negotiable: frames are RoughBox).
 const ROUGHBOX = readFileSync(resolve(__dirname, "roughbox.js"), "utf8");
-const GOOGLE_TAG = `<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-4G73FH1XCL"></script>
+const GOOGLE_TAG = `<!-- Google tag (gtag.js) with Consent Mode v2 -->
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
+  (function(){
+    var EU = /^(Europe\\/|Atlantic\\/(Azores|Madeira|Canary|Reykjavik)|Asia\\/(Nicosia|Famagusta))/;
+    var tz = ""; try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ""; } catch(e){}
+    var required = EU.test(tz);
+    var choice = null; try { choice = localStorage.getItem("ys-consent"); } catch(e){}
+    var granted = choice ? choice === "granted" : !required;
+    var v = granted ? "granted" : "denied";
+    gtag("consent", "default", {
+      ad_storage: v, ad_user_data: v, ad_personalization: v, analytics_storage: v,
+      functionality_storage: "granted", security_storage: "granted",
+      wait_for_update: 500
+    });
+    window.__ys = { consentRequired: required, consentChoice: choice };
+  })();
   gtag('js', new Date());
-
   gtag('config', 'G-4G73FH1XCL');
-</script>`;
+</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-4G73FH1XCL"></script>
+<script src="/consent.js" defer></script>`;
 
 // Per-page mascot greeter (real ink SVGs in public/mascots, space-free filenames).
 const MASCOTS = {
@@ -87,7 +101,7 @@ const SUBTITLES = {
   "memorize-a-monologue": "Lock a speech without cues to lean on.",
   "cue-to-cue-rehearsal": "What cues are, and how to drill them solo.",
 };
-const CRUMB = { about: "About", guide: "Guide", comparison: "Compare" };
+const CRUMB = { about: "About", guide: "Guide", comparison: "Compare", legal: "Privacy" };
 
 // ── tiny helpers ─────────────────────────────────────────────────────────────
 const esc = (s = "") =>
@@ -248,6 +262,7 @@ tbody th{font-weight:600}
 .btn:hover .rough-box{opacity:1}
 .btn:hover{color:var(--maroon)}
 .btn-ghost{color:var(--pencil)}
+button.btn{appearance:none;-webkit-appearance:none;border:0;background:transparent;cursor:pointer}
 /* footer */
 .site-foot{max-width:720px;margin:48px auto 0;padding:22px 28px 44px;position:relative}
 .site-foot .foot-eyebrow{font-family:var(--font-ui);font-weight:500;font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gray);margin:0 0 12px}
@@ -258,6 +273,8 @@ tbody th{font-weight:600}
 .foot-bottom{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px 24px;margin-top:18px}
 .foot-sayhi{font-family:var(--font-ui);font-size:.86rem;color:var(--gray);text-decoration:none}
 .foot-sayhi:hover{color:var(--ink)}
+button.foot-sayhi{background:none;border:0;padding:0;cursor:pointer}
+.foot-bottom-links{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline}
 .visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 a:focus-visible,summary:focus-visible,.btn:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 @media(max-width:600px){body{font-size:17px}.chrome{padding-left:18px;padding-right:18px}.chrome-center{display:none}main.sheet,.site-foot{padding-left:18px;padding-right:18px}}
@@ -414,11 +431,15 @@ function renderCta(page) {
 
 function renderFooter(currentSlug) {
   const links = [{ path: "/", label: "Home" }].concat(
-    GENERATED_PAGES.filter((p) => p.slug !== currentSlug).map((p) => ({ path: hrefFor(p.path), label: p.llmsTitle })),
+    GENERATED_PAGES.filter((p) => p.slug !== currentSlug && p.inFooterNav !== false).map((p) => ({ path: hrefFor(p.path), label: p.llmsTitle })),
   );
   const lis = links
     .map((l) => `        <li><a class="foot-link squiggle" href="${l.path}">${esc(l.label)}</a></li>`)
     .join("\n");
+  const privacyLink =
+    currentSlug === "privacy"
+      ? ""
+      : `<a class="foot-sayhi squiggle" href="${hrefFor("/privacy")}">Privacy</a>`;
   return `
   <footer class="site-foot">
     <p class="foot-eyebrow">More from Your Script</p>
@@ -429,7 +450,11 @@ ${lis}
     </nav>
     <div class="foot-bottom">
       <p class="foot-note">${esc(SITE.name)}. A minimal line rehearsal companion for actors and theatre students.</p>
-      <a class="foot-sayhi squiggle" href="/feedback?from=resources&amp;kind=say-hi" rel="nofollow">Built by a student. Say hi!</a>
+      <span class="foot-bottom-links">
+        <a class="foot-sayhi squiggle" href="/feedback?from=resources&amp;kind=say-hi" rel="nofollow">Built by a student. Say hi!</a>
+        ${privacyLink}
+        <button type="button" class="foot-sayhi squiggle" data-ys-privacy-choices>Privacy choices</button>
+      </span>
     </div>
   </footer>`;
 }
@@ -490,7 +515,7 @@ ${ldScript(jsonGraph(page))}
   </div>
 ${useStaticLinks(page.body).trim()}
 ${renderFaq(page.faqs)}
-${renderCta(page)}
+${page.noCta ? "" : renderCta(page)}
 </main>
 ${renderFooter(page.slug)}
 <script>${ROUGHBOX}</script>
