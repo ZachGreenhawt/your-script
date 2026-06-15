@@ -1,15 +1,29 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-4G73FH1XCL"></script>
+    <!-- Google tag (gtag.js) with Consent Mode v2 -->
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
+      (function(){
+        var EU = /^(Europe\/|Atlantic\/(Azores|Madeira|Canary|Reykjavik)|Asia\/(Nicosia|Famagusta))/;
+        var tz = ""; try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ""; } catch(e){}
+        var required = EU.test(tz);
+        var choice = null; try { choice = localStorage.getItem("ys-consent"); } catch(e){}
+        var granted = choice ? choice === "granted" : !required;
+        var v = granted ? "granted" : "denied";
+        gtag("consent", "default", {
+          ad_storage: v, ad_user_data: v, ad_personalization: v, analytics_storage: v,
+          functionality_storage: "granted", security_storage: "granted",
+          wait_for_update: 500
+        });
+        window.__ys = { consentRequired: required, consentChoice: choice };
+      })();
       gtag('js', new Date());
-
       gtag('config', 'G-4G73FH1XCL');
     </script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-4G73FH1XCL"></script>
+    <script src="/consent.js" defer></script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="/favicon.ico" />
